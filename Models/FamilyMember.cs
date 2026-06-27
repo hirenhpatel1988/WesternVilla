@@ -18,25 +18,31 @@ namespace WesternVilla.Models
         [Display(Name = "SurName / અટક")]
         public string SurName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Age is required / ઉંમર જરૂરી છે")]
         [Range(1, 120, ErrorMessage = "Age must be between 1 and 120 / ઉંમર ૧ થી ૧૨૦ ની વચ્ચે હોવી જોઈએ")]
-        [Display(Name = "Age / ઉંમર")]
-        public int Age { get; set; }
+        [Display(Name = "Age (Optional) / ઉંમર (વૈકલ્પિક)")]
+        public int? Age { get; set; }
 
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Mobile Number must be exactly 10 digits / મોબાઇલ નંબર બરાબર ૧૦ અંકનો હોવો જોઈએ")]
         [Display(Name = "Mobile Number (Optional) / મોબાઇલ નંબર (વૈકલ્પિક)")]
         public string? MobileNumber { get; set; }
 
-        [Required(ErrorMessage = "Occupation Type is required / વ્યવસાય પ્રકાર જરૂરી છે")]
-        [Display(Name = "Occupation Type / વ્યવસાય પ્રકાર")]
-        public string OccupationType { get; set; } = string.Empty; // "Study", "Business", "Job", "None"
+        [Display(Name = "Occupation Type (Optional) / વ્યવસાય પ્રકાર (વૈકલ્પિક)")]
+        public string? OccupationType { get; set; } // "Study", "Business", "Job", "None"
 
         [Display(Name = "Occupation / Study Details / વ્યવસાય / અભ્યાસ વિગતો")]
         public string? OccupationDetails { get; set; }
 
-        [Required(ErrorMessage = "Blood Group is required / બ્લડ ગ્રુપ જરૂરી છે")]
-        [Display(Name = "Blood Group / બ્લડ ગ્રુપ")]
-        public string BloodGroup { get; set; } = string.Empty;
+        [Display(Name = "Blood Group (Optional) / બ્લડ ગ્રુપ (વૈકલ્પિક)")]
+        public string? BloodGroup { get; set; }
+
+        [Display(Name = "Blood Donated? (Optional) / રક્ત દાન કર્યું? (વૈકલ્પિક)")]
+        public string? IsBloodDonated { get; set; } // "Yes" or "No"
+
+        [Display(Name = "Gender (Optional) / લિંગ (વૈકલ્પિક)")]
+        public string? Gender { get; set; } // "Male" or "Female"
+
+        [Display(Name = "House Number (Optional) / ઘર નંબર (વૈકલ્પિક)")]
+        public string? HouseNumber { get; set; }
 
         // Foreign Key
         public int ResidentId { get; set; }

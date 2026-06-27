@@ -98,6 +98,44 @@
                         <input asp-for="OwnerSurName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. Patel" />
                         <span asp-validation-for="OwnerSurName" class="text-xs text-rose-500 mt-1 block"></span>
                     </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label asp-for="Gender" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="Gender" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="Male">Male / પુરુષ</option>
+                            <option value="Female">Female / સ્ત્રી</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Blood Group -->
+                    <div>
+                        <label asp-for="BloodGroup" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="BloodGroup" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="">Select / પસંદ કરો</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        <span asp-validation-for="BloodGroup" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Blood Donated -->
+                    <div>
+                        <label asp-for="IsBloodDonated" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="IsBloodDonated" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="">Select / પસંદ કરો</option>
+                            <option value="Yes">Yes / હા</option>
+                            <option value="No">No / ના</option>
+                        </select>
+                        <span asp-validation-for="IsBloodDonated" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
                 </div>
             </div>
 
@@ -157,7 +195,7 @@
                     <div>
                         <label asp-for="HouseNumber" class="block text-sm font-semibold text-slate-700 mb-2"></label>
                         <input asp-for="HouseNumber" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. 101" />
-                        <p class="text-xs text-slate-400 mt-1">Must be exactly 3 digits (e.g. 005, 108)</p>
+                        <p class="text-xs text-slate-400 mt-1">Between 1 and 181 / ૧ થી ૧૮૧ ની વચ્ચે</p>
                         <span asp-validation-for="HouseNumber" class="text-xs text-rose-500 mt-1 block"></span>
                     </div>
 
@@ -264,10 +302,26 @@
                                     <input type="text" :name="'FamilyMembers[' + index + '].SurName'" x-model="member.surName" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="SurName" />
                                 </div>
 
+                                <!-- Gender -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Gender (Optional) / લિંગ (વૈકલ્પિક)</label>
+                                    <select :name="'FamilyMembers[' + index + '].Gender'" x-model="member.gender" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                        <option value="">Select / પસંદ કરો</option>
+                                        <option value="Male">Male / પુરુષ</option>
+                                        <option value="Female">Female / સ્ત્રી</option>
+                                    </select>
+                                </div>
+
                                 <!-- Age -->
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-2">Age / ઉંમર <span class="text-rose-500">*</span></label>
-                                    <input type="number" :name="'FamilyMembers[' + index + '].Age'" x-model.number="member.age" required min="1" max="120" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="Age" />
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Age (Optional) / ઉંમર (વૈકલ્પિક)</label>
+                                    <input type="number" :name="'FamilyMembers[' + index + '].Age'" x-model.number="member.age" min="1" max="120" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="Age" />
+                                </div>
+
+                                <!-- House Number -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">House Number (Optional) / ઘર નંબર (વૈકલ્પિક)</label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].HouseNumber'" x-model="member.houseNumber" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="e.g. 101" />
                                 </div>
 
                                 <!-- Mobile Number -->
@@ -278,8 +332,8 @@
 
                                 <!-- Blood Group -->
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-2">Blood Group / બ્લડ ગ્રુપ <span class="text-rose-500">*</span></label>
-                                    <select :name="'FamilyMembers[' + index + '].BloodGroup'" x-model="member.bloodGroup" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Blood Group (Optional) / બ્લડ ગ્રુપ (વૈકલ્પિક)</label>
+                                    <select :name="'FamilyMembers[' + index + '].BloodGroup'" x-model="member.bloodGroup" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
                                         <option value="">Select / પસંદ કરો</option>
                                         <option value="A+">A+</option>
                                         <option value="A-">A-</option>
@@ -292,14 +346,25 @@
                                     </select>
                                 </div>
 
+                                <!-- Blood Donated -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Blood Donated? (Optional) / રક્ત દાન કર્યું? (વૈકલ્પિક)</label>
+                                    <select :name="'FamilyMembers[' + index + '].IsBloodDonated'" x-model="member.isBloodDonated" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                        <option value="">Select / પસંદ કરો</option>
+                                        <option value="Yes">Yes / હા</option>
+                                        <option value="No">No / ના</option>
+                                    </select>
+                                </div>
+
                                 <!-- Occupation Type -->
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-2">Occupation Type / વ્યવસાય પ્રકાર <span class="text-rose-500">*</span></label>
-                                    <select :name="'FamilyMembers[' + index + '].OccupationType'" x-model="member.occupationType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Occupation Type (Optional) / વ્યવસાય પ્રકાર (વૈકલ્પિક)</label>
+                                    <select :name="'FamilyMembers[' + index + '].OccupationType'" x-model="member.occupationType" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
                                         <option value="None">None / કોઈ નહીં</option>
                                         <option value="Study">Study / અભ્યાસ</option>
                                         <option value="Business">Business / વ્યવસાય</option>
                                         <option value="Job">Job / નોકરી</option>
+                                        <option value="Housewife">Housewife/Homemaker / ગૃહિણી</option>
                                     </select>
                                 </div>
 
@@ -370,8 +435,8 @@
 
                                 <!-- Vehicle Number -->
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-2">Vehicle Number / વાહન નંબર <span class="text-rose-500">*</span></label>
-                                    <input type="text" :name="'Vehicles[' + index + '].VehicleNumber'" x-model="vehicle.vehicleNumber" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-slate-50/50" placeholder="e.g. GJ-01-AB-1234" />
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Vehicle Number (Optional) / વાહન નંબર (વૈકલ્પિક)</label>
+                                    <input type="text" :name="'Vehicles[' + index + '].VehicleNumber'" x-model="vehicle.vehicleNumber" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-slate-50/50" placeholder="e.g. GJ-01-AB-1234" />
                                 </div>
                             </div>
                         </div>
@@ -481,11 +546,14 @@
                     firstName: fm.firstName || fm.FirstName || '',
                     middleName: fm.middleName || fm.MiddleName || '',
                     surName: fm.surName || fm.SurName || '',
+                    gender: fm.gender || fm.Gender || '',
                     age: fm.age || fm.Age || '',
+                    houseNumber: fm.houseNumber || fm.HouseNumber || '',
                     mobileNumber: fm.mobileNumber || fm.MobileNumber || '',
                     occupationType: fm.occupationType || fm.OccupationType || 'None',
                     occupationDetails: fm.occupationDetails || fm.OccupationDetails || '',
-                    bloodGroup: fm.bloodGroup || fm.BloodGroup || ''
+                    bloodGroup: fm.bloodGroup || fm.BloodGroup || '',
+                    isBloodDonated: fm.isBloodDonated || fm.IsBloodDonated || ''
                 })),
 
                 vehicles: (initialVehicles || []).map(v => ({
@@ -501,11 +569,14 @@
                         firstName: '',
                         middleName: '',
                         surName: '',
+                        gender: '',
                         age: '',
+                        houseNumber: '',
                         mobileNumber: '',
                         occupationType: 'None',
                         occupationDetails: '',
-                        bloodGroup: ''
+                        bloodGroup: '',
+                        isBloodDonated: ''
                     });
                 },
 

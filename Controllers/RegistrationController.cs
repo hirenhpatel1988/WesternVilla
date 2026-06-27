@@ -54,21 +54,14 @@ namespace WesternVilla.Controllers
                 model.TenantSurName = null;
             }
 
-            // Conditional Validation for Maintenance Receipt
-            if (model.IsMaintenancePaid == "Yes" && model.IsReceiptReceived == "Yes")
+            // Conditional cleanup for Maintenance Receipt
+            if (model.IsMaintenancePaid == "No")
             {
-                if (string.IsNullOrWhiteSpace(model.ReceiptNumber))
-                {
-                    ModelState.AddModelError(nameof(model.ReceiptNumber), "Receipt Number is required / રસીદ નંબર જરૂરી છે");
-                }
+                model.IsReceiptReceived = "No";
+                model.ReceiptNumber = null;
             }
-            else
+            else if (model.IsReceiptReceived == "No")
             {
-                // Clear receipt number if not paid or not received
-                if (model.IsMaintenancePaid == "No")
-                {
-                    model.IsReceiptReceived = "No";
-                }
                 model.ReceiptNumber = null;
             }
 
@@ -85,7 +78,7 @@ namespace WesternVilla.Controllers
 
             if (model.Vehicles != null)
             {
-                var validVehicles = model.Vehicles.Where(v => !string.IsNullOrWhiteSpace(v.VehicleNumber)).ToList();
+                var validVehicles = model.Vehicles.Where(v => !string.IsNullOrWhiteSpace(v.VehicleType)).ToList();
                 model.Vehicles.Clear();
                 foreach (var vehicle in validVehicles)
                 {
@@ -116,7 +109,7 @@ namespace WesternVilla.Controllers
                     await transaction.CommitAsync();
 
                     TempData["SuccessMessage"] = "Community Registration Successful! / સોસાયટી રજીસ્ટ્રેશન સફળતાપૂર્વક પૂર્ણ થયું!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(ThankYou));
                 }
                 catch (Exception ex)
                 {
@@ -128,6 +121,13 @@ namespace WesternVilla.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+        // GET: Registration/ThankYou
+        [HttpGet]
+        public IActionResult ThankYou()
+        {
+            return View();
         }
     }
 }

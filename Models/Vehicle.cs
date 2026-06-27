@@ -14,9 +14,8 @@ namespace WesternVilla.Models
         [Display(Name = "Fuel Type / બળતણનો પ્રકાર")]
         public string FuelType { get; set; } = string.Empty; // "Electric", "Petrol", "Diesel"
 
-        [Required(ErrorMessage = "Vehicle Number is required / વાહન નંબર જરૂરી છે")]
-        [Display(Name = "Vehicle Number / વાહન નંબર")]
-        public string VehicleNumber { get; set; } = string.Empty;
+        [Display(Name = "Vehicle Number (Optional) / વાહન નંબર (વૈકલ્પિક)")]
+        public string? VehicleNumber { get; set; }
 
         // Foreign Key
         public int ResidentId { get; set; }

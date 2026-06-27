@@ -35,7 +35,7 @@ namespace WesternVilla.Models
 
         // Core Address & Contact Info
         [Required(ErrorMessage = "House Number is required / ઘર નંબર જરૂરી છે")]
-        [RegularExpression(@"^\d{3}$", ErrorMessage = "House Number must be exactly 3 digits / ઘર નંબર બરાબર ૩ અંકનો હોવો જોઈએ")]
+        [RegularExpression(@"^([1-9]|[1-9][0-9]|1[0-7][0-9]|18[0-1])$", ErrorMessage = "House Number must be between 1 and 181 / ઘર નંબર ૧ થી ૧૮૧ ની વચ્ચે હોવો જોઈએ")]
         [Display(Name = "House Number / ઘર નંબર")]
         public string HouseNumber { get; set; } = string.Empty;
 
@@ -44,10 +44,9 @@ namespace WesternVilla.Models
         [Display(Name = "Mobile Number / મોબાઇલ નંબર")]
         public string MobileNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email Address is required / ઇમેઇલ સરનામું જરૂરી છે")]
         [EmailAddress(ErrorMessage = "Invalid Email Address / અમાન્ય ઇમેઇલ સરનામું")]
-        [Display(Name = "Email Address / ઇમેઇલ સરનામું")]
-        public string Email { get; set; } = string.Empty;
+        [Display(Name = "Email Address (Optional) / ઇમેઇલ સરનામું (વૈકલ્પિક)")]
+        public string? Email { get; set; }
 
         // Maintenance Details
         [Required(ErrorMessage = "Maintenance Paid status is required / મેન્ટેનન્સ ચુકવણીની સ્થિતિ જરૂરી છે")]
@@ -59,6 +58,17 @@ namespace WesternVilla.Models
 
         [Display(Name = "Receipt Number / રસીદ નંબર")]
         public string? ReceiptNumber { get; set; }
+
+        // Personal Details
+        [Required(ErrorMessage = "Gender is required / લિંગ જરૂરી છે")]
+        [Display(Name = "Gender / લિંગ")]
+        public string Gender { get; set; } = "Male"; // "Male" or "Female"
+
+        [Display(Name = "Blood Group (Optional) / બ્લડ ગ્રુપ (વૈકલ્પિક)")]
+        public string? BloodGroup { get; set; }
+
+        [Display(Name = "Blood Donated? (Optional) / રક્ત દાન કર્યું? (વૈકલ્પિક)")]
+        public string? IsBloodDonated { get; set; } // "Yes" or "No"
 
         // Navigation properties
         public virtual ICollection<FamilyMember> FamilyMembers { get; set; } = new List<FamilyMember>();
