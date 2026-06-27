@@ -1,0 +1,531 @@
+@model WesternVilla.Models.Resident
+@{
+    ViewData["Title"] = "Society Community Registration / સોસાયટી નોંધણી";
+    var successMsg = TempData["SuccessMessage"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto" x-data="registrationForm()">
+        
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight sm:text-5xl bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-teal-500">
+                Western Villa
+            </h1>
+            <p class="mt-3 text-lg text-slate-500 font-medium">
+                Society Community Registration System / સોસાયટી કમ્યુનિટી રજીસ્ટ્રેશન સિસ્ટમ
+            </p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(successMsg))
+        {
+            <!-- Success Alert -->
+            <div class="mb-8 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start space-x-3 shadow-sm animate-fade-in-down">
+                <div class="flex-shrink-0 text-emerald-500 mt-0.5">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-emerald-800">Success / સફળતા</h3>
+                    <p class="text-sm text-emerald-700 mt-1">@successMsg</p>
+                </div>
+            </div>
+        }
+
+        <!-- Validation Summary -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="mb-8 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start space-x-3 shadow-sm">
+                <div class="flex-shrink-0 text-rose-500 mt-0.5">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-rose-800">Please correct the errors / કૃપા કરીને ભૂલો સુધારો</h3>
+                    <div asp-validation-summary="ModelOnly" class="text-sm text-rose-700 mt-1 list-disc pl-5"></div>
+                </div>
+            </div>
+        }
+
+        <!-- Form Card -->
+        <form asp-action="Index" method="post" class="bg-white shadow-xl rounded-3xl overflow-hidden border border-slate-100">
+            @Html.AntiForgeryToken()
+
+            <!-- STEP 1: Owner Details -->
+            <div class="p-8 border-b border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">1</div>
+                    <h2 class="text-xl font-bold text-slate-800">Owner Details / માલિકની વિગતો</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Owner First Name -->
+                    <div>
+                        <label asp-for="OwnerFirstName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="OwnerFirstName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. Ramesh" />
+                        <span asp-validation-for="OwnerFirstName" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Owner Middle Name -->
+                    <div>
+                        <label asp-for="OwnerMiddleName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="OwnerMiddleName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. K." />
+                        <span asp-validation-for="OwnerMiddleName" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Owner SurName -->
+                    <div>
+                        <label asp-for="OwnerSurName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="OwnerSurName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. Patel" />
+                        <span asp-validation-for="OwnerSurName" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Tenant Configuration -->
+            <div class="p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">2</div>
+                    <h2 class="text-xl font-bold text-slate-800">Is House Rented to Tenant? / શું ઘર ભાડે આપેલ છે?</h2>
+                </div>
+
+                <div class="max-w-xs mb-6">
+                    <label asp-for="IsTenant" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                    <select asp-for="IsTenant" x-model="isTenant" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                        <option value="No">No / ના</option>
+                        <option value="Yes">Yes / હા</option>
+                    </select>
+                    <span asp-validation-for="IsTenant" class="text-xs text-rose-500 mt-1 block"></span>
+                </div>
+
+                <!-- Conditional Tenant Form Fields -->
+                <div x-show="isTenant === 'Yes'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" class="mt-6 p-6 border border-blue-100 bg-blue-50/20 rounded-2xl">
+                    <h3 class="text-md font-bold text-blue-900 mb-4">Tenant Details / ભાડુઆતની વિગતો</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Tenant First Name -->
+                        <div>
+                            <label asp-for="TenantFirstName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <input asp-for="TenantFirstName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. Suresh" />
+                            <span asp-validation-for="TenantFirstName" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+
+                        <!-- Tenant Middle Name -->
+                        <div>
+                            <label asp-for="TenantMiddleName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <input asp-for="TenantMiddleName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. M." />
+                            <span asp-validation-for="TenantMiddleName" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+
+                        <!-- Tenant SurName -->
+                        <div>
+                            <label asp-for="TenantSurName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <input asp-for="TenantSurName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. Shah" />
+                            <span asp-validation-for="TenantSurName" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Contact & Address Information -->
+            <div class="p-8 border-b border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">3</div>
+                    <h2 class="text-xl font-bold text-slate-800">Address & Contact / સરનામું અને સંપર્ક માહિતી</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- House Number -->
+                    <div>
+                        <label asp-for="HouseNumber" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="HouseNumber" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. 101" />
+                        <p class="text-xs text-slate-400 mt-1">Must be exactly 3 digits (e.g. 005, 108)</p>
+                        <span asp-validation-for="HouseNumber" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div>
+                        <label asp-for="MobileNumber" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="MobileNumber" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. 9876543210" />
+                        <p class="text-xs text-slate-400 mt-1">10-digit number / ૧૦ અંકનો નંબર</p>
+                        <span asp-validation-for="MobileNumber" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="Email" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. mail@example.com" />
+                        <span asp-validation-for="Email" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Maintenance Details -->
+            <div class="p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">4</div>
+                    <h2 class="text-xl font-bold text-slate-800">Maintenance Payments / મેન્ટેનન્સ ચુકવણી</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Maintenance Paid? -->
+                    <div>
+                        <label asp-for="IsMaintenancePaid" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="IsMaintenancePaid" x-model="isMaintenancePaid" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="No">No / ના</option>
+                            <option value="Yes">Yes / હા</option>
+                        </select>
+                        <span asp-validation-for="IsMaintenancePaid" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Receipt Received? -->
+                    <div x-show="isMaintenancePaid === 'Yes'" x-transition:enter="transition duration-200" class="transition">
+                        <label asp-for="IsReceiptReceived" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="IsReceiptReceived" x-model="isReceiptReceived" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="No">No / ના</option>
+                            <option value="Yes">Yes / હા</option>
+                        </select>
+                        <span asp-validation-for="IsReceiptReceived" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Receipt Number -->
+                    <div x-show="isMaintenancePaid === 'Yes' && isReceiptReceived === 'Yes'" x-transition:enter="transition duration-200" class="transition">
+                        <label asp-for="ReceiptNumber" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="ReceiptNumber" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. MV-4939" />
+                        <span asp-validation-for="ReceiptNumber" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Family Members (Dynamic) -->
+            <div class="p-8 border-b border-slate-100">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">5</div>
+                        <h2 class="text-xl font-bold text-slate-800">Family Members / પરિવારના સભ્યો</h2>
+                    </div>
+                    <button type="button" @@click="addFamilyMember()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xs font-semibold rounded-xl transition duration-200 shadow-sm flex items-center space-x-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add Member / સભ્ય ઉમેરો</span>
+                    </button>
+                </div>
+
+                <!-- List of Family Members -->
+                <div class="space-y-6">
+                    <template x-for="(member, index) in familyMembers" :key="index">
+                        <div class="p-6 border border-slate-100 bg-slate-50/40 rounded-2xl relative shadow-sm hover:shadow-md transition duration-200">
+                            <!-- Remove button -->
+                            <button type="button" @@click="removeFamilyMember(index)" class="absolute top-4 right-4 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded-lg transition duration-150">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+
+                            <div class="text-xs font-bold text-blue-600 mb-4 tracking-wider uppercase">
+                                Family Member #<span x-text="index + 1"></span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- First Name -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">First Name / પ્રથમ નામ <span class="text-rose-500">*</span></label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].FirstName'" x-model="member.firstName" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="First Name" />
+                                </div>
+
+                                <!-- Middle Name -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Middle Name / મધ્યમ નામ <span class="text-rose-500">*</span></label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].MiddleName'" x-model="member.middleName" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="Middle Name" />
+                                </div>
+
+                                <!-- SurName -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">SurName / અટક <span class="text-rose-500">*</span></label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].SurName'" x-model="member.surName" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="SurName" />
+                                </div>
+
+                                <!-- Age -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Age / ઉંમર <span class="text-rose-500">*</span></label>
+                                    <input type="number" :name="'FamilyMembers[' + index + '].Age'" x-model.number="member.age" required min="1" max="120" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="Age" />
+                                </div>
+
+                                <!-- Mobile Number -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Mobile Number (Optional) / મોબાઇલ નંબર (વૈકલ્પિક)</label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].MobileNumber'" x-model="member.mobileNumber" pattern="^\d{10}$" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="e.g. 9876543210" />
+                                </div>
+
+                                <!-- Blood Group -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Blood Group / બ્લડ ગ્રુપ <span class="text-rose-500">*</span></label>
+                                    <select :name="'FamilyMembers[' + index + '].BloodGroup'" x-model="member.bloodGroup" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                        <option value="">Select / પસંદ કરો</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+
+                                <!-- Occupation Type -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Occupation Type / વ્યવસાય પ્રકાર <span class="text-rose-500">*</span></label>
+                                    <select :name="'FamilyMembers[' + index + '].OccupationType'" x-model="member.occupationType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white">
+                                        <option value="None">None / કોઈ નહીં</option>
+                                        <option value="Study">Study / અભ્યાસ</option>
+                                        <option value="Business">Business / વ્યવસાય</option>
+                                        <option value="Job">Job / નોકરી</option>
+                                    </select>
+                                </div>
+
+                                <!-- Occupation Details -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Study/Business Details / અભ્યાસ / વ્યવસાય વિગતો</label>
+                                    <input type="text" :name="'FamilyMembers[' + index + '].OccupationDetails'" x-model="member.occupationDetails" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="e.g. School name, Class or Shop name, Office details" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="familyMembers.length === 0" class="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm font-medium">
+                        No family members added yet. Click "Add Member" above.
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6: Vehicle Details (Dynamic) -->
+            <div class="p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">6</div>
+                        <h2 class="text-xl font-bold text-slate-800">Vehicle Details / વાહનની વિગતો</h2>
+                    </div>
+                    <button type="button" @@click="addVehicle()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xs font-semibold rounded-xl transition duration-200 shadow-sm flex items-center space-x-1.5">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add Vehicle / વાહન ઉમેરો</span>
+                    </button>
+                </div>
+
+                <!-- List of Vehicles -->
+                <div class="space-y-6">
+                    <template x-for="(vehicle, index) in vehicles" :key="index">
+                        <div class="p-6 border border-slate-100 bg-white rounded-2xl relative shadow-sm hover:shadow-md transition duration-200">
+                            <!-- Remove button -->
+                            <button type="button" @@click="removeVehicle(index)" class="absolute top-4 right-4 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded-lg transition duration-150">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+
+                            <div class="text-xs font-bold text-indigo-600 mb-4 tracking-wider uppercase">
+                                Vehicle #<span x-text="index + 1"></span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- Vehicle Type -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Vehicle Type / વાહનનો પ્રકાર <span class="text-rose-500">*</span></label>
+                                    <select :name="'Vehicles[' + index + '].VehicleType'" x-model="vehicle.vehicleType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-slate-50/50">
+                                        <option value="Two">Two Wheeler / ૨ વ્હીલર</option>
+                                        <option value="Four">Four Wheeler / ૪ વ્હીલર</option>
+                                    </select>
+                                </div>
+
+                                <!-- Fuel Type -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Fuel Type / બળતણનો પ્રકાર <span class="text-rose-500">*</span></label>
+                                    <select :name="'Vehicles[' + index + '].FuelType'" x-model="vehicle.fuelType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-slate-50/50">
+                                        <option value="Electric">Electric / ઇલેક્ટ્રિક</option>
+                                        <option value="Petrol">Petrol / પેટ્રોલ</option>
+                                        <option value="Diesel">Diesel / ડીઝલ</option>
+                                    </select>
+                                </div>
+
+                                <!-- Vehicle Number -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-2">Vehicle Number / વાહન નંબર <span class="text-rose-500">*</span></label>
+                                    <input type="text" :name="'Vehicles[' + index + '].VehicleNumber'" x-model="vehicle.vehicleNumber" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-slate-50/50" placeholder="e.g. GJ-01-AB-1234" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="vehicles.length === 0" class="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm font-medium">
+                        No vehicles added yet. Click "Add Vehicle" above.
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 7: Interests (Society Tasks) -->
+            <div class="p-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">7</div>
+                    <h2 class="text-xl font-bold text-slate-800">Choice of Interest for Society Tasks / સોસાયટી કાર્યમાં રસના ક્ષેત્રો</h2>
+                </div>
+
+                <p class="text-sm text-slate-500 mb-6">
+                    Please select the areas where you or your family members are interested in volunteering or helping the society:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Social Event -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Social Events / સામાજિક કાર્યક્રમો" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Social Events</span>
+                            <span class="text-xs text-slate-400">સામાજિક કાર્યક્રમો</span>
+                        </div>
+                    </label>
+
+                    <!-- Sport Activities -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Sport Activities / રમતગમત પ્રવૃત્તિઓ" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Sport Activities</span>
+                            <span class="text-xs text-slate-400">રમતગમત પ્રવૃત્તિઓ</span>
+                        </div>
+                    </label>
+
+                    <!-- Cultural Programs -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Cultural Programs / સાંસ્કૃતિક કાર્યક્રમો" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Cultural Programs</span>
+                            <span class="text-xs text-slate-400">સાંસ્કૃતિક કાર્યક્રમો</span>
+                        </div>
+                    </label>
+
+                    <!-- Security & Safety Advisory -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Security & Safety / સુરક્ષા અને સલામતી" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Security & Safety</span>
+                            <span class="text-xs text-slate-400">સુરક્ષા અને સલામતી</span>
+                        </div>
+                    </label>
+
+                    <!-- Cleanliness Drive -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Cleanliness Drive / સ્વચ્છતા અભિયાન" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Cleanliness Drive</span>
+                            <span class="text-xs text-slate-400">સ્વચ્છતા અભિયાન</span>
+                        </div>
+                    </label>
+
+                    <!-- Gardening & Greenery -->
+                    <label class="flex items-start p-4 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition">
+                        <input type="checkbox" name="selectedInterests" value="Gardening & Greenery / બાગકામ અને હરિયાળી" x-model="selectedInterests" class="h-5 w-5 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-0.5 mr-3">
+                        <div>
+                            <span class="text-sm font-semibold text-slate-700 block">Gardening & Greenery</span>
+                            <span class="text-xs text-slate-400">બાગકામ અને હરિયાળી</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Footer / Submit -->
+            <div class="px-8 py-6 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row justify-end">
+                <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-md transition duration-200 transform hover:-translate-y-0.5 text-center">
+                    Submit Registration / ફોર્મ સબમિટ કરો
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+
+    <!-- Alpine.js Initialization -->
+    <script>
+        function registrationForm() {
+            // Safe JSON serialization from MVC Razor
+            const initialFamilyMembers = @Html.Raw(Json.Serialize(Model.FamilyMembers ?? new List<FamilyMember>()));
+            const initialVehicles = @Html.Raw(Json.Serialize(Model.Vehicles ?? new List<Vehicle>()));
+            const initialInterests = @Html.Raw(Json.Serialize(Model.Interests ?? new List<ResidentInterest>()));
+
+            return {
+                isTenant: '@(Model.IsTenant ?? "No")',
+                isMaintenancePaid: '@(Model.IsMaintenancePaid ?? "No")',
+                isReceiptReceived: '@(Model.IsReceiptReceived ?? "No")',
+
+                familyMembers: (initialFamilyMembers || []).map(fm => ({
+                    firstName: fm.firstName || fm.FirstName || '',
+                    middleName: fm.middleName || fm.MiddleName || '',
+                    surName: fm.surName || fm.SurName || '',
+                    age: fm.age || fm.Age || '',
+                    mobileNumber: fm.mobileNumber || fm.MobileNumber || '',
+                    occupationType: fm.occupationType || fm.OccupationType || 'None',
+                    occupationDetails: fm.occupationDetails || fm.OccupationDetails || '',
+                    bloodGroup: fm.bloodGroup || fm.BloodGroup || ''
+                })),
+
+                vehicles: (initialVehicles || []).map(v => ({
+                    vehicleType: v.vehicleType || v.VehicleType || 'Two',
+                    fuelType: v.fuelType || v.FuelType || 'Petrol',
+                    vehicleNumber: v.vehicleNumber || v.VehicleNumber || ''
+                })),
+
+                selectedInterests: (initialInterests || []).map(i => i.interestName || i.InterestName),
+
+                addFamilyMember() {
+                    this.familyMembers.push({
+                        firstName: '',
+                        middleName: '',
+                        surName: '',
+                        age: '',
+                        mobileNumber: '',
+                        occupationType: 'None',
+                        occupationDetails: '',
+                        bloodGroup: ''
+                    });
+                },
+
+                removeFamilyMember(index) {
+                    this.familyMembers.splice(index, 1);
+                },
+
+                addVehicle() {
+                    this.vehicles.push({
+                        vehicleType: 'Two',
+                        fuelType: 'Petrol',
+                        vehicleNumber: ''
+                    });
+                },
+
+                removeVehicle(index) {
+                    this.vehicles.splice(index, 1);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
