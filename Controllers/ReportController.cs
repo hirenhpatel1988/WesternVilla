@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ClosedXML.Excel;
 using System.Text;
+using System.IO.Compression;
 using WesternVilla.Data;
 using WesternVilla.Models;
 
@@ -47,21 +48,24 @@ namespace WesternVilla.Controllers
             var wsResidents = workbook.Worksheets.Add("Residents");
             wsResidents.Cell(1, 1).Value = "House No / ઘર નંબર";
             wsResidents.Cell(1, 2).Value = "Owner Name / માલિકનું નામ";
-            wsResidents.Cell(1, 3).Value = "Is Tenant? / શું ભાડુઆત છે?";
-            wsResidents.Cell(1, 4).Value = "Tenant Name / ભાડુઆતનું નામ";
-            wsResidents.Cell(1, 5).Value = "Mobile Number / મોબાઇલ નંબર";
-            wsResidents.Cell(1, 6).Value = "Email / ઇમેઇલ";
-            wsResidents.Cell(1, 7).Value = "Maintenance Paid? / મેન્ટેનન્સ ચૂકવેલ છે?";
-            wsResidents.Cell(1, 8).Value = "Receipt Received? / રસીદ મળી છે?";
-            wsResidents.Cell(1, 9).Value = "Receipt Number / રસીદ નંબર";
-            wsResidents.Cell(1, 10).Value = "Family Size / સભ્યોની સંખ્યા";
-            wsResidents.Cell(1, 11).Value = "Vehicles Count / વાહનોની સંખ્યા";
-            wsResidents.Cell(1, 12).Value = "Interests / રસના ક્ષેત્રો";
+            wsResidents.Cell(1, 3).Value = "Gender / લિંગ";
+            wsResidents.Cell(1, 4).Value = "Is Tenant? / શું ભાડુઆત છે?";
+            wsResidents.Cell(1, 5).Value = "Tenant Name / ભાડુઆતનું નામ";
+            wsResidents.Cell(1, 6).Value = "Mobile Number / મોબાઇલ નંબર";
+            wsResidents.Cell(1, 7).Value = "Email / ઇમેઇલ";
+            wsResidents.Cell(1, 8).Value = "Blood Group / બ્લડ ગ્રુપ";
+            wsResidents.Cell(1, 9).Value = "Blood Donated? / રક્ત દાન?";
+            wsResidents.Cell(1, 10).Value = "Maintenance Paid? / મેન્ટેનન્સ ચૂકવેલ છે?";
+            wsResidents.Cell(1, 11).Value = "Receipt Received? / રસીદ મળી છે?";
+            wsResidents.Cell(1, 12).Value = "Receipt Number / રસીદ નંબર";
+            wsResidents.Cell(1, 13).Value = "Family Size / સભ્યોની સંખ્યા";
+            wsResidents.Cell(1, 14).Value = "Vehicles Count / વાહનોની સંખ્યા";
+            wsResidents.Cell(1, 15).Value = "Interests / રસના ક્ષેત્રો";
 
             // Format Header
             var headerStyle = wsResidents.Row(1).Style;
             headerStyle.Font.Bold = true;
-            headerStyle.Fill.BackgroundColor = XLColor.FromHtml("#1E3A8A"); // Dark Indigo/Blue
+            headerStyle.Fill.BackgroundColor = XLColor.FromHtml("#1E3A8A");
             headerStyle.Font.FontColor = XLColor.White;
 
             int row = 2;
@@ -69,16 +73,19 @@ namespace WesternVilla.Controllers
             {
                 wsResidents.Cell(row, 1).Value = r.HouseNumber;
                 wsResidents.Cell(row, 2).Value = $"{r.OwnerFirstName} {r.OwnerMiddleName} {r.OwnerSurName}";
-                wsResidents.Cell(row, 3).Value = r.IsTenant;
-                wsResidents.Cell(row, 4).Value = r.IsTenant == "Yes" ? $"{r.TenantFirstName} {r.TenantMiddleName} {r.TenantSurName}" : "-";
-                wsResidents.Cell(row, 5).Value = r.MobileNumber;
-                wsResidents.Cell(row, 6).Value = r.Email;
-                wsResidents.Cell(row, 7).Value = r.IsMaintenancePaid;
-                wsResidents.Cell(row, 8).Value = r.IsReceiptReceived;
-                wsResidents.Cell(row, 9).Value = r.ReceiptNumber ?? "-";
-                wsResidents.Cell(row, 10).Value = r.FamilyMembers.Count;
-                wsResidents.Cell(row, 11).Value = r.Vehicles.Count;
-                wsResidents.Cell(row, 12).Value = string.Join(", ", r.Interests.Select(i => i.InterestName));
+                wsResidents.Cell(row, 3).Value = r.Gender ?? "-";
+                wsResidents.Cell(row, 4).Value = r.IsTenant;
+                wsResidents.Cell(row, 5).Value = r.IsTenant == "Yes" ? $"{r.TenantFirstName} {r.TenantMiddleName} {r.TenantSurName}" : "-";
+                wsResidents.Cell(row, 6).Value = r.MobileNumber;
+                wsResidents.Cell(row, 7).Value = r.Email ?? "-";
+                wsResidents.Cell(row, 8).Value = r.BloodGroup ?? "-";
+                wsResidents.Cell(row, 9).Value = r.IsBloodDonated ?? "-";
+                wsResidents.Cell(row, 10).Value = r.IsMaintenancePaid;
+                wsResidents.Cell(row, 11).Value = r.IsReceiptReceived;
+                wsResidents.Cell(row, 12).Value = r.ReceiptNumber ?? "-";
+                wsResidents.Cell(row, 13).Value = r.FamilyMembers.Count;
+                wsResidents.Cell(row, 14).Value = r.Vehicles.Count;
+                wsResidents.Cell(row, 15).Value = string.Join(", ", r.Interests.Select(i => i.InterestName));
                 row++;
             }
             wsResidents.Columns().AdjustToContents();
@@ -88,15 +95,17 @@ namespace WesternVilla.Controllers
             wsFamily.Cell(1, 1).Value = "House No / ઘર નંબર";
             wsFamily.Cell(1, 2).Value = "Resident (Owner/Tenant)";
             wsFamily.Cell(1, 3).Value = "Member Name / સભ્યનું નામ";
-            wsFamily.Cell(1, 4).Value = "Age / ઉંમર";
-            wsFamily.Cell(1, 5).Value = "Mobile Number / મોબાઇલ નંબર";
-            wsFamily.Cell(1, 6).Value = "Occupation Type / વ્યવસાય પ્રકાર";
-            wsFamily.Cell(1, 7).Value = "Occupation Details / વ્યવસાય વિગતો";
-            wsFamily.Cell(1, 8).Value = "Blood Group / બ્લડ ગ્રુપ";
+            wsFamily.Cell(1, 4).Value = "Gender / લિંગ";
+            wsFamily.Cell(1, 5).Value = "Age / ઉંમર";
+            wsFamily.Cell(1, 6).Value = "Mobile Number / મોબાઇલ નંબર";
+            wsFamily.Cell(1, 7).Value = "Occupation Type / વ્યવસાય પ્રકાર";
+            wsFamily.Cell(1, 8).Value = "Occupation Details / વ્યવસાય વિગતો";
+            wsFamily.Cell(1, 9).Value = "Blood Group / બ્લડ ગ્રુપ";
+            wsFamily.Cell(1, 10).Value = "Blood Donated? / રક્ત દાન?";
 
             var fHeaderStyle = wsFamily.Row(1).Style;
             fHeaderStyle.Font.Bold = true;
-            fHeaderStyle.Fill.BackgroundColor = XLColor.FromHtml("#0D9488"); // Teal
+            fHeaderStyle.Fill.BackgroundColor = XLColor.FromHtml("#0D9488");
             fHeaderStyle.Font.FontColor = XLColor.White;
 
             int fRow = 2;
@@ -111,11 +120,13 @@ namespace WesternVilla.Controllers
                     wsFamily.Cell(fRow, 1).Value = r.HouseNumber;
                     wsFamily.Cell(fRow, 2).Value = residentName;
                     wsFamily.Cell(fRow, 3).Value = $"{fm.FirstName} {fm.MiddleName} {fm.SurName}";
-                    wsFamily.Cell(fRow, 4).Value = fm.Age;
-                    wsFamily.Cell(fRow, 5).Value = fm.MobileNumber ?? "-";
-                    wsFamily.Cell(fRow, 6).Value = fm.OccupationType;
-                    wsFamily.Cell(fRow, 7).Value = fm.OccupationDetails ?? "-";
-                    wsFamily.Cell(fRow, 8).Value = fm.BloodGroup;
+                    wsFamily.Cell(fRow, 4).Value = fm.Gender ?? "-";
+                    wsFamily.Cell(fRow, 5).Value = fm.Age;
+                    wsFamily.Cell(fRow, 6).Value = fm.MobileNumber ?? "-";
+                    wsFamily.Cell(fRow, 7).Value = fm.OccupationType ?? "-";
+                    wsFamily.Cell(fRow, 8).Value = fm.OccupationDetails ?? "-";
+                    wsFamily.Cell(fRow, 9).Value = fm.BloodGroup ?? "-";
+                    wsFamily.Cell(fRow, 10).Value = fm.IsBloodDonated ?? "-";
                     fRow++;
                 }
             }
@@ -131,7 +142,7 @@ namespace WesternVilla.Controllers
 
             var vHeaderStyle = wsVehicles.Row(1).Style;
             vHeaderStyle.Font.Bold = true;
-            vHeaderStyle.Fill.BackgroundColor = XLColor.FromHtml("#B45309"); // Amber
+            vHeaderStyle.Fill.BackgroundColor = XLColor.FromHtml("#B45309");
             vHeaderStyle.Font.FontColor = XLColor.White;
 
             int vRow = 2;
@@ -147,7 +158,7 @@ namespace WesternVilla.Controllers
                     wsVehicles.Cell(vRow, 2).Value = residentName;
                     wsVehicles.Cell(vRow, 3).Value = v.VehicleType == "Two" ? "2 Wheeler / ૨ વ્હીલર" : "4 Wheeler / ૪ વ્હીલર";
                     wsVehicles.Cell(vRow, 4).Value = v.FuelType;
-                    wsVehicles.Cell(vRow, 5).Value = v.VehicleNumber;
+                    wsVehicles.Cell(vRow, 5).Value = v.VehicleNumber ?? "-";
                     vRow++;
                 }
             }
@@ -174,6 +185,43 @@ namespace WesternVilla.Controllers
                 return NotFound();
             }
 
+            var html = GenerateWordHtml(r);
+            var fileName = $"Home_Profile_House_{r.HouseNumber}.doc";
+            var bytes = Encoding.UTF8.GetBytes(html);
+            return File(bytes, "application/msword", fileName);
+        }
+
+        // GET: Report/DownloadAllWord
+        [HttpGet]
+        public async Task<IActionResult> DownloadAllWord()
+        {
+            var residents = await _context.Residents
+                .Include(r => r.FamilyMembers)
+                .Include(r => r.Vehicles)
+                .Include(r => r.Interests)
+                .OrderBy(r => r.HouseNumber)
+                .ToListAsync();
+
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                foreach (var r in residents)
+                {
+                    var html = GenerateWordHtml(r);
+                    var entry = archive.CreateEntry($"Home_Profile_House_{r.HouseNumber}.doc");
+                    using var entryStream = entry.Open();
+                    var bytes = Encoding.UTF8.GetBytes(html);
+                    entryStream.Write(bytes, 0, bytes.Length);
+                }
+            }
+
+            memoryStream.Position = 0;
+            return File(memoryStream.ToArray(), "application/zip", "WesternVilla_AllHomes_WordFiles.zip");
+        }
+
+        // Helper: Generate Word HTML for a single resident
+        private string GenerateWordHtml(Resident r)
+        {
             var html = new StringBuilder();
 
             html.Append("<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>");
@@ -192,7 +240,6 @@ namespace WesternVilla.Controllers
             html.Append(".badge { padding: 4px 8px; font-weight: bold; font-size: 9.5pt; border-radius: 4px; display: inline-block; }");
             html.Append(".paid { background-color: #DEF7EC; color: #03543F; }");
             html.Append(".notpaid { background-color: #FDE8E8; color: #9B1C1C; }");
-            html.Append(".tenant-header { background-color: #EEF2F6; color: #1E293B; font-weight: bold; }");
             html.Append("</style>");
             html.Append("</head>");
             html.Append("<body>");
@@ -208,8 +255,11 @@ namespace WesternVilla.Controllers
             html.Append("<table>");
             html.Append($"<tr><th>House Number / ઘર નંબર</th><td><b>{r.HouseNumber}</b></td></tr>");
             html.Append($"<tr><th>Owner Name / માલિકનું નામ</th><td>{r.OwnerFirstName} {r.OwnerMiddleName} {r.OwnerSurName}</td></tr>");
+            html.Append($"<tr><th>Gender / લિંગ</th><td>{r.Gender}</td></tr>");
             html.Append($"<tr><th>Mobile Number / મોબાઇલ નંબર</th><td>{r.MobileNumber}</td></tr>");
-            html.Append($"<tr><th>Email / ઇમેઇલ</th><td>{r.Email}</td></tr>");
+            html.Append($"<tr><th>Email / ઇમેઇલ</th><td>{r.Email ?? "-"}</td></tr>");
+            html.Append($"<tr><th>Blood Group / બ્લડ ગ્રુપ</th><td>{r.BloodGroup ?? "-"}</td></tr>");
+            html.Append($"<tr><th>Blood Donated? / રક્ત દાન?</th><td>{r.IsBloodDonated ?? "-"}</td></tr>");
             html.Append($"<tr><th>Is Rented to Tenant? / શું ભાડે આપેલ છે?</th><td>{r.IsTenant}</td></tr>");
             html.Append("</table>");
 
@@ -248,23 +298,27 @@ namespace WesternVilla.Controllers
                 html.Append("<thead>");
                 html.Append("<tr>");
                 html.Append("<th>Member Name / નામ</th>");
+                html.Append("<th>Gender / લિંગ</th>");
                 html.Append("<th>Age / ઉંમર</th>");
                 html.Append("<th>Mobile / મોબાઇલ</th>");
                 html.Append("<th>Occupation / વ્યવસાય</th>");
                 html.Append("<th>Details / વિગત</th>");
                 html.Append("<th>Blood Group / લોહીનું જૂથ</th>");
+                html.Append("<th>Blood Donated? / રક્ત દાન?</th>");
                 html.Append("</tr>");
-                html.Append("</div>");
+                html.Append("</thead>");
 
                 foreach (var fm in r.FamilyMembers)
                 {
                     html.Append("<tr>");
                     html.Append($"<td>{fm.FirstName} {fm.MiddleName} {fm.SurName}</td>");
-                    html.Append($"<td>{fm.Age}</td>");
+                    html.Append($"<td>{fm.Gender ?? "-"}</td>");
+                    html.Append($"<td>{(fm.Age.HasValue ? fm.Age.ToString() : "-")}</td>");
                     html.Append($"<td>{(string.IsNullOrWhiteSpace(fm.MobileNumber) ? "-" : fm.MobileNumber)}</td>");
-                    html.Append($"<td>{fm.OccupationType}</td>");
+                    html.Append($"<td>{fm.OccupationType ?? "-"}</td>");
                     html.Append($"<td>{(string.IsNullOrWhiteSpace(fm.OccupationDetails) ? "-" : fm.OccupationDetails)}</td>");
-                    html.Append($"<td>{fm.BloodGroup}</td>");
+                    html.Append($"<td>{fm.BloodGroup ?? "-"}</td>");
+                    html.Append($"<td>{fm.IsBloodDonated ?? "-"}</td>");
                     html.Append("</tr>");
                 }
                 html.Append("</table>");
@@ -293,7 +347,7 @@ namespace WesternVilla.Controllers
                     string type = v.VehicleType == "Two" ? "2 Wheeler / ૨-વ્હીલર" : "4 Wheeler / ૪-વ્હીલર";
                     html.Append($"<td>{type}</td>");
                     html.Append($"<td>{v.FuelType}</td>");
-                    html.Append($"<td>{v.VehicleNumber}</td>");
+                    html.Append($"<td>{v.VehicleNumber ?? "-"}</td>");
                     html.Append("</tr>");
                 }
                 html.Append("</table>");
@@ -322,10 +376,7 @@ namespace WesternVilla.Controllers
             html.Append("</body>");
             html.Append("</html>");
 
-            var fileName = $"Home_Profile_House_{r.HouseNumber}.doc";
-            var bytes = Encoding.UTF8.GetBytes(html.ToString());
-
-            return File(bytes, "application/msword", fileName);
+            return html.ToString();
         }
     }
 }

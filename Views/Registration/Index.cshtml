@@ -318,12 +318,6 @@
                                     <input type="number" :name="'FamilyMembers[' + index + '].Age'" x-model.number="member.age" min="1" max="120" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="Age" />
                                 </div>
 
-                                <!-- House Number -->
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-2">House Number (Optional) / ઘર નંબર (વૈકલ્પિક)</label>
-                                    <input type="text" :name="'FamilyMembers[' + index + '].HouseNumber'" x-model="member.houseNumber" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 bg-white" placeholder="e.g. 101" />
-                                </div>
-
                                 <!-- Mobile Number -->
                                 <div>
                                     <label class="block text-xs font-bold text-slate-600 mb-2">Mobile Number (Optional) / મોબાઇલ નંબર (વૈકલ્પિક)</label>
@@ -548,7 +542,6 @@
                     surName: fm.surName || fm.SurName || '',
                     gender: fm.gender || fm.Gender || '',
                     age: fm.age || fm.Age || '',
-                    houseNumber: fm.houseNumber || fm.HouseNumber || '',
                     mobileNumber: fm.mobileNumber || fm.MobileNumber || '',
                     occupationType: fm.occupationType || fm.OccupationType || 'None',
                     occupationDetails: fm.occupationDetails || fm.OccupationDetails || '',
@@ -571,7 +564,6 @@
                         surName: '',
                         gender: '',
                         age: '',
-                        houseNumber: '',
                         mobileNumber: '',
                         occupationType: 'None',
                         occupationDetails: '',

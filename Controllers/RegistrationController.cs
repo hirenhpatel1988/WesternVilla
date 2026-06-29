@@ -86,6 +86,15 @@ namespace WesternVilla.Controllers
                 }
             }
 
+            // Auto-populate HouseNumber for all family members from the resident's HouseNumber
+            if (model.FamilyMembers != null)
+            {
+                foreach (var member in model.FamilyMembers)
+                {
+                    member.HouseNumber = model.HouseNumber;
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 using var transaction = await _context.Database.BeginTransactionAsync();

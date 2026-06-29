@@ -30,13 +30,21 @@
                     Manage and export registered resident data, family members, vehicles, and maintenance details.
                 </p>
             </div>
-            <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            <div class="mt-4 flex flex-wrap md:mt-0 md:ml-4 gap-3">
                 <!-- Export to Excel Button -->
                 <a asp-action="ExportExcel" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-sm font-bold rounded-2xl shadow-sm transition duration-200 hover:-translate-y-0.5">
                     <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <span>Export Excel / એક્સેલ ડાઉનલોડ</span>
+                </a>
+
+                <!-- Download All Word Files (ZIP) -->
+                <a asp-action="DownloadAllWord" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white text-sm font-bold rounded-2xl shadow-sm transition duration-200 hover:-translate-y-0.5">
+                    <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span>All Word Files (ZIP) / બધા ડોક ફાઇલ</span>
                 </a>
 
                 <!-- Register New Button -->
