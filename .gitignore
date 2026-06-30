@@ -1,0 +1,42 @@
+## .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+*.cache
+*.vsidx
+
+## Visual Studio
+.vs/
+
+## IDE
+.idea/
+*.swp
+*.sln.docstates
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## publish
+publish/
+
+## Node
+node_modules/
+
+## OS
+.DS_Store
+Thumbs.db

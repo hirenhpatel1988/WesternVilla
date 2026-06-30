@@ -136,6 +136,14 @@
                         </select>
                         <span asp-validation-for="IsBloodDonated" class="text-xs text-rose-500 mt-1 block"></span>
                     </div>
+
+                    <!-- Owner Age -->
+                    <div>
+                        <label asp-for="Age" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="Age" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. 35" />
+                        <p class="text-xs text-slate-400 mt-1">Between 1 and 120 / ૧ થી ૧૨૦ ની વચ્ચે</p>
+                        <span asp-validation-for="Age" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
                 </div>
             </div>
 
@@ -178,6 +186,14 @@
                             <label asp-for="TenantSurName" class="block text-sm font-semibold text-slate-700 mb-2"></label>
                             <input asp-for="TenantSurName" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. Shah" />
                             <span asp-validation-for="TenantSurName" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+
+                        <!-- Tenant Age -->
+                        <div>
+                            <label asp-for="TenantAge" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <input asp-for="TenantAge" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. 30" />
+                            <p class="text-xs text-slate-400 mt-1">Between 1 and 120 / ૧ થી ૧૨૦ ની વચ્ચે</p>
+                            <span asp-validation-for="TenantAge" class="text-xs text-rose-500 mt-1 block"></span>
                         </div>
                     </div>
                 </div>
@@ -255,21 +271,15 @@
 
             <!-- STEP 5: Family Members (Dynamic) -->
             <div class="p-8 border-b border-slate-100">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center mb-6">
                     <div class="flex items-center space-x-3">
                         <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">5</div>
                         <h2 class="text-xl font-bold text-slate-800">Family Members / પરિવારના સભ્યો</h2>
                     </div>
-                    <button type="button" @@click="addFamilyMember()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xs font-semibold rounded-xl transition duration-200 shadow-sm flex items-center space-x-1.5">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>Add Member / સભ્ય ઉમેરો</span>
-                    </button>
                 </div>
 
                 <!-- List of Family Members -->
-                <div class="space-y-6">
+                <div class="space-y-6" x-ref="familyMembersContainer">
                     <template x-for="(member, index) in familyMembers" :key="index">
                         <div class="p-6 border border-slate-100 bg-slate-50/40 rounded-2xl relative shadow-sm hover:shadow-md transition duration-200">
                             <!-- Remove button -->
@@ -372,28 +382,31 @@
                     </template>
 
                     <div x-show="familyMembers.length === 0" class="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm font-medium">
-                        No family members added yet. Click "Add Member" above.
+                        No family members added yet. Click "Add Member" below.
+                    </div>
+
+                    <div class="flex justify-center pt-2">
+                        <button type="button" @@click="addFamilyMember()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl transition duration-200 shadow-md flex items-center space-x-2">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Add More Member / વધુ સભ્ય ઉમેરો</span>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- STEP 6: Vehicle Details (Dynamic) -->
             <div class="p-8 border-b border-slate-100 bg-slate-50/50">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center mb-6">
                     <div class="flex items-center space-x-3">
                         <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">6</div>
                         <h2 class="text-xl font-bold text-slate-800">Vehicle Details / વાહનની વિગતો</h2>
                     </div>
-                    <button type="button" @@click="addVehicle()" class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-xs font-semibold rounded-xl transition duration-200 shadow-sm flex items-center space-x-1.5">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>Add Vehicle / વાહન ઉમેરો</span>
-                    </button>
                 </div>
 
                 <!-- List of Vehicles -->
-                <div class="space-y-6">
+                <div class="space-y-6" x-ref="vehiclesContainer">
                     <template x-for="(vehicle, index) in vehicles" :key="index">
                         <div class="p-6 border border-slate-100 bg-white rounded-2xl relative shadow-sm hover:shadow-md transition duration-200">
                             <!-- Remove button -->
@@ -437,7 +450,16 @@
                     </template>
 
                     <div x-show="vehicles.length === 0" class="text-center py-8 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm font-medium">
-                        No vehicles added yet. Click "Add Vehicle" above.
+                        No vehicles added yet. Click "Add Vehicle" below.
+                    </div>
+
+                    <div class="flex justify-center pt-2">
+                        <button type="button" @@click="addVehicle()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl transition duration-200 shadow-md flex items-center space-x-2">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Add More Vehicle / વધુ વાહન ઉમેરો</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -570,6 +592,9 @@
                         bloodGroup: '',
                         isBloodDonated: ''
                     });
+                    this.$nextTick(() => {
+                        this.$refs.familyMembersContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    });
                 },
 
                 removeFamilyMember(index) {
@@ -581,6 +606,9 @@
                         vehicleType: 'Two',
                         fuelType: 'Petrol',
                         vehicleNumber: ''
+                    });
+                    this.$nextTick(() => {
+                        this.$refs.vehiclesContainer.scrollIntoView({ behavior: 'smooth', block: 'end' });
                     });
                 },
 

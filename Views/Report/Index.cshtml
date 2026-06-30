@@ -132,6 +132,11 @@
                             </div>
                             <div><span class="font-bold text-slate-500 text-xs">Mobile / મોબાઇલ:</span> @item.MobileNumber</div>
                             <div><span class="font-bold text-slate-500 text-xs">Email / ઇમેઇલ:</span> @item.Email</div>
+                            <div><span class="font-bold text-slate-500 text-xs">Owner Age / માલિકની ઉંમર:</span> @(item.Age?.ToString() ?? "-")</div>
+                            @if (item.IsTenant == "Yes")
+                            {
+                                <div><span class="font-bold text-slate-500 text-xs">Tenant Age / ભાડુઆતની ઉંમર:</span> @(item.TenantAge?.ToString() ?? "-")</div>
+                            }
                             @if (item.IsMaintenancePaid == "Yes" && item.IsReceiptReceived == "Yes")
                             {
                                 <div><span class="font-bold text-slate-500 text-xs">Receipt / રસીદ:</span> @item.ReceiptNumber</div>
@@ -172,6 +177,9 @@
                             </th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                                 Primary Resident (Owner / Tenant) / મુખ્ય રહેવાસી
+                            </th>
+                            <th scope="col" class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">
+                                Age / ઉંમર
                             </th>
                             <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
                                 Contact details / સંપર્ક વિગત
@@ -229,6 +237,15 @@
                                         </div>
                                     </td>
 
+                                    <!-- Age -->
+                                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-semibold text-slate-700">
+                                        @(item.Age?.ToString() ?? "-")
+                                        @if (item.IsTenant == "Yes")
+                                        {
+                                            <div class="text-xs text-slate-400 mt-0.5">Tenant: @(item.TenantAge?.ToString() ?? "-")</div>
+                                        }
+                                    </td>
+
                                     <!-- Contact details -->
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
                                         <div class="font-medium">@item.MobileNumber</div>
@@ -280,7 +297,7 @@
                         else
                         {
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-400 font-medium">
+                                <td colspan="8" class="px-6 py-12 text-center text-sm text-slate-400 font-medium">
                                     No registrations found. Register a resident to see them here. / કોઈ રજીસ્ટ્રેશન મળ્યું નથી.
                                 </td>
                             </tr>

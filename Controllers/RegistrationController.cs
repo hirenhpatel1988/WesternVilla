@@ -52,6 +52,7 @@ namespace WesternVilla.Controllers
                 model.TenantFirstName = null;
                 model.TenantMiddleName = null;
                 model.TenantSurName = null;
+                model.TenantAge = null;
             }
 
             // Conditional cleanup for Maintenance Receipt

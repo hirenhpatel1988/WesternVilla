@@ -19,6 +19,10 @@ namespace WesternVilla.Models
         [Display(Name = "Owner SurName / માલિકની અટક")]
         public string OwnerSurName { get; set; } = string.Empty;
 
+        [Range(1, 120, ErrorMessage = "Age must be between 1 and 120 / ઉંમર ૧ થી ૧૨૦ ની વચ્ચે હોવી જોઈએ")]
+        [Display(Name = "Age (Optional) / ઉંમર (વૈકલ્પિક)")]
+        public int? Age { get; set; }
+
         // Tenant Details
         [Required(ErrorMessage = "Please specify if there is a tenant / કૃપા કરીને સ્પષ્ટ કરો કે ભાડુઆત છે કે નહીં")]
         [Display(Name = "Is Tenant? / શું ભાડુઆત છે?")]
@@ -32,6 +36,10 @@ namespace WesternVilla.Models
 
         [Display(Name = "Tenant SurName / ભાડુઆતની અટક")]
         public string? TenantSurName { get; set; }
+
+        [Range(1, 120, ErrorMessage = "Tenant Age must be between 1 and 120 / ભાડુઆતની ઉંમર ૧ થી ૧૨૦ ની વચ્ચે હોવી જોઈએ")]
+        [Display(Name = "Tenant Age (Optional) / ભાડુઆતની ઉંમર (વૈકલ્પિક)")]
+        public int? TenantAge { get; set; }
 
         // Core Address & Contact Info
         [Required(ErrorMessage = "House Number is required / ઘર નંબર જરૂરી છે")]
