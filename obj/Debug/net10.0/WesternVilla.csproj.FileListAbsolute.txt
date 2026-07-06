@@ -274,3 +274,4 @@ D:\Projects\GenAI Projects\WesternVilla\bin\Debug\net10.0\publish\publish\appset
 D:\Projects\GenAI Projects\WesternVilla\bin\Debug\net10.0\publish\publish\WesternVilla.deps.json
 D:\Projects\GenAI Projects\WesternVilla\bin\Debug\net10.0\publish\publish\WesternVilla.runtimeconfig.json
 D:\Projects\GenAI Projects\WesternVilla\bin\Debug\net10.0\publish\publish\WesternVilla.staticwebassets.endpoints.json
+D:\Projects\GenAI Projects\WesternVilla\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

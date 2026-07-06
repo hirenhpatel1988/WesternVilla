@@ -50,19 +50,23 @@ namespace WesternVilla.Controllers
             wsResidents.Cell(1, 2).Value = "Owner Name / માલિકનું નામ";
             wsResidents.Cell(1, 3).Value = "Age / ઉંમર";
             wsResidents.Cell(1, 4).Value = "Gender / લિંગ";
-            wsResidents.Cell(1, 5).Value = "Is Tenant? / શું ભાડુઆત છે?";
-            wsResidents.Cell(1, 6).Value = "Tenant Name / ભાડુઆતનું નામ";
-            wsResidents.Cell(1, 7).Value = "Tenant Age / ભાડુઆતની ઉંમર";
-            wsResidents.Cell(1, 8).Value = "Mobile Number / મોબાઇલ નંબર";
-            wsResidents.Cell(1, 9).Value = "Email / ઇમેઇલ";
-            wsResidents.Cell(1, 10).Value = "Blood Group / બ્લડ ગ્રુપ";
-            wsResidents.Cell(1, 11).Value = "Blood Donated? / રક્ત દાન?";
-            wsResidents.Cell(1, 12).Value = "Maintenance Paid? / મેન્ટેનન્સ ચૂકવેલ છે?";
-            wsResidents.Cell(1, 13).Value = "Receipt Received? / રસીદ મળી છે?";
-            wsResidents.Cell(1, 14).Value = "Receipt Number / રસીદ નંબર";
-            wsResidents.Cell(1, 15).Value = "Family Size / સભ્યોની સંખ્યા";
-            wsResidents.Cell(1, 16).Value = "Vehicles Count / વાહનોની સંખ્યા";
-            wsResidents.Cell(1, 17).Value = "Interests / રસના ક્ષેત્રો";
+            wsResidents.Cell(1, 5).Value = "Owner Occupation / માલિક વ્યવસાય";
+            wsResidents.Cell(1, 6).Value = "Owner Occ. Details / માલિક વ્યવસાય વિગતો";
+            wsResidents.Cell(1, 7).Value = "Is Tenant? / શું ભાડુઆત છે?";
+            wsResidents.Cell(1, 8).Value = "Tenant Name / ભાડુઆતનું નામ";
+            wsResidents.Cell(1, 9).Value = "Tenant Age / ભાડુઆતની ઉંમર";
+            wsResidents.Cell(1, 10).Value = "Tenant Occupation / ભાડુઆત વ્યવસાય";
+            wsResidents.Cell(1, 11).Value = "Tenant Occ. Details / ભાડુઆત વ્યવસાય વિગતો";
+            wsResidents.Cell(1, 12).Value = "Mobile Number / મોબાઇલ નંબર";
+            wsResidents.Cell(1, 13).Value = "Email / ઇમેઇલ";
+            wsResidents.Cell(1, 14).Value = "Blood Group / બ્લડ ગ્રુપ";
+            wsResidents.Cell(1, 15).Value = "Blood Donated? / રક્ત દાન?";
+            wsResidents.Cell(1, 16).Value = "Maintenance Paid? / મેન્ટેનન્સ ચૂકવેલ છે?";
+            wsResidents.Cell(1, 17).Value = "Receipt Received? / રસીદ મળી છે?";
+            wsResidents.Cell(1, 18).Value = "Receipt Number / રસીદ નંબર";
+            wsResidents.Cell(1, 19).Value = "Family Size / સભ્યોની સંખ્યા";
+            wsResidents.Cell(1, 20).Value = "Vehicles Count / વાહનોની સંખ્યા";
+            wsResidents.Cell(1, 21).Value = "Interests / રસના ક્ષેત્રો";
 
             // Format Header
             var headerStyle = wsResidents.Row(1).Style;
@@ -77,19 +81,23 @@ namespace WesternVilla.Controllers
                 wsResidents.Cell(row, 2).Value = $"{r.OwnerFirstName} {r.OwnerMiddleName} {r.OwnerSurName}";
                 wsResidents.Cell(row, 3).Value = r.Age;
                 wsResidents.Cell(row, 4).Value = r.Gender ?? "-";
-                wsResidents.Cell(row, 5).Value = r.IsTenant;
-                wsResidents.Cell(row, 6).Value = r.IsTenant == "Yes" ? $"{r.TenantFirstName} {r.TenantMiddleName} {r.TenantSurName}" : "-";
-                wsResidents.Cell(row, 7).Value = r.TenantAge;
-                wsResidents.Cell(row, 8).Value = r.MobileNumber;
-                wsResidents.Cell(row, 9).Value = r.Email ?? "-";
-                wsResidents.Cell(row, 10).Value = r.BloodGroup ?? "-";
-                wsResidents.Cell(row, 11).Value = r.IsBloodDonated ?? "-";
-                wsResidents.Cell(row, 12).Value = r.IsMaintenancePaid;
-                wsResidents.Cell(row, 13).Value = r.IsReceiptReceived;
-                wsResidents.Cell(row, 14).Value = r.ReceiptNumber ?? "-";
-                wsResidents.Cell(row, 15).Value = r.FamilyMembers.Count;
-                wsResidents.Cell(row, 16).Value = r.Vehicles.Count;
-                wsResidents.Cell(row, 17).Value = string.Join(", ", r.Interests.Select(i => i.InterestName));
+                wsResidents.Cell(row, 5).Value = r.OwnerOccupationType ?? "-";
+                wsResidents.Cell(row, 6).Value = r.OwnerOccupationDetails ?? "-";
+                wsResidents.Cell(row, 7).Value = r.IsTenant;
+                wsResidents.Cell(row, 8).Value = r.IsTenant == "Yes" ? $"{r.TenantFirstName} {r.TenantMiddleName} {r.TenantSurName}" : "-";
+                wsResidents.Cell(row, 9).Value = r.TenantAge;
+                wsResidents.Cell(row, 10).Value = r.TenantOccupationType ?? "-";
+                wsResidents.Cell(row, 11).Value = r.TenantOccupationDetails ?? "-";
+                wsResidents.Cell(row, 12).Value = r.MobileNumber;
+                wsResidents.Cell(row, 13).Value = r.Email ?? "-";
+                wsResidents.Cell(row, 14).Value = r.BloodGroup ?? "-";
+                wsResidents.Cell(row, 15).Value = r.IsBloodDonated ?? "-";
+                wsResidents.Cell(row, 16).Value = r.IsMaintenancePaid;
+                wsResidents.Cell(row, 17).Value = r.IsReceiptReceived;
+                wsResidents.Cell(row, 18).Value = r.ReceiptNumber ?? "-";
+                wsResidents.Cell(row, 19).Value = r.FamilyMembers.Count;
+                wsResidents.Cell(row, 20).Value = r.Vehicles.Count;
+                wsResidents.Cell(row, 21).Value = string.Join(", ", r.Interests.Select(i => i.InterestName));
                 row++;
             }
             wsResidents.Columns().AdjustToContents();
@@ -261,6 +269,8 @@ namespace WesternVilla.Controllers
             html.Append($"<tr><th>Owner Name / માલિકનું નામ</th><td>{r.OwnerFirstName} {r.OwnerMiddleName} {r.OwnerSurName}</td></tr>");
             html.Append($"<tr><th>Age / ઉંમર</th><td>{(r.Age.HasValue ? r.Age.ToString() : "-")}</td></tr>");
             html.Append($"<tr><th>Gender / લિંગ</th><td>{r.Gender}</td></tr>");
+            html.Append($"<tr><th>Owner Occupation Type / માલિક વ્યવસાય</th><td>{r.OwnerOccupationType ?? "-"}</td></tr>");
+            html.Append($"<tr><th>Owner Occupation Details / માલિક વ્યવસાય વિગતો</th><td>{r.OwnerOccupationDetails ?? "-"}</td></tr>");
             html.Append($"<tr><th>Mobile Number / મોબાઇલ નંબર</th><td>{r.MobileNumber}</td></tr>");
             html.Append($"<tr><th>Email / ઇમેઇલ</th><td>{r.Email ?? "-"}</td></tr>");
             html.Append($"<tr><th>Blood Group / બ્લડ ગ્રુપ</th><td>{r.BloodGroup ?? "-"}</td></tr>");
@@ -275,6 +285,8 @@ namespace WesternVilla.Controllers
                 html.Append("<table>");
                 html.Append($"<tr><th>Tenant Name / ભાડુઆતનું નામ</th><td>{r.TenantFirstName} {r.TenantMiddleName} {r.TenantSurName}</td></tr>");
                 html.Append($"<tr><th>Tenant Age / ભાડુઆતની ઉંમર</th><td>{(r.TenantAge.HasValue ? r.TenantAge.ToString() : "-")}</td></tr>");
+                html.Append($"<tr><th>Tenant Occupation Type / ભાડુઆત વ્યવસાય</th><td>{r.TenantOccupationType ?? "-"}</td></tr>");
+                html.Append($"<tr><th>Tenant Occupation Details / ભાડુઆત વ્યવસાય વિગતો</th><td>{r.TenantOccupationDetails ?? "-"}</td></tr>");
                 html.Append("</table>");
             }
 

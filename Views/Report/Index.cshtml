@@ -133,9 +133,11 @@
                             <div><span class="font-bold text-slate-500 text-xs">Mobile / મોબાઇલ:</span> @item.MobileNumber</div>
                             <div><span class="font-bold text-slate-500 text-xs">Email / ઇમેઇલ:</span> @item.Email</div>
                             <div><span class="font-bold text-slate-500 text-xs">Owner Age / માલિકની ઉંમર:</span> @(item.Age?.ToString() ?? "-")</div>
+                            <div><span class="font-bold text-slate-500 text-xs">Owner Occupation / માલિક વ્યવસાય:</span> @(item.OwnerOccupationType ?? "-") @(!string.IsNullOrEmpty(item.OwnerOccupationDetails) ? $"({item.OwnerOccupationDetails})" : "")</div>
                             @if (item.IsTenant == "Yes")
                             {
                                 <div><span class="font-bold text-slate-500 text-xs">Tenant Age / ભાડુઆતની ઉંમર:</span> @(item.TenantAge?.ToString() ?? "-")</div>
+                                <div><span class="font-bold text-slate-500 text-xs">Tenant Occupation / ભાડુઆત વ્યવસાય:</span> @(item.TenantOccupationType ?? "-") @(!string.IsNullOrEmpty(item.TenantOccupationDetails) ? $"({item.TenantOccupationDetails})" : "")</div>
                             }
                             @if (item.IsMaintenancePaid == "Yes" && item.IsReceiptReceived == "Yes")
                             {
