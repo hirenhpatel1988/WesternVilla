@@ -144,6 +144,26 @@
                         <p class="text-xs text-slate-400 mt-1">Between 1 and 120 / ૧ થી ૧૨૦ ની વચ્ચે</p>
                         <span asp-validation-for="Age" class="text-xs text-rose-500 mt-1 block"></span>
                     </div>
+
+                    <!-- Owner Occupation Type -->
+                    <div>
+                        <label asp-for="OwnerOccupationType" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <select asp-for="OwnerOccupationType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                            <option value="None">None / કોઈ નહીં</option>
+                            <option value="Study">Study / અભ્યાસ</option>
+                            <option value="Business">Business / વ્યવસાય</option>
+                            <option value="Job">Job / નોકરી</option>
+                            <option value="Housewife">Housewife/Homemaker / ગૃહિણી</option>
+                        </select>
+                        <span asp-validation-for="OwnerOccupationType" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
+
+                    <!-- Owner Occupation Details -->
+                    <div class="md:col-span-2">
+                        <label asp-for="OwnerOccupationDetails" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                        <input asp-for="OwnerOccupationDetails" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800" placeholder="e.g. School name, Class or Shop name, Office details" />
+                        <span asp-validation-for="OwnerOccupationDetails" class="text-xs text-rose-500 mt-1 block"></span>
+                    </div>
                 </div>
             </div>
 
@@ -194,6 +214,26 @@
                             <input asp-for="TenantAge" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. 30" />
                             <p class="text-xs text-slate-400 mt-1">Between 1 and 120 / ૧ થી ૧૨૦ ની વચ્ચે</p>
                             <span asp-validation-for="TenantAge" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+
+                        <!-- Tenant Occupation Type -->
+                        <div>
+                            <label asp-for="TenantOccupationType" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <select asp-for="TenantOccupationType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white">
+                                <option value="None">None / કોઈ નહીં</option>
+                                <option value="Study">Study / અભ્યાસ</option>
+                                <option value="Business">Business / વ્યવસાય</option>
+                                <option value="Job">Job / નોકરી</option>
+                                <option value="Housewife">Housewife/Homemaker / ગૃહિણી</option>
+                            </select>
+                            <span asp-validation-for="TenantOccupationType" class="text-xs text-rose-500 mt-1 block"></span>
+                        </div>
+
+                        <!-- Tenant Occupation Details -->
+                        <div class="md:col-span-2">
+                            <label asp-for="TenantOccupationDetails" class="block text-sm font-semibold text-slate-700 mb-2"></label>
+                            <input asp-for="TenantOccupationDetails" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800 bg-white" placeholder="e.g. School name, Class or Shop name, Office details" />
+                            <span asp-validation-for="TenantOccupationDetails" class="text-xs text-rose-500 mt-1 block"></span>
                         </div>
                     </div>
                 </div>
@@ -580,10 +620,19 @@
                 selectedInterests: (initialInterests || []).map(i => i.interestName || i.InterestName),
 
                 addFamilyMember() {
+                    let defaultSurName = '';
+                    if (this.isTenant === 'Yes') {
+                        const tenantSurNameEl = document.getElementById('TenantSurName');
+                        if (tenantSurNameEl) defaultSurName = tenantSurNameEl.value;
+                    } else {
+                        const ownerSurNameEl = document.getElementById('OwnerSurName');
+                        if (ownerSurNameEl) defaultSurName = ownerSurNameEl.value;
+                    }
+
                     this.familyMembers.push({
                         firstName: '',
                         middleName: '',
-                        surName: '',
+                        surName: defaultSurName,
                         gender: '',
                         age: '',
                         mobileNumber: '',

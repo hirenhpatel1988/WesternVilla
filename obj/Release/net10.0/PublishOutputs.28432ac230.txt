@@ -1,6 +1,7 @@
 D:\Projects\GenAI Projects\WesternVilla\publish\WesternVilla.exe
 D:\Projects\GenAI Projects\WesternVilla\publish\appsettings.Development.json
 D:\Projects\GenAI Projects\WesternVilla\publish\appsettings.json
+D:\Projects\GenAI Projects\WesternVilla\publish\dotnet-tools.json
 D:\Projects\GenAI Projects\WesternVilla\publish\WesternVilla.dll
 D:\Projects\GenAI Projects\WesternVilla\publish\WesternVilla.runtimeconfig.json
 D:\Projects\GenAI Projects\WesternVilla\publish\WesternVilla.pdb

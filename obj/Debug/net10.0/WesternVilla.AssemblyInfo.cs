@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WesternVilla")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73fb500b99e3f0fa8be24925e23fcb28cad71546")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c79bf8c6a7b5066b3e119ad56cf7b4e8f05c3500")]
 [assembly: System.Reflection.AssemblyProductAttribute("WesternVilla")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WesternVilla")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

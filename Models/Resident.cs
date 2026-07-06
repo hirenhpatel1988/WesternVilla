@@ -23,6 +23,12 @@ namespace WesternVilla.Models
         [Display(Name = "Age (Optional) / ઉંમર (વૈકલ્પિક)")]
         public int? Age { get; set; }
 
+        [Display(Name = "Occupation Type (Optional) / વ્યવસાય પ્રકાર (વૈકલ્પિક)")]
+        public string? OwnerOccupationType { get; set; } // "Study", "Business", "Job", "Housewife", "None"
+
+        [Display(Name = "Occupation / Study Details / વ્યવસાય / અભ્યાસ વિગતો")]
+        public string? OwnerOccupationDetails { get; set; }
+
         // Tenant Details
         [Required(ErrorMessage = "Please specify if there is a tenant / કૃપા કરીને સ્પષ્ટ કરો કે ભાડુઆત છે કે નહીં")]
         [Display(Name = "Is Tenant? / શું ભાડુઆત છે?")]
@@ -40,6 +46,12 @@ namespace WesternVilla.Models
         [Range(1, 120, ErrorMessage = "Tenant Age must be between 1 and 120 / ભાડુઆતની ઉંમર ૧ થી ૧૨૦ ની વચ્ચે હોવી જોઈએ")]
         [Display(Name = "Tenant Age (Optional) / ભાડુઆતની ઉંમર (વૈકલ્પિક)")]
         public int? TenantAge { get; set; }
+
+        [Display(Name = "Occupation Type (Optional) / વ્યવસાય પ્રકાર (વૈકલ્પિક)")]
+        public string? TenantOccupationType { get; set; } // "Study", "Business", "Job", "Housewife", "None"
+
+        [Display(Name = "Occupation / Study Details / વ્યવસાય / અભ્યાસ વિગતો")]
+        public string? TenantOccupationDetails { get; set; }
 
         // Core Address & Contact Info
         [Required(ErrorMessage = "House Number is required / ઘર નંબર જરૂરી છે")]

@@ -28,16 +28,16 @@ DECLARE @ResId2 INT;
 DECLARE @ResId3 INT;
 
 -- 1. Insert Residents (Owners/Tenants)
-INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber)
-VALUES ('Ramesh', 'Kanti', 'Patel', 'No', NULL, NULL, NULL, '101', '9876543210', 'ramesh.patel@gmail.com', 'Yes', 'Yes', 'REC-101');
+INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber, Gender, OwnerOccupationType, OwnerOccupationDetails, TenantOccupationType, TenantOccupationDetails)
+VALUES ('Ramesh', 'Kanti', 'Patel', 'No', NULL, NULL, NULL, '101', '9876543210', 'ramesh.patel@gmail.com', 'Yes', 'Yes', 'REC-101', 'Male', 'Business', 'Patel Electronics', NULL, NULL);
 SET @ResId1 = SCOPE_IDENTITY();
 
-INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber)
-VALUES ('Suresh', 'Bhai', 'Shah', 'Yes', 'Jignesh', 'Harish', 'Mehta', '102', '9822334455', 'jignesh.mehta@yahoo.com', 'Yes', 'No', NULL);
+INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber, Gender, OwnerOccupationType, OwnerOccupationDetails, TenantOccupationType, TenantOccupationDetails)
+VALUES ('Suresh', 'Bhai', 'Shah', 'Yes', 'Jignesh', 'Harish', 'Mehta', '102', '9822334455', 'jignesh.mehta@yahoo.com', 'Yes', 'No', NULL, 'Male', 'None', NULL, 'Job', 'Software Engineer');
 SET @ResId2 = SCOPE_IDENTITY();
 
-INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber)
-VALUES ('Amit', 'R.', 'Sharma', 'No', NULL, NULL, NULL, '103', '9988776655', 'amit.sharma@outlook.com', 'No', 'No', NULL);
+INSERT INTO [Residents] (OwnerFirstName, OwnerMiddleName, OwnerSurName, IsTenant, TenantFirstName, TenantMiddleName, TenantSurName, HouseNumber, MobileNumber, Email, IsMaintenancePaid, IsReceiptReceived, ReceiptNumber, Gender, OwnerOccupationType, OwnerOccupationDetails, TenantOccupationType, TenantOccupationDetails)
+VALUES ('Amit', 'R.', 'Sharma', 'No', NULL, NULL, NULL, '103', '9988776655', 'amit.sharma@outlook.com', 'No', 'No', NULL, 'Male', 'Job', 'Bank Manager', NULL, NULL);
 SET @ResId3 = SCOPE_IDENTITY();
 
 -- 2. Insert Resident Interests (Choice of Interest of Society Tasks)
