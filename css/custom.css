@@ -1,0 +1,183 @@
+/* WesternVilla Custom & A4 Print Stylesheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary-blue: #1e3a8a;
+    --primary-teal: #0d9488;
+}
+
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+}
+
+/* Custom Scrollbar for dynamic tables */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.animate-fade-in-down {
+    animation: fadeInDown 0.25s ease-out forwards;
+}
+
+/* =========================================================
+ * A4 PRINT STYLES
+ * ========================================================= */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 12mm 10mm 12mm 10mm;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 9.5pt !important;
+        line-height: 1.3 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Hide non-printable elements */
+    .no-print, 
+    nav, 
+    header, 
+    footer, 
+    button, 
+    .btn, 
+    #filterSection, 
+    #columnSelector, 
+    #statsCards, 
+    .alert-banner,
+    input,
+    select {
+        display: none !important;
+    }
+
+    /* Print Container full width */
+    .print-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    /* Show Print Header */
+    .print-only-header {
+        display: block !important;
+        text-align: center;
+        border-bottom: 2px solid #1e3a8a;
+        padding-bottom: 8px;
+        margin-bottom: 14px;
+    }
+
+    .print-only-header h1 {
+        font-size: 16pt !important;
+        font-weight: 800 !important;
+        color: #1e3a8a !important;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .print-only-header p {
+        font-size: 8.5pt !important;
+        color: #475569 !important;
+        margin: 3px 0 0 0;
+    }
+
+    /* Print Table Styling */
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 10px !important;
+        font-size: 8.5pt !important;
+    }
+
+    table th, 
+    table td {
+        border: 1px solid #cbd5e1 !important;
+        padding: 5px 6px !important;
+        text-align: left !important;
+        word-break: break-word !important;
+    }
+
+    table th {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 7.5pt !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Ensure table rows do not break across pages awkwardly */
+    tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* Badges in print */
+    .badge {
+        border: 1px solid #94a3b8 !important;
+        padding: 1px 4px !important;
+        border-radius: 3px !important;
+        font-size: 7pt !important;
+        font-weight: 600 !important;
+        display: inline-block !important;
+        background: transparent !important;
+        color: #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Print Footer */
+    .print-only-footer {
+        display: block !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 7pt;
+        color: #64748b;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 4px;
+    }
+}
+
+/* Hide print-only elements on screen */
+@media screen {
+    .print-only-header,
+    .print-only-footer {
+        display: none !important;
+    }
+}

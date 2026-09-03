@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western Villa - Society Community Registration / સોસાયટી નોંધણી</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Custom CSS & Print Styles -->
+    <link rel="stylesheet" href="./css/custom.css">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- Top Navigation Bar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm no-print">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="h-10 w-10 rounded-xl bg-blue-700 text-white font-black text-xl flex items-center justify-center shadow">WV</span>
+                    <div>
+                        <a href="index.html" class="text-xl font-bold text-slate-900 tracking-tight block">Western Villa</a>
+                        <span class="text-xs text-slate-500 font-medium block">Society Community Portal / સોસાયટી પોર્ટલ</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <a href="index.html" class="inline-flex items-center px-3.5 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span>Register / નોંધણી</span>
+                    </a>
+                    <a href="report.html" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Reports & Print / અહેવાલ</span>
+                    </a>
+                    <button type="button" onclick="DataStore.downloadCSV()" class="hidden sm:inline-flex items-center px-3.5 py-2 text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Download CSV / એક્સેલ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="max-w-5xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8" x-data="registrationApp()">
+        
+        <!-- Header Banner -->
+        <div class="text-center mb-8">
+            <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                Official Society Registration / સત્તાવાર સોસાયટી નોંધણી
+            </span>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-teal-600">
+                Western Villa Community Registration
+            </h1>
+            <p class="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+                Please provide accurate details of house owner, tenant, family members, and vehicles (House No. 1 to 181).
+                <br class="hidden sm:inline">
+                કૃપા કરીને ઘર માલિક, ભાડુઆત, પરિવારના સભ્યો અને વાહનોની સાચી વિગતો ભરો (ઘર નંબર ૧ થી ૧૮૧).
+            </p>
+        </div>
+
+        <!-- DUPLICATE HOUSE WARNING BANNER -->
+        <div x-show="isDuplicateHouse" x-transition.duration.300ms class="mb-8 p-5 bg-rose-50 border-2 border-rose-300 rounded-2xl shadow-md">
+            <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0 text-rose-600 mt-0.5">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-rose-900">
+                        House No. <span x-text="form.houseNumber"></span> is Already Registered! / ઘર નંબર પહેલેથી જ નોંધાયેલ છે!
+                    </h3>
+                    <p class="text-sm text-rose-800 mt-1 leading-relaxed">
+                        Details for House Number <strong x-text="form.houseNumber"></strong> have already been submitted. You cannot submit duplicate details.
+                        <br>
+                        જો તમારે આ ઘરમાં કોઈ વિગત સુધારવી હોય અથવા મદદ જોઈતી હોય, તો કૃપા કરીને 
+                        <strong class="underline font-bold text-rose-950">Hiren Patel - Home 13</strong> 
+                        (સંપર્ક: <a href="tel:9876543210" class="underline font-bold">9876543210</a>) નો સંપર્ક કરો.
+                    </p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        <a href="report.html" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-rose-900 bg-rose-200/80 hover:bg-rose-200 rounded-lg transition">
+                            View in Reports / અહેવાલમાં જુઓ &rarr;
+                        </a>
+                        <button type="button" @click="form.houseNumber = ''; checkHouseDuplicate()" class="inline-flex items-center px-3 py-1.5 text-xs font-bold text-slate-700 bg-white border border-rose-300 hover:bg-rose-50 rounded-lg transition">
+                            Clear House Number / ઘર નંબર બદલો
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM CARD -->
+        <form @submit.prevent="submitRegistration()" class="bg-white shadow-xl rounded-3xl overflow-hidden border border-slate-200/80">
+
+            <!-- STEP 1: Address & House Identification (First so user immediately sees if house exists) -->
+            <div class="p-6 sm:p-8 border-b border-slate-100 bg-gradient-to-r from-blue-50/40 via-white to-teal-50/30">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">1</div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">House Number & Contact / ઘર નંબર અને સંપર્ક માહિતી</h2>
+                        <p class="text-xs text-slate-500">Core identification of the home (1 to 181)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- House Number -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">
+                            House Number / ઘર નંબર <span class="text-rose-500">*</span>
+                        </label>
+                        <input 
+                            type="number" 
+                            x-model="form.houseNumber" 
+                            @input="checkHouseDuplicate()" 
+                            @blur="checkHouseDuplicate()"
+                            min="1" 
+                            max="181" 
+                            required 
+                            placeholder="e.g. 101 (1 to 181)" 
+                            :class="isDuplicateHouse ? 'border-rose-500 bg-rose-50 text-rose-900 ring-2 ring-rose-400' : 'border-slate-200 text-slate-900 focus:ring-blue-500'"
+                            class="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:border-blue-500 transition duration-200 outline-none font-semibold text-base"
+                        />
+                        <div x-show="isDuplicateHouse" class="text-xs font-bold text-rose-600 mt-1.5 flex items-center">
+                            <span>Already registered! Contact Hiren Patel - Home 13</span>
+                        </div>
+                        <p x-show="!isDuplicateHouse" class="text-xs text-slate-400 mt-1">Valid range: 1 to 181 / ૧ થી ૧૮૧ ની વચ્ચે</p>
+                    </div>
+
+                    <!-- Primary Mobile Number -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">
+                            Mobile Number / મોબાઇલ નંબર <span class="text-rose-500">*</span>
+                        </label>
+                        <input 
+                            type="tel" 
+                            x-model="form.mobileNumber" 
+                            required 
+                            pattern="^\d{10}$" 
+                            maxlength="10"
+                            placeholder="e.g. 9876543210" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800"
+                        />
+                        <p class="text-xs text-slate-400 mt-1">Exactly 10 digits / બરાબર ૧૦ અંક</p>
+                    </div>
+
+                    <!-- Email Address -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">
+                            Email Address / ઇમેઇલ સરનામું (વૈકલ્પિક)
+                        </label>
+                        <input 
+                            type="email" 
+                            x-model="form.email" 
+                            placeholder="e.g. resident@example.com" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 outline-none text-slate-800"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Owner Details -->
+            <div class="p-6 sm:p-8 border-b border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">2</div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Owner Details / માલિકની વિગતો</h2>
+                        <p class="text-xs text-slate-500">Legal property owner name and profile</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Owner First Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Owner First Name / માલિકનું પ્રથમ નામ <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="form.ownerFirstName" @input="updateSurnameDefaults()" required placeholder="e.g. Ramesh" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition outline-none" />
+                    </div>
+
+                    <!-- Owner Middle Name -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Owner Middle Name / માલિકનું મધ્યમ નામ <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="form.ownerMiddleName" required placeholder="e.g. Kanti" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition outline-none" />
+                    </div>
+
+                    <!-- Owner Surname -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Owner SurName / માલિકની અટક <span class="text-rose-500">*</span></label>
+                        <input type="text" x-model="form.ownerSurName" @input="updateSurnameDefaults()" required placeholder="e.g. Patel" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition outline-none" />
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Gender / લિંગ <span class="text-rose-500">*</span></label>
+                        <select x-model="form.gender" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
+                            <option value="Male">Male / પુરુષ</option>
+                            <option value="Female">Female / સ્ત્રી</option>
+                        </select>
+                    </div>
+
+                    <!-- Age -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Owner Age / માલિકની ઉંમર (વૈકલ્પિક)</label>
+                        <input type="number" x-model.number="form.age" min="1" max="120" placeholder="e.g. 45" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                    </div>
+
+                    <!-- Blood Group -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Blood Group / બ્લડ ગ્રુપ (વૈકલ્પિક)</label>
+                        <select x-model="form.bloodGroup" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
+                            <option value="">Select / પસંદ કરો</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+
+                    <!-- Blood Donated -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Blood Donated? / રક્ત દાન કર્યું છે?</label>
+                        <select x-model="form.isBloodDonated" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
+                            <option value="No">No / ના</option>
+                            <option value="Yes">Yes / હા</option>
+                        </select>
+                    </div>
+
+                    <!-- Occupation Type -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Occupation Type / વ્યવસાય પ્રકાર</label>
+                        <select x-model="form.ownerOccupationType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
+                            <option value="None">None / કોઈ નહીં</option>
+                            <option value="Study">Study / અભ્યાસ</option>
+                            <option value="Business">Business / વ્યવસાય</option>
+                            <option value="Job">Job / નોકરી</option>
+                            <option value="Housewife">Housewife/Homemaker / ગૃહિણી</option>
+                        </select>
+                    </div>
+
+                    <!-- Occupation Details -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Occupation Details / વ્યવસાય અથવા સંસ્થાનું નામ</label>
+                        <input type="text" x-model="form.ownerOccupationDetails" placeholder="e.g. Shop name, Company name, School/College" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Tenant Details (Conditional) -->
+            <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">3</div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Tenant Status / શું ઘર ભાડે આપેલ છે?</h2>
+                        <p class="text-xs text-slate-500">Specify if the house is occupied by a tenant</p>
+                    </div>
+                </div>
+
+                <div class="max-w-xs mb-6">
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Is House Rented to Tenant? / શું ઘર ભાડે આપેલ છે? <span class="text-rose-500">*</span></label>
+                    <select x-model="form.isTenant" @change="updateSurnameDefaults()" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white font-semibold">
+                        <option value="No">No (Owner Occupied) / ના (માલિક રહે છે)</option>
+                        <option value="Yes">Yes (Rented to Tenant) / હા (ભાડુઆત રહે છે)</option>
+                    </select>
+                </div>
+
+                <!-- Conditional Tenant Fields -->
+                <div x-show="form.isTenant === 'Yes'" x-transition.duration.250ms class="p-6 border border-blue-200 bg-blue-50/40 rounded-2xl">
+                    <div class="text-sm font-bold text-blue-900 mb-4 flex items-center">
+                        <svg class="h-5 w-5 mr-1.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span>Tenant Information / ભાડુઆતની વિગતો</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Tenant First Name -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant First Name / ભાડુઆતનું નામ <span class="text-rose-500">*</span></label>
+                            <input type="text" x-model="form.tenantFirstName" :required="form.isTenant === 'Yes'" placeholder="e.g. Suresh" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                        </div>
+
+                        <!-- Tenant Middle Name -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant Middle Name / ભાડુઆતનું મધ્યમ નામ <span class="text-rose-500">*</span></label>
+                            <input type="text" x-model="form.tenantMiddleName" :required="form.isTenant === 'Yes'" placeholder="e.g. M." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                        </div>
+
+                        <!-- Tenant Surname -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant SurName / ભાડુઆતની અટક <span class="text-rose-500">*</span></label>
+                            <input type="text" x-model="form.tenantSurName" @input="updateSurnameDefaults()" :required="form.isTenant === 'Yes'" placeholder="e.g. Shah" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                        </div>
+
+                        <!-- Tenant Age -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant Age / ભાડુઆતની ઉંમર (વૈકલ્પિક)</label>
+                            <input type="number" x-model.number="form.tenantAge" min="1" max="120" placeholder="e.g. 35" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                        </div>
+
+                        <!-- Tenant Occupation Type -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant Occupation / વ્યવસાય</label>
+                            <select x-model="form.tenantOccupationType" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none">
+                                <option value="None">None / કોઈ નહીં</option>
+                                <option value="Study">Study / અભ્યાસ</option>
+                                <option value="Business">Business / વ્યવસાય</option>
+                                <option value="Job">Job / નોકરી</option>
+                                <option value="Housewife">Housewife/Homemaker / ગૃહિણી</option>
+                            </select>
+                        </div>
+
+                        <!-- Tenant Occupation Details -->
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Tenant Occupation Details / વ્યવસાય વિગતો</label>
+                            <input type="text" x-model="form.tenantOccupationDetails" placeholder="e.g. Company or office name" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Maintenance Details -->
+            <div class="p-6 sm:p-8 border-b border-slate-100">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">4</div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Maintenance Details / મેન્ટેનન્સ ચુકવણી</h2>
+                        <p class="text-xs text-slate-500">Society maintenance payment and receipt confirmation</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Maintenance Paid? -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Maintenance Paid? / મેન્ટેનન્સ ચૂકવેલ છે? <span class="text-rose-500">*</span></label>
+                        <select x-model="form.isMaintenancePaid" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white font-semibold">
+                            <option value="No">No (Unpaid) / ના (બાકી છે)</option>
+                            <option value="Yes">Yes (Paid) / હા (ચૂકવેલ છે)</option>
+                        </select>
+                    </div>
+
+                    <!-- Receipt Received? -->
+                    <div x-show="form.isMaintenancePaid === 'Yes'" x-transition.duration.200ms>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Receipt Received? / રસીદ મળી છે? <span class="text-rose-500">*</span></label>
+                        <select x-model="form.isReceiptReceived" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
+                            <option value="No">No / ના</option>
+                            <option value="Yes">Yes / હા</option>
+                        </select>
+                    </div>
+
+                    <!-- Receipt Number -->
+                    <div x-show="form.isMaintenancePaid === 'Yes' && form.isReceiptReceived === 'Yes'" x-transition.duration.200ms>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Receipt Number / રસીદ નંબર</label>
+                        <input type="text" x-model="form.receiptNumber" placeholder="e.g. REC-101" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Family Members (Dynamic List) -->
+            <div class="p-6 sm:p-8 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">5</div>
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-900">Family Members / પરિવારના સભ્યો</h2>
+                            <p class="text-xs text-slate-500">Other members residing in this home</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="addFamilyMember()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition shadow-sm inline-flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add Member / સભ્ય ઉમેરો</span>
+                    </button>
+                </div>
+
+                <!-- Family Member Cards -->
+                <div class="space-y-4">
+                    <template x-for="(member, index) in form.familyMembers" :key="index">
+                        <div class="p-5 border border-slate-200 bg-white rounded-2xl relative shadow-sm hover:shadow-md transition">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-xs font-bold uppercase tracking-wider text-blue-700">
+                                    Family Member #<span x-text="index + 1"></span>
+                                </span>
+                                <button type="button" @click="removeFamilyMember(index)" class="text-rose-500 hover:text-rose-700 text-xs font-bold inline-flex items-center p-1 rounded hover:bg-rose-50">
+                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span>Remove / હટાવો</span>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">First Name / નામ <span class="text-rose-500">*</span></label>
+                                    <input type="text" x-model="member.firstName" required placeholder="First Name" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Middle Name / મધ્યમ નામ <span class="text-rose-500">*</span></label>
+                                    <input type="text" x-model="member.middleName" required placeholder="Middle Name" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">SurName / અટક <span class="text-rose-500">*</span></label>
+                                    <input type="text" x-model="member.surName" required placeholder="Surname" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Gender / લિંગ</label>
+                                    <select x-model="member.gender" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male / પુરુષ</option>
+                                        <option value="Female">Female / સ્ત્રી</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Age / ઉંમર</label>
+                                    <input type="number" x-model.number="member.age" min="1" max="120" placeholder="Age" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Mobile / મોબાઇલ</label>
+                                    <input type="tel" x-model="member.mobileNumber" pattern="^\d{10}$" maxlength="10" placeholder="10 Digits" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Blood Group / બ્લડ ગ્રુપ</label>
+                                    <select x-model="member.bloodGroup" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        <option value="">Select</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Occupation Type / વ્યવસાય</label>
+                                    <select x-model="member.occupationType" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        <option value="None">None</option>
+                                        <option value="Study">Study</option>
+                                        <option value="Business">Business</option>
+                                        <option value="Job">Job</option>
+                                        <option value="Housewife">Housewife</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Occupation Details / વિગત</label>
+                                    <input type="text" x-model="member.occupationDetails" placeholder="Details" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="form.familyMembers.length === 0" class="text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm">
+                        No additional family members added yet. Click "Add Member" above if needed.
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 6: Vehicle Details (Dynamic List) -->
+            <div class="p-6 sm:p-8 border-b border-slate-100">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">6</div>
+                        <div>
+                            <h2 class="text-lg sm:text-xl font-bold text-slate-900">Vehicle Details / વાહનની વિગતો</h2>
+                            <p class="text-xs text-slate-500">Cars, scooters, bikes parked in society</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="addVehicle()" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition shadow-sm inline-flex items-center">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add Vehicle / વાહન ઉમેરો</span>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <template x-for="(vehicle, index) in form.vehicles" :key="index">
+                        <div class="p-5 border border-slate-200 bg-slate-50/40 rounded-2xl relative shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="text-xs font-bold uppercase tracking-wider text-indigo-700">
+                                    Vehicle #<span x-text="index + 1"></span>
+                                </span>
+                                <button type="button" @click="removeVehicle(index)" class="text-rose-500 hover:text-rose-700 text-xs font-bold inline-flex items-center p-1 rounded hover:bg-rose-50">
+                                    <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    <span>Remove / હટાવો</span>
+                                </button>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Vehicle Type / પ્રકાર <span class="text-rose-500">*</span></label>
+                                    <select x-model="vehicle.vehicleType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        <option value="Two">Two Wheeler / ૨ વ્હીલર</option>
+                                        <option value="Four">Four Wheeler / ૪ વ્હીલર</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Fuel Type / બળતણ <span class="text-rose-500">*</span></label>
+                                    <select x-model="vehicle.fuelType" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                        <option value="Petrol">Petrol / પેટ્રોલ</option>
+                                        <option value="Electric">Electric / ઇલેક્ટ્રિક</option>
+                                        <option value="Diesel">Diesel / ડીઝલ</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Vehicle Number / નંબર (વૈકલ્પિક)</label>
+                                    <input type="text" x-model="vehicle.vehicleNumber" placeholder="e.g. GJ-01-AB-1234" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="form.vehicles.length === 0" class="text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl text-slate-400 text-sm">
+                        No vehicles added yet. Click "Add Vehicle" above if you have vehicles.
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 7: Society Tasks / Choice of Interest -->
+            <div class="p-6 sm:p-8">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="h-8 w-8 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-sm">7</div>
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-bold text-slate-900">Choice of Interest for Society Tasks / સોસાયટી કાર્યમાં રસના ક્ષેત્રો</h2>
+                        <p class="text-xs text-slate-500">Volunteer interest areas for society events and development</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <template x-for="item in interestOptions" :key="item.value">
+                        <label class="flex items-start p-3.5 border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer transition select-none">
+                            <input type="checkbox" :value="item.value" x-model="form.interests" class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500 mt-1 mr-3">
+                            <div>
+                                <span class="text-sm font-semibold text-slate-800 block" x-text="item.labelEn"></span>
+                                <span class="text-xs text-slate-500 block" x-text="item.labelGu"></span>
+                            </div>
+                        </label>
+                    </template>
+                </div>
+            </div>
+
+            <!-- SUBMIT FOOTER -->
+            <div class="px-6 sm:px-8 py-5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-500">
+                    All data is securely saved and formatted for CSV & A4 reporting.
+                </div>
+                <div class="flex items-center space-x-3 w-full sm:w-auto">
+                    <button 
+                        type="submit" 
+                        :disabled="isDuplicateHouse" 
+                        :class="isDuplicateHouse ? 'bg-slate-400 cursor-not-allowed opacity-60' : 'bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 transform hover:-translate-y-0.5 shadow-md'"
+                        class="w-full sm:w-auto px-8 py-3 text-white font-bold rounded-2xl transition duration-200 text-center"
+                    >
+                        Submit Registration / ફોર્મ સબમિટ કરો
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/data-store.js"></script>
+    <script>
+        function registrationApp() {
+            return {
+                isDuplicateHouse: false,
+                interestOptions: [
+                    { value: 'Social Events / સામાજિક કાર્યક્રમો', labelEn: 'Social Events', labelGu: 'સામાજિક કાર્યક્રમો' },
+                    { value: 'Sport Activities / રમતગમત પ્રવૃત્તિઓ', labelEn: 'Sport Activities', labelGu: 'રમતગમત પ્રવૃત્તિઓ' },
+                    { value: 'Cultural Programs / સાંસ્કૃતિક કાર્યક્રમો', labelEn: 'Cultural Programs', labelGu: 'સાંસ્કૃતિક કાર્યક્રમો' },
+                    { value: 'Security & Safety / સુરક્ષા અને સલામતી', labelEn: 'Security & Safety Advisory', labelGu: 'સુરક્ષા અને સલામતી સલાહકાર' },
+                    { value: 'Cleanliness Drive / સ્વચ્છતા અભિયાન', labelEn: 'Cleanliness Drive', labelGu: 'સ્વચ્છતા અભિયાન' },
+                    { value: 'Gardening & Greenery / બાગકામ અને હરિયાળી', labelEn: 'Gardening & Greenery', labelGu: 'બાગકામ અને હરિયાળી' }
+                ],
+                form: {
+                    houseNumber: '',
+                    mobileNumber: '',
+                    email: '',
+                    ownerFirstName: '',
+                    ownerMiddleName: '',
+                    ownerSurName: '',
+                    gender: 'Male',
+                    age: null,
+                    bloodGroup: '',
+                    isBloodDonated: 'No',
+                    ownerOccupationType: 'None',
+                    ownerOccupationDetails: '',
+                    isTenant: 'No',
+                    tenantFirstName: '',
+                    tenantMiddleName: '',
+                    tenantSurName: '',
+                    tenantAge: null,
+                    tenantOccupationType: 'None',
+                    tenantOccupationDetails: '',
+                    isMaintenancePaid: 'No',
+                    isReceiptReceived: 'No',
+                    receiptNumber: '',
+                    familyMembers: [],
+                    vehicles: [],
+                    interests: []
+                },
+
+                // Duplicate house validation
+                checkHouseDuplicate() {
+                    if (!this.form.houseNumber) {
+                        this.isDuplicateHouse = false;
+                        return;
+                    }
+                    this.isDuplicateHouse = DataStore.isHouseNumberRegistered(this.form.houseNumber);
+                },
+
+                // Update default surnames for family members
+                updateSurnameDefaults() {
+                    const defaultSurname = this.form.isTenant === 'Yes' 
+                        ? (this.form.tenantSurName || this.form.ownerSurName || '')
+                        : (this.form.ownerSurName || '');
+                    
+                    this.form.familyMembers.forEach(m => {
+                        if (!m.surName) m.surName = defaultSurname;
+                    });
+                },
+
+                // Add Family Member
+                addFamilyMember() {
+                    const defaultSurname = this.form.isTenant === 'Yes' 
+                        ? (this.form.tenantSurName || this.form.ownerSurName || '')
+                        : (this.form.ownerSurName || '');
+
+                    this.form.familyMembers.push({
+                        firstName: '',
+                        middleName: '',
+                        surName: defaultSurname,
+                        gender: '',
+                        age: null,
+                        mobileNumber: '',
+                        bloodGroup: '',
+                        isBloodDonated: 'No',
+                        occupationType: 'None',
+                        occupationDetails: ''
+                    });
+                },
+
+                // Remove Family Member
+                removeFamilyMember(index) {
+                    this.form.familyMembers.splice(index, 1);
+                },
+
+                // Add Vehicle
+                addVehicle() {
+                    this.form.vehicles.push({
+                        vehicleType: 'Two',
+                        fuelType: 'Petrol',
+                        vehicleNumber: ''
+                    });
+                },
+
+                // Remove Vehicle
+                removeVehicle(index) {
+                    this.form.vehicles.splice(index, 1);
+                },
+
+                // Form Submit Handler
+                submitRegistration() {
+                    // Recheck duplicate
+                    if (DataStore.isHouseNumberRegistered(this.form.houseNumber)) {
+                        this.isDuplicateHouse = true;
+                        alert(`House No. ${this.form.houseNumber} has already been registered! Please contact Hiren Patel - Home 13 for assistance.`);
+                        return;
+                    }
+
+                    // Clean data
+                    const record = JSON.parse(JSON.stringify(this.form));
+                    if (record.isTenant === 'No') {
+                        record.tenantFirstName = '';
+                        record.tenantMiddleName = '';
+                        record.tenantSurName = '';
+                        record.tenantAge = null;
+                        record.tenantOccupationType = 'None';
+                        record.tenantOccupationDetails = '';
+                    }
+
+                    if (record.isMaintenancePaid === 'No') {
+                        record.isReceiptReceived = 'No';
+                        record.receiptNumber = '';
+                    }
+
+                    // Filter empty family members & vehicles
+                    record.familyMembers = (record.familyMembers || []).filter(m => m.firstName && m.surName);
+                    record.vehicles = (record.vehicles || []).filter(v => v.vehicleType);
+
+                    // Save to DataStore
+                    const res = DataStore.saveResident(record);
+                    if (!res.success) {
+                        alert(res.message);
+                        return;
+                    }
+
+                    // Save last registered for thankyou page
+                    sessionStorage.setItem('lastRegisteredHouse', record.houseNumber);
+                    sessionStorage.setItem('lastRegisteredResidentName', record.isTenant === 'Yes' ? `${record.tenantFirstName} ${record.tenantSurName}` : `${record.ownerFirstName} ${record.ownerSurName}`);
+
+                    // Redirect to thankyou.html
+                    window.location.href = 'thankyou.html';
+                }
+            };
+        }
+    </script>
+</body>
+</html>

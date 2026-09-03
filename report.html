@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western Villa - Society Reports & A4 Printable / સોસાયટી અહેવાલ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Custom CSS & Print Styles -->
+    <link rel="stylesheet" href="./css/custom.css">
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- Top Navigation Bar (Hidden when printing) -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="h-10 w-10 rounded-xl bg-blue-700 text-white font-black text-xl flex items-center justify-center shadow">WV</span>
+                    <div>
+                        <a href="index.html" class="text-xl font-bold text-slate-900 tracking-tight block">Western Villa</a>
+                        <span class="text-xs text-slate-500 font-medium block">Society Community Portal / સોસાયટી પોર્ટલ</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="index.html" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span>Register / નોંધણી</span>
+                    </a>
+                    <a href="report.html" class="inline-flex items-center px-3.5 py-2 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Reports & Print / અહેવાલ</span>
+                    </a>
+                    <button type="button" onclick="window.print()" class="inline-flex items-center px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Print A4 / પ્રિન્ટ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- App Container -->
+    <div class="max-w-7xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8 print-container" x-data="reportApp()">
+
+        <!-- SCREEN HEADER & CONTROLS (Hidden in print) -->
+        <div class="no-print">
+            
+            <!-- Page Title & Top Action Buttons -->
+            <div class="md:flex md:items-center md:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Society Community Reports / સોસાયટી અહેવાલ
+                    </h1>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                        Select which data to include, filter as needed, and print directly on A4 paper or export to CSV.
+                    </p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-wrap gap-2.5">
+                    <!-- Print A4 -->
+                    <button type="button" @click="triggerPrint()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Print A4 Report / પ્રિન્ટ</span>
+                    </button>
+
+                    <!-- Export Selected CSV -->
+                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>Export CSV / એક્સેલ</span>
+                    </button>
+
+                    <!-- Import CSV -->
+                    <label class="inline-flex items-center px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
+                        <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span>Import CSV / અપલોડ</span>
+                        <input type="file" accept=".csv" @change="handleCSVUpload($event)" class="hidden">
+                    </label>
+
+                    <!-- Add New -->
+                    <a href="index.html" class="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>Add New / નવું ફોર્મ</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Dashboard Summary Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 mb-6">
+                <!-- Total Homes -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Registered</div>
+                    <div class="text-2xl font-black text-slate-900 mt-1">
+                        <span x-text="stats.total"></span><span class="text-xs text-slate-400 font-normal"> / 181</span>
+                    </div>
+                    <div class="text-[11px] text-slate-500">કુલ નોંધાયેલ ઘર</div>
+                </div>
+
+                <!-- Tenants -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Rented (Tenants)</div>
+                    <div class="text-2xl font-black text-blue-600 mt-1" x-text="stats.tenants"></div>
+                    <div class="text-[11px] text-slate-500">ભાડુઆત ઘરો</div>
+                </div>
+
+                <!-- Maintenance Paid -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Maint. Paid</div>
+                    <div class="text-2xl font-black text-emerald-600 mt-1" x-text="stats.paid"></div>
+                    <div class="text-[11px] text-slate-500">ચૂકવેલ મેન્ટેનન્સ</div>
+                </div>
+
+                <!-- Total Vehicles -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Vehicles</div>
+                    <div class="text-2xl font-black text-amber-600 mt-1" x-text="stats.vehicles"></div>
+                    <div class="text-[11px] text-slate-500">કુલ વાહનો</div>
+                </div>
+
+                <!-- Total Family Members -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm col-span-2 sm:col-span-1">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Family Members</div>
+                    <div class="text-2xl font-black text-purple-600 mt-1" x-text="stats.familyMembers"></div>
+                    <div class="text-[11px] text-slate-500">પરિવારના સભ્યો</div>
+                </div>
+            </div>
+
+            <!-- COLUMN SELECTION & REPORT CUSTOMIZER (Checkboxes) -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-100 gap-3">
+                    <div>
+                        <h2 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center">
+                            <svg class="h-4 w-4 mr-1.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            <span>Customize Report Columns / અહેવાલમાં કઈ વિગતો દર્શાવવી?</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Check/uncheck boxes below to adjust table and A4 printable columns</p>
+                    </div>
+
+                    <!-- Quick Preset Buttons -->
+                    <div class="flex flex-wrap gap-1.5 text-xs">
+                        <button type="button" @click="applyPreset('all')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition">
+                            All Columns
+                        </button>
+                        <button type="button" @click="applyPreset('directory')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg transition">
+                            Phonebook
+                        </button>
+                        <button type="button" @click="applyPreset('maintenance')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-lg transition">
+                            Maintenance
+                        </button>
+                        <button type="button" @click="applyPreset('vehicles')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded-lg transition">
+                            Vehicles
+                        </button>
+                        <button type="button" @click="applyPreset('volunteers')" class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-lg transition">
+                            Volunteers
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Checkbox List -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-3.5 text-xs">
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.houseNumber" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">House No (ઘર નંબર)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.residentStatus" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Resident Type (પ્રકાર)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.primaryName" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Primary Resident (નામ)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.ownerDetails" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Owner Info (માલિક)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.tenantDetails" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Tenant Info (ભાડુઆત)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.contact" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Mobile & Email (સંપર્ક)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.maintenance" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Maintenance (મેન્ટેનન્સ)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.blood" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Blood Group (બ્લડ ગ્રુપ)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.familyMembers" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Family Members (પરિવાર)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.vehicles" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Vehicles (વાહનો)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.interests" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Interests (સોસાયટી કાર્ય)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.regDate" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Date (તારીખ)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- SEARCH & FILTERS -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <!-- Search -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Search / શોધો</label>
+                    <input type="text" x-model="searchQuery" placeholder="House, Name, Mobile..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <!-- Occupancy Filter -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Occupancy / સ્થિતિ</label>
+                    <select x-model="filterOccupancy" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="all">All Homes (બધા ઘરો)</option>
+                        <option value="owner">Owner Occupied (માલિક)</option>
+                        <option value="tenant">Rented to Tenant (ભાડુઆત)</option>
+                    </select>
+                </div>
+
+                <!-- Maintenance Filter -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Maintenance / મેન્ટેનન્સ</label>
+                    <select x-model="filterMaintenance" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="all">All Status (બધી સ્થિતિ)</option>
+                        <option value="paid">Paid Only (ચૂકવેલ)</option>
+                        <option value="unpaid">Unpaid Only (બાકી)</option>
+                    </select>
+                </div>
+
+                <!-- Sort -->
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-500 mb-1">Sort By / ક્રમ</label>
+                    <select x-model="sortBy" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                        <option value="houseAsc">House No (1 &rarr; 181)</option>
+                        <option value="houseDesc">House No (181 &rarr; 1)</option>
+                        <option value="nameAsc">Name (A &rarr; Z)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             A4 PRINT HEADER (Visible only when printed on paper)
+             ========================================================= -->
+        <div class="print-only-header">
+            <h1>WESTERN VILLA RESIDENTS WELFARE ASSOCIATION</h1>
+            <p>Society Community Master Report / સોસાયટી કમ્યુનિટી અહેવાલ (Houses 1 to 181)</p>
+            <p class="text-xs">
+                Generated on: <span x-text="currentDateTime"></span> | 
+                Total Listed Records: <span x-text="filteredResidents.length"></span> | 
+                Filters Applied: <span x-text="activeFilterSummary"></span>
+            </p>
+        </div>
+
+        <!-- MAIN REPORT TABLE CARD -->
+        <div class="bg-white shadow-lg rounded-3xl overflow-hidden border border-slate-200 print-container">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                    <thead class="bg-slate-50 text-slate-700">
+                        <tr>
+                            <th x-show="cols.houseNumber" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 w-16">
+                                House #
+                            </th>
+                            <th x-show="cols.residentStatus" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Type
+                            </th>
+                            <th x-show="cols.primaryName" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Primary Resident / મુખ્ય રહેવાસી
+                            </th>
+                            <th x-show="cols.ownerDetails" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Owner Details / માલિક
+                            </th>
+                            <th x-show="cols.tenantDetails" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Tenant Details / ભાડુઆત
+                            </th>
+                            <th x-show="cols.contact" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Contact / સંપર્ક
+                            </th>
+                            <th x-show="cols.maintenance" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
+                                Maintenance
+                            </th>
+                            <th x-show="cols.blood" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
+                                Blood Group
+                            </th>
+                            <th x-show="cols.familyMembers" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Family Members / પરિવાર
+                            </th>
+                            <th x-show="cols.vehicles" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Vehicles / વાહનો
+                            </th>
+                            <th x-show="cols.interests" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Society Tasks / સેવા
+                            </th>
+                            <th x-show="cols.regDate" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
+                                Registered
+                            </th>
+                            <th class="px-3 py-3 text-center font-bold tracking-wider uppercase no-print w-20">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        <template x-for="item in filteredResidents" :key="item.id">
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <!-- House No -->
+                                <td x-show="cols.houseNumber" class="px-3 py-2.5 text-center font-black text-slate-900 border-r border-slate-200 bg-slate-50/30">
+                                    <span class="text-sm" x-text="item.houseNumber"></span>
+                                </td>
+
+                                <!-- Resident Status -->
+                                <td x-show="cols.residentStatus" class="px-3 py-2.5 whitespace-nowrap border-r border-slate-200">
+                                    <span :class="item.isTenant === 'Yes' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-slate-100 text-slate-700 border-slate-200'" class="badge border font-semibold">
+                                        <span x-text="item.isTenant === 'Yes' ? 'Tenant / ભાડુઆત' : 'Owner / માલિક'"></span>
+                                    </span>
+                                </td>
+
+                                <!-- Primary Resident Name -->
+                                <td x-show="cols.primaryName" class="px-3 py-2.5 font-bold text-slate-900 border-r border-slate-200">
+                                    <div x-text="getPrimaryName(item)"></div>
+                                </td>
+
+                                <!-- Owner Details -->
+                                <td x-show="cols.ownerDetails" class="px-3 py-2.5 border-r border-slate-200">
+                                    <div class="font-semibold text-slate-800" x-text="`${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`"></div>
+                                    <div class="text-[10px] text-slate-500">
+                                        <span x-text="item.gender || '-'"></span> | 
+                                        <span x-text="item.age ? item.age + ' yrs' : '-'"></span> | 
+                                        <span x-text="item.ownerOccupationType || '-'"></span>
+                                        <span x-show="item.ownerOccupationDetails" x-text="` (${item.ownerOccupationDetails})`"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Tenant Details -->
+                                <td x-show="cols.tenantDetails" class="px-3 py-2.5 border-r border-slate-200">
+                                    <template x-if="item.isTenant === 'Yes'">
+                                        <div>
+                                            <div class="font-semibold text-blue-900" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></div>
+                                            <div class="text-[10px] text-slate-500">
+                                                <span x-text="item.tenantAge ? item.tenantAge + ' yrs' : '-'"></span> | 
+                                                <span x-text="item.tenantOccupationType || '-'"></span>
+                                                <span x-show="item.tenantOccupationDetails" x-text="` (${item.tenantOccupationDetails})`"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <template x-if="item.isTenant !== 'Yes'">
+                                        <span class="text-slate-300">-</span>
+                                    </template>
+                                </td>
+
+                                <!-- Contact Details -->
+                                <td x-show="cols.contact" class="px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
+                                    <div class="font-semibold text-slate-800" x-text="item.mobileNumber || '-'"></div>
+                                    <div class="text-[10px] text-slate-400" x-text="item.email || ''"></div>
+                                </td>
+
+                                <!-- Maintenance Details -->
+                                <td x-show="cols.maintenance" class="px-3 py-2.5 text-center border-r border-slate-200 whitespace-nowrap">
+                                    <span :class="item.isMaintenancePaid === 'Yes' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-rose-50 text-rose-800 border-rose-300'" class="badge border">
+                                        <span x-text="item.isMaintenancePaid === 'Yes' ? 'Paid / ચૂકવેલ' : 'Unpaid / બાકી'"></span>
+                                    </span>
+                                    <div x-show="item.isMaintenancePaid === 'Yes' && item.receiptNumber" class="text-[10px] text-slate-400 mt-0.5">
+                                        Rec: <span x-text="item.receiptNumber"></span>
+                                    </div>
+                                </td>
+
+                                <!-- Blood Group -->
+                                <td x-show="cols.blood" class="px-3 py-2.5 text-center border-r border-slate-200 whitespace-nowrap">
+                                    <span class="font-bold text-slate-700" x-text="item.bloodGroup || '-'"></span>
+                                    <div x-show="item.isBloodDonated === 'Yes'" class="text-[9px] text-emerald-600 font-bold">Donated</div>
+                                </td>
+
+                                <!-- Family Members -->
+                                <td x-show="cols.familyMembers" class="px-3 py-2.5 border-r border-slate-200">
+                                    <template x-if="item.familyMembers && item.familyMembers.length > 0">
+                                        <div>
+                                            <span class="font-bold text-[10px] text-purple-700" x-text="`${item.familyMembers.length} member(s):`"></span>
+                                            <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5">
+                                                <template x-for="fm in item.familyMembers" :key="fm.firstName + fm.surName">
+                                                    <li>
+                                                        <span x-text="`${fm.firstName} ${fm.middleName || ''} ${fm.surName}`"></span>
+                                                        <span class="text-slate-400" x-text="` (${fm.gender || '-'}, ${fm.age ? fm.age + 'y' : '-'})`"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                    <template x-if="!item.familyMembers || item.familyMembers.length === 0">
+                                        <span class="text-slate-300 text-[10px]">None</span>
+                                    </template>
+                                </td>
+
+                                <!-- Vehicles -->
+                                <td x-show="cols.vehicles" class="px-3 py-2.5 border-r border-slate-200">
+                                    <template x-if="item.vehicles && item.vehicles.length > 0">
+                                        <div>
+                                            <span class="font-bold text-[10px] text-amber-700" x-text="`${item.vehicles.length} vehicle(s):`"></span>
+                                            <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5">
+                                                <template x-for="v in item.vehicles" :key="v.vehicleNumber || v.fuelType">
+                                                    <li>
+                                                        <span x-text="v.vehicleType === 'Two' ? '2-Wheeler' : '4-Wheeler'"></span>
+                                                        <span class="text-slate-400" x-text="` [${v.fuelType}] ${v.vehicleNumber || ''}`"></span>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </div>
+                                    </template>
+                                    <template x-if="!item.vehicles || item.vehicles.length === 0">
+                                        <span class="text-slate-300 text-[10px]">None</span>
+                                    </template>
+                                </td>
+
+                                <!-- Society Tasks Interests -->
+                                <td x-show="cols.interests" class="px-3 py-2.5 border-r border-slate-200">
+                                    <template x-if="item.interests && item.interests.length > 0">
+                                        <div class="text-[10px] text-slate-600 space-y-0.5">
+                                            <template x-for="intr in item.interests" :key="intr">
+                                                <div class="truncate max-w-xs" x-text="intr"></div>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template x-if="!item.interests || item.interests.length === 0">
+                                        <span class="text-slate-300 text-[10px]">-</span>
+                                    </template>
+                                </td>
+
+                                <!-- Registered Date -->
+                                <td x-show="cols.regDate" class="px-3 py-2.5 text-center border-r border-slate-200 whitespace-nowrap text-[10px] text-slate-400">
+                                    <span x-text="formatDate(item.registeredAt)"></span>
+                                </td>
+
+                                <!-- Actions (Delete / Manage) -->
+                                <td class="px-3 py-2.5 text-center no-print whitespace-nowrap">
+                                    <button type="button" @click="deleteItem(item.id, item.houseNumber)" class="text-rose-500 hover:text-rose-700 text-[11px] font-bold hover:underline">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <!-- Empty State -->
+                        <tr x-show="filteredResidents.length === 0">
+                            <td colspan="13" class="px-6 py-12 text-center text-slate-400 text-sm font-medium">
+                                No records found matching the criteria.
+                                <br>
+                                <a href="index.html" class="text-blue-600 font-bold underline mt-2 inline-block">Register a new house now &rarr;</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =========================================================
+             A4 PRINT FOOTER
+             ========================================================= -->
+        <div class="print-only-footer">
+            Western Villa Residential Community — Confidential Society Document — Official Resident Directory (Houses 1 to 181)
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./js/data-store.js"></script>
+    <script>
+        function reportApp() {
+            return {
+                residents: [],
+                searchQuery: '',
+                filterOccupancy: 'all',
+                filterMaintenance: 'all',
+                sortBy: 'houseAsc',
+                currentDateTime: new Date().toLocaleString(),
+
+                // Column Visibility Flags
+                cols: {
+                    houseNumber: true,
+                    residentStatus: true,
+                    primaryName: true,
+                    ownerDetails: true,
+                    tenantDetails: true,
+                    contact: true,
+                    maintenance: true,
+                    blood: false,
+                    familyMembers: true,
+                    vehicles: true,
+                    interests: false,
+                    regDate: false
+                },
+
+                init() {
+                    this.loadData();
+                },
+
+                loadData() {
+                    this.residents = DataStore.getAllResidents();
+                },
+
+                get stats() {
+                    const total = this.residents.length;
+                    const tenants = this.residents.filter(r => r.isTenant === 'Yes').length;
+                    const paid = this.residents.filter(r => r.isMaintenancePaid === 'Yes').length;
+                    const vehicles = this.residents.reduce((sum, r) => sum + (r.vehicles?.length || 0), 0);
+                    const familyMembers = this.residents.reduce((sum, r) => sum + (r.familyMembers?.length || 0), 0);
+                    return { total, tenants, paid, vehicles, familyMembers };
+                },
+
+                get filteredResidents() {
+                    let list = [...this.residents];
+
+                    // Search query
+                    if (this.searchQuery.trim()) {
+                        const q = this.searchQuery.toLowerCase().trim();
+                        list = list.filter(r => {
+                            const house = String(r.houseNumber || '').toLowerCase();
+                            const owner = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.toLowerCase();
+                            const tenant = `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.toLowerCase();
+                            const mobile = String(r.mobileNumber || '');
+                            return house.includes(q) || owner.includes(q) || tenant.includes(q) || mobile.includes(q);
+                        });
+                    }
+
+                    // Occupancy filter
+                    if (this.filterOccupancy === 'owner') {
+                        list = list.filter(r => r.isTenant !== 'Yes');
+                    } else if (this.filterOccupancy === 'tenant') {
+                        list = list.filter(r => r.isTenant === 'Yes');
+                    }
+
+                    // Maintenance filter
+                    if (this.filterMaintenance === 'paid') {
+                        list = list.filter(r => r.isMaintenancePaid === 'Yes');
+                    } else if (this.filterMaintenance === 'unpaid') {
+                        list = list.filter(r => r.isMaintenancePaid !== 'Yes');
+                    }
+
+                    // Sorting
+                    if (this.sortBy === 'houseAsc') {
+                        list.sort((a, b) => (parseInt(a.houseNumber, 10) || 0) - (parseInt(b.houseNumber, 10) || 0));
+                    } else if (this.sortBy === 'houseDesc') {
+                        list.sort((a, b) => (parseInt(b.houseNumber, 10) || 0) - (parseInt(a.houseNumber, 10) || 0));
+                    } else if (this.sortBy === 'nameAsc') {
+                        list.sort((a, b) => (a.ownerFirstName || '').localeCompare(b.ownerFirstName || ''));
+                    }
+
+                    return list;
+                },
+
+                get activeFilterSummary() {
+                    const parts = [];
+                    if (this.filterOccupancy !== 'all') parts.push(`Occupancy: ${this.filterOccupancy}`);
+                    if (this.filterMaintenance !== 'all') parts.push(`Maintenance: ${this.filterMaintenance}`);
+                    if (this.searchQuery) parts.push(`Search: "${this.searchQuery}"`);
+                    return parts.length > 0 ? parts.join(', ') : 'All Homes';
+                },
+
+                getPrimaryName(item) {
+                    if (item.isTenant === 'Yes') {
+                        return `${item.tenantFirstName || ''} ${item.tenantSurName || ''}`.trim() || 'Tenant';
+                    }
+                    return `${item.ownerFirstName || ''} ${item.ownerSurName || ''}`.trim() || 'Owner';
+                },
+
+                formatDate(iso) {
+                    if (!iso) return '-';
+                    try {
+                        return new Date(iso).toLocaleDateString();
+                    } catch {
+                        return '-';
+                    }
+                },
+
+                // Apply Quick Column Presets
+                applyPreset(type) {
+                    if (type === 'all') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = true);
+                    } else if (type === 'directory') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = false);
+                        this.cols.houseNumber = true;
+                        this.cols.residentStatus = true;
+                        this.cols.primaryName = true;
+                        this.cols.contact = true;
+                        this.cols.blood = true;
+                    } else if (type === 'maintenance') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = false);
+                        this.cols.houseNumber = true;
+                        this.cols.residentStatus = true;
+                        this.cols.primaryName = true;
+                        this.cols.contact = true;
+                        this.cols.maintenance = true;
+                    } else if (type === 'vehicles') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = false);
+                        this.cols.houseNumber = true;
+                        this.cols.residentStatus = true;
+                        this.cols.primaryName = true;
+                        this.cols.contact = true;
+                        this.cols.vehicles = true;
+                    } else if (type === 'volunteers') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = false);
+                        this.cols.houseNumber = true;
+                        this.cols.primaryName = true;
+                        this.cols.contact = true;
+                        this.cols.interests = true;
+                    }
+                },
+
+                // Trigger Native Print
+                triggerPrint() {
+                    this.currentDateTime = new Date().toLocaleString();
+                    window.print();
+                },
+
+                // Export Selected Columns to CSV
+                exportSelectedCSV() {
+                    // Map enabled column keys to CSV column IDs
+                    const mapping = {
+                        houseNumber: 'houseNumber',
+                        residentStatus: 'residentType',
+                        primaryName: 'primaryName',
+                        ownerDetails: 'ownerName',
+                        tenantDetails: 'tenantName',
+                        contact: 'mobileNumber',
+                        maintenance: 'maintenancePaid',
+                        blood: 'bloodGroup',
+                        familyMembers: 'familySummary',
+                        vehicles: 'vehiclesSummary',
+                        interests: 'interests',
+                        regDate: 'registeredAt'
+                    };
+
+                    const selectedColIds = Object.keys(this.cols)
+                        .filter(k => this.cols[k])
+                        .map(k => mapping[k])
+                        .filter(Boolean);
+
+                    DataStore.downloadCSV('WesternVilla_Custom_Report.csv', selectedColIds);
+                },
+
+                // Import CSV File
+                async handleCSVUpload(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    try {
+                        const result = await DataStore.importFromCSV(file);
+                        alert(result.message);
+                        this.loadData();
+                    } catch (err) {
+                        alert('Error importing CSV: ' + err.message);
+                    }
+                    event.target.value = '';
+                },
+
+                // Delete Resident Record
+                deleteItem(id, houseNo) {
+                    if (confirm(`Are you sure you want to remove registration for House No. ${houseNo}?`)) {
+                        DataStore.deleteResident(id);
+                        this.loadData();
+                    }
+                }
+            };
+        }
+    </script>
+</body>
+</html>
