@@ -10,8 +10,125 @@ const MAX_HOUSE_NUMBER = 181;
 const CONTACT_PERSON = 'Hiren Patel - Home 13';
 const CONTACT_PHONE = '9876543210';
 
-// Default initial data: Starts as EMPTY so live demo has 0 pre-existing records
-const DEFAULT_SEED_DATA = [];
+// Default initial seed records: Populated when local storage is empty so data is always visible in local
+const DEFAULT_SEED_DATA = [
+    {
+        id: 1,
+        houseNumber: '13',
+        ownerFirstName: 'Hiren',
+        ownerMiddleName: 'Kumar',
+        ownerSurName: 'Patel',
+        gender: 'Male',
+        age: 38,
+        ownerOccupationType: 'Job',
+        ownerOccupationDetails: 'Tech Lead',
+        isTenant: 'No',
+        mobileNumber: '9876543210',
+        email: 'hiren.patel@gmail.com',
+        isMaintenancePaid: 'Yes',
+        isReceiptReceived: 'Yes',
+        receiptNumber: 'REC-013',
+        bloodGroup: 'B+',
+        isBloodDonated: 'Yes',
+        familyMembers: [
+            { firstName: 'Sneha', middleName: 'Hirenkumar', surName: 'Patel', gender: 'Female', age: 36, mobileNumber: '9876543211', occupationType: 'Housewife', occupationDetails: '', bloodGroup: 'O+', isBloodDonated: 'No' },
+            { firstName: 'Palkeen', middleName: 'Hirenkumar', surName: 'Patel', gender: 'Female', age: 10, mobileNumber: '', occupationType: 'Study', occupationDetails: 'School Student', bloodGroup: 'B+', isBloodDonated: 'No' }
+        ],
+        vehicles: [
+            { vehicleType: 'Four', fuelType: 'Petrol', vehicleNumber: 'GJ-01-AB-1234' },
+            { vehicleType: 'Two', fuelType: 'Electric', vehicleNumber: 'GJ-01-EE-9999' }
+        ],
+        interests: ['Security', 'Cleanliness', 'Cultural / Festivals'],
+        registeredAt: '2026-09-05T10:00:00.000Z'
+    },
+    {
+        id: 2,
+        houseNumber: '14',
+        ownerFirstName: 'Hiren',
+        ownerMiddleName: 'Hasmukhbhai',
+        ownerSurName: 'Patel',
+        gender: 'Male',
+        age: 36,
+        ownerOccupationType: 'Job',
+        ownerOccupationDetails: 'Software Engineer',
+        isTenant: 'No',
+        mobileNumber: '8490021341',
+        email: 'hiren.h@gmail.com',
+        isMaintenancePaid: 'No',
+        isReceiptReceived: 'No',
+        receiptNumber: '',
+        bloodGroup: 'B+',
+        isBloodDonated: 'No',
+        familyMembers: [
+            { firstName: 'Sneha', middleName: 'Hiren', surName: 'Patel', gender: 'Female', age: 34, mobileNumber: '8490021342', occupationType: 'Job', occupationDetails: 'Banking', bloodGroup: 'A+', isBloodDonated: 'No' },
+            { firstName: 'Palkeen', middleName: 'Hiren', surName: 'Patel', gender: 'Female', age: 9, mobileNumber: '', occupationType: 'Study', occupationDetails: '', bloodGroup: 'B+', isBloodDonated: 'No' }
+        ],
+        vehicles: [
+            { vehicleType: 'Four', fuelType: 'Petrol', vehicleNumber: 'GJ-01-HP-1414' },
+            { vehicleType: 'Two', fuelType: 'Electric', vehicleNumber: 'GJ-01-HP-2020' }
+        ],
+        interests: ['Sports / Youth', 'Health & Blood Donation'],
+        registeredAt: '2026-09-06T11:30:00.000Z'
+    },
+    {
+        id: 3,
+        houseNumber: '15',
+        ownerFirstName: 'Ankit',
+        ownerMiddleName: 'H',
+        ownerSurName: 'Patel',
+        gender: 'Male',
+        age: 32,
+        ownerOccupationType: 'Business',
+        ownerOccupationDetails: 'Chemical Trading',
+        isTenant: 'No',
+        mobileNumber: '8490021341',
+        email: 'ankit.patel@gmail.com',
+        isMaintenancePaid: 'No',
+        isReceiptReceived: 'No',
+        receiptNumber: '',
+        bloodGroup: 'O+',
+        isBloodDonated: 'No',
+        familyMembers: [],
+        vehicles: [
+            { vehicleType: 'Four', fuelType: 'Diesel', vehicleNumber: 'GJ-01-AK-1515' }
+        ],
+        interests: ['Gardening / Environment'],
+        registeredAt: '2026-09-07T09:15:00.000Z'
+    },
+    {
+        id: 4,
+        houseNumber: '2',
+        ownerFirstName: 'Suresh',
+        ownerMiddleName: 'Bhai',
+        ownerSurName: 'Shah',
+        gender: 'Male',
+        age: 62,
+        ownerOccupationType: 'Business',
+        ownerOccupationDetails: 'Retired',
+        isTenant: 'Yes',
+        tenantFirstName: 'Jignesh',
+        tenantMiddleName: 'H',
+        tenantSurName: 'Mehta',
+        tenantAge: 35,
+        tenantOccupationType: 'Job',
+        tenantOccupationDetails: 'Bank Manager',
+        mobileNumber: '9822334455',
+        email: 'jignesh.mehta@gmail.com',
+        isMaintenancePaid: 'Yes',
+        isReceiptReceived: 'Yes',
+        receiptNumber: 'REC-002',
+        bloodGroup: 'A+',
+        isBloodDonated: 'No',
+        familyMembers: [
+            { firstName: 'Priti', middleName: 'Jignesh', surName: 'Mehta', gender: 'Female', age: 34, mobileNumber: '9822334456', occupationType: 'Business', occupationDetails: 'Mehta Boutique', bloodGroup: 'B+', isBloodDonated: 'No' }
+        ],
+        vehicles: [
+            { vehicleType: 'Two', fuelType: 'Petrol', vehicleNumber: 'GJ-01-JM-7777' }
+        ],
+        interests: ['Cultural / Festivals'],
+        registeredAt: '2026-09-07T14:00:00.000Z'
+    }
+];
 
 /* =========================================================
  * STRING SANITIZATION & TITLE CASING HELPERS
@@ -126,9 +243,28 @@ const DataStore = {
     MAX_HOUSE_NUMBER: MAX_HOUSE_NUMBER,
 
     init() {
-        if (!localStorage.getItem(STORAGE_KEY)) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SEED_DATA));
+        try {
+            const current = localStorage.getItem(STORAGE_KEY);
+            if (!current || current === '[]') {
+                const v1 = localStorage.getItem('western_villa_residents_db_v1') || localStorage.getItem('western_villa_residents_db');
+                if (v1 && v1 !== '[]') {
+                    localStorage.setItem(STORAGE_KEY, v1);
+                } else if (DEFAULT_SEED_DATA && DEFAULT_SEED_DATA.length > 0) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SEED_DATA.map(r => sanitizeResident(r))));
+                }
+            }
+        } catch (e) {
+            console.warn('localStorage not accessible:', e);
         }
+    },
+
+    resetToSampleData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SEED_DATA.map(r => sanitizeResident(r))));
+        return DEFAULT_SEED_DATA.length;
+    },
+
+    clearAllData() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
     },
 
     getAllResidents() {
@@ -502,6 +638,94 @@ const DataStore = {
         XLSX.writeFile(wb, filename);
     },
 
+    // Download Printable Roster Form with Custom Columns in Excel format (.xlsx)
+    downloadPrintableFormExcel(residentsList, standardCols, customCols = [], filename = 'WesternVilla_Printable_Form.xlsx') {
+        if (typeof XLSX === 'undefined') {
+            alert('Excel library (SheetJS) is not loaded. Please reload or check your connection.');
+            return false;
+        }
+
+        const residents = sortByHouseNumber(residentsList || this.getAllResidents());
+        const wb = XLSX.utils.book_new();
+
+        // 1. Headers
+        const headers = ['House No / ઘર નંબર'];
+        
+        const showOwnerTenant = !standardCols || standardCols.ownerDetails || standardCols.primaryName;
+        if (showOwnerTenant) {
+            headers.push('Owner & Tenant Details / રહેવાસી & માલિક');
+        }
+        if (!standardCols || standardCols.contact) {
+            headers.push('Mobile Number / મોબાઇલ');
+        }
+        if (standardCols && standardCols.blood) {
+            headers.push('Blood Group / બ્લડ ગ્રુપ');
+        }
+        if (standardCols && standardCols.familyMembers) {
+            headers.push('Family Count / સભ્યો');
+        }
+
+        // Add Custom Columns
+        (customCols || []).forEach(cc => {
+            headers.push(cc.title || 'Custom Column');
+        });
+
+        const rows = [headers];
+
+        residents.forEach(r => {
+            const row = [r.houseNumber];
+
+            if (showOwnerTenant) {
+                const ownerName = `${r.ownerFirstName || ''} ${r.ownerSurName || ''}`.trim();
+                if (r.isTenant === 'Yes') {
+                    const tenantName = `${r.tenantFirstName || ''} ${r.tenantSurName || ''}`.trim();
+                    row.push(`Tenant: ${tenantName} (Owner: ${ownerName})`);
+                } else {
+                    row.push(`Owner: ${ownerName}`);
+                }
+            }
+
+            if (!standardCols || standardCols.contact) {
+                row.push(r.mobileNumber || '-');
+            }
+
+            if (standardCols && standardCols.blood) {
+                row.push(r.bloodGroup || '-');
+            }
+
+            if (standardCols && standardCols.familyMembers) {
+                row.push(r.familyMembers ? r.familyMembers.length : 0);
+            }
+
+            // Custom columns are empty for form fill-in
+            (customCols || []).forEach(() => {
+                row.push('');
+            });
+
+            rows.push(row);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        // Auto column widths
+        const colWidths = headers.map((h, idx) => {
+            let maxLen = h.length;
+            rows.forEach(r => {
+                const val = r[idx] ? String(r[idx]) : '';
+                if (val.length > maxLen) maxLen = val.length;
+            });
+            if (idx >= headers.length - (customCols || []).length) {
+                maxLen = Math.max(maxLen, 24);
+            }
+            return { wch: Math.min(Math.max(maxLen + 4, 12), 40) };
+        });
+        ws['!cols'] = colWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Printable Form');
+        XLSX.writeFile(wb, filename);
+        return true;
+    },
+
     /* =========================================================
      * BACKUP SYSTEM
      * ========================================================= */
@@ -765,5 +989,7 @@ const DataStore = {
 // Auto-initialize
 DataStore.init();
 
-// Export globally for browser use
-window.DataStore = DataStore;
+// Export globally for browser and Node environments
+if (typeof window !== 'undefined') window.DataStore = DataStore;
+if (typeof globalThis !== 'undefined') globalThis.DataStore = DataStore;
+if (typeof module !== 'undefined' && module.exports) module.exports = DataStore;

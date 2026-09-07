@@ -6,11 +6,14 @@
     <title>Western Villa - Society Reports & A4 Printable / સોસાયટી અહેવાલ</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js CDN -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- SheetJS for multi-sheet Excel generation -->
     <script src="./js/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Data Engine (Local First) -->
+    <script src="./js/data-store.js"></script>
+    <!-- Alpine.js (Local first with CDN fallback) -->
+    <script src="./js/alpine.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Custom CSS & Print Styles -->
     <link rel="stylesheet" href="./css/custom.css">
 </head>
@@ -67,21 +70,35 @@
                         Select which data to include, filter by blood group or occupancy, and print directly on A4 paper or download multi-sheet Excel.
                     </p>
                 </div>
-                <div class="mt-4 md:mt-0 flex flex-wrap gap-2.5">
+                <div class="mt-4 md:mt-0 flex flex-wrap items-center gap-2">
                     <!-- Print A4 -->
-                    <button type="button" @click="triggerPrint()" class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
-                        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <button type="button" @click="triggerPrint()" class="inline-flex items-center px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
-                        <span>Print A4 / પ્રિન્ટ</span>
+                        <span>Print Form / પ્રિન્ટ</span>
                     </button>
 
                     <!-- Master 3-Sheet Excel (.xlsx) -->
-                    <button type="button" @click="downloadMultiSheetExcel()" class="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
-                        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <button type="button" @click="downloadMultiSheetExcel()" class="inline-flex items-center px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span>📥 Download 3-Sheet Excel (.xlsx) / ૩-શીટ એક્સેલ</span>
+                        <span>📥 Master Excel (.xlsx) / ૩-શીટ એક્સેલ</span>
+                    </button>
+
+                    <!-- Printable Form Excel (.xlsx) with Custom Columns -->
+                    <button type="button" @click="downloadFormExcel()" class="inline-flex items-center px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs sm:text-sm font-bold rounded-xl transition shadow-sm" title="Download current printable form with custom columns in Excel">
+                        <svg class="h-4 w-4 mr-1.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>📊 Form Excel (.xlsx)</span>
+                    </button>
+
+                    <!-- Reload Sample Data (if local storage was cleared) -->
+                    <button type="button" @click="reloadSampleData()" class="inline-flex items-center px-2.5 py-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 text-xs font-semibold rounded-xl transition" title="Reload sample starter houses if list is empty">
+                        <svg class="h-3.5 w-3.5 mr-1 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        <span>Reset Sample</span>
                     </button>
                 </div>
             </div>
@@ -141,8 +158,8 @@
 
                     <!-- Quick Preset Buttons -->
                     <div class="flex flex-wrap gap-1.5 text-xs">
-                        <button type="button" @click="applyPreset('all')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition">
-                            All Columns
+                        <button type="button" @click="applyPreset('form')" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition shadow-sm flex items-center">
+                            <span>📋 Printable Form (Default)</span>
                         </button>
                         <button type="button" @click="applyPreset('directory')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg transition">
                             Phonebook
@@ -150,11 +167,8 @@
                         <button type="button" @click="applyPreset('maintenance')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold rounded-lg transition">
                             Maintenance
                         </button>
-                        <button type="button" @click="applyPreset('vehicles')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded-lg transition">
-                            Vehicles
-                        </button>
-                        <button type="button" @click="applyPreset('print')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold rounded-lg transition">
-                            🖨️ Sheet Print (Roster)
+                        <button type="button" @click="applyPreset('all')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition">
+                            All Columns
                         </button>
                     </div>
                 </div>
@@ -164,6 +178,16 @@
                     <label class="flex items-center space-x-2 select-none cursor-pointer">
                         <input type="checkbox" x-model="cols.houseNumber" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                         <span class="font-semibold text-slate-700">House No (ઘર નંબર)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.ownerDetails" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Owner & Tenant (માલિક/ભાડુઆત)</span>
+                    </label>
+
+                    <label class="flex items-center space-x-2 select-none cursor-pointer">
+                        <input type="checkbox" x-model="cols.contact" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
+                        <span class="font-semibold text-slate-700">Mobile & Email (સંપર્ક)</span>
                     </label>
 
                     <label class="flex items-center space-x-2 select-none cursor-pointer">
@@ -177,18 +201,8 @@
                     </label>
 
                     <label class="flex items-center space-x-2 select-none cursor-pointer">
-                        <input type="checkbox" x-model="cols.ownerDetails" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                        <span class="font-semibold text-slate-700">Owner Info (માલિક)</span>
-                    </label>
-
-                    <label class="flex items-center space-x-2 select-none cursor-pointer">
                         <input type="checkbox" x-model="cols.tenantDetails" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                        <span class="font-semibold text-slate-700">Tenant Info (ભાડુઆત)</span>
-                    </label>
-
-                    <label class="flex items-center space-x-2 select-none cursor-pointer">
-                        <input type="checkbox" x-model="cols.contact" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
-                        <span class="font-semibold text-slate-700">Mobile & Email (સંપર્ક)</span>
+                        <span class="font-semibold text-slate-700">Tenant Only (ભાડુઆત)</span>
                     </label>
 
                     <label class="flex items-center space-x-2 select-none cursor-pointer">
@@ -220,6 +234,60 @@
                         <input type="checkbox" x-model="cols.regDate" class="h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500">
                         <span class="font-semibold text-slate-700">Date (તારીખ)</span>
                     </label>
+                </div>
+
+                <!-- CUSTOM PRINTABLE COLUMNS (Width / Length Adjustment) -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+                        <div>
+                            <span class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center">
+                                <span class="h-2 w-2 rounded-full bg-indigo-600 mr-2"></span>
+                                <span>Custom Printable Columns / કસ્ટમ પ્રિન્ટ કોલમ (લંબાઈ / પહોળાઈ સાથે)</span>
+                            </span>
+                            <p class="text-[11px] text-slate-500 mt-0.5">
+                                Add write-in blank columns for physical printouts (e.g. Amount collection, Yes/No, Signature) with custom width.
+                            </p>
+                        </div>
+                        <button type="button" @click="addCustomColumn()" class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition border border-indigo-200 shadow-sm self-start sm:self-auto">
+                            <svg class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            <span>+ Add Column / નવી કોલમ</span>
+                        </button>
+                    </div>
+
+                    <!-- Custom Columns Editor Rows -->
+                    <div class="space-y-2">
+                        <template x-for="(cc, idx) in customColumns" :key="cc.id">
+                            <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl flex flex-wrap sm:flex-nowrap items-center gap-2">
+                                <span class="h-6 w-6 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0" x-text="idx + 1"></span>
+                                
+                                <!-- Column Title -->
+                                <div class="flex-grow min-w-[200px]">
+                                    <input type="text" x-model="cc.title" placeholder="Column Title (e.g. Amount Collection, Signature...)" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500 text-slate-800" />
+                                </div>
+
+                                <!-- Column Width / Length -->
+                                <div class="flex items-center space-x-1.5 flex-shrink-0">
+                                    <span class="text-[11px] font-bold text-slate-500">Width:</span>
+                                    <select x-model="cc.width" class="px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500 text-slate-700">
+                                        <option value="90px">Narrow (90px) / સાંકડી</option>
+                                        <option value="120px">Medium (120px) / મધ્યમ</option>
+                                        <option value="160px">Wide (160px) / પહોળી</option>
+                                        <option value="200px">Extra Wide (200px) / વિશેષ</option>
+                                        <option value="240px">Signature Box (240px) / સહી બોક્સ</option>
+                                    </select>
+                                </div>
+
+                                <!-- Remove Column -->
+                                <button type="button" @click="removeCustomColumn(idx)" class="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg flex items-center justify-center transition flex-shrink-0" title="Remove column">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </template>
+
+                        <div x-show="customColumns.length === 0" class="p-2.5 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-center text-xs text-slate-400">
+                            No custom columns active. Click <strong>"+ Add Column"</strong> above to add fillable columns for printing.
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -329,6 +397,12 @@
                             <th x-show="cols.regDate" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
                                 Registered
                             </th>
+                            <!-- Custom Printable Columns Header -->
+                            <template x-for="col in customColumns" :key="col.id">
+                                <th :style="`width: ${col.width}; min-width: ${col.width};`" class="px-3 py-3 text-center font-bold uppercase border-r border-slate-200 bg-slate-100/70 text-slate-800">
+                                    <span x-text="col.title"></span>
+                                </th>
+                            </template>
                             <th class="px-3 py-3 text-center font-bold tracking-wider uppercase no-print w-20">
                                 Action
                             </th>
@@ -370,6 +444,12 @@
                                         <span x-text="item.ownerOccupationType || '-'"></span>
                                         <span x-show="item.ownerOccupationDetails" x-text="` (${item.ownerOccupationDetails})`"></span>
                                     </div>
+                                    <!-- If tenant is available, show here so default printable form has both -->
+                                    <template x-if="item.isTenant === 'Yes'">
+                                        <div class="mt-1.5 inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold">
+                                            <span>Tenant: <strong x-text="`${item.tenantFirstName || ''} ${item.tenantSurName || ''}`.trim() || 'Yes'"></strong></span>
+                                        </div>
+                                    </template>
                                 </td>
 
                                 <!-- Tenant Details (Hyperlink) -->
@@ -470,6 +550,15 @@
                                     <span x-text="formatDate(item.registeredAt)"></span>
                                 </td>
 
+                                <!-- Custom Fillable Write-in Columns (for printing, amounts, checks, signatures) -->
+                                <template x-for="col in customColumns" :key="col.id">
+                                    <td :style="`width: ${col.width}; min-width: ${col.width};`" class="px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
+                                        <div class="h-9 w-full border border-dashed border-slate-300 rounded print:border-slate-400 print:bg-white flex items-center justify-center">
+                                            <!-- Printable blank write-in box -->
+                                        </div>
+                                    </td>
+                                </template>
+
                                 <!-- Actions (View / Delete) -->
                                 <td class="px-3 py-2.5 text-center no-print whitespace-nowrap">
                                     <div class="flex items-center justify-center space-x-1.5">
@@ -486,7 +575,7 @@
 
                         <!-- Empty State -->
                         <tr x-show="filteredResidents.length === 0">
-                            <td colspan="13" class="px-6 py-12 text-center text-slate-400 text-sm font-medium">
+                            <td :colspan="13 + customColumns.length" class="px-6 py-12 text-center text-slate-400 text-sm font-medium">
                                 No records found matching the criteria.
                                 <br>
                                 <a href="index.html" class="text-blue-600 font-bold underline mt-2 inline-block">Register a new house now &rarr;</a>
@@ -506,7 +595,6 @@
     </div>
 
     <!-- Scripts -->
-    <script src="./js/data-store.js"></script>
     <script>
         function reportApp() {
             return {
@@ -517,21 +605,28 @@
                 sortBy: 'houseAsc',
                 currentDateTime: new Date().toLocaleString(),
 
-                // Column Visibility Flags
+                // Column Visibility Flags (Default: Form with House, Owner/Tenant, Mobile, Custom Columns)
                 cols: {
                     houseNumber: true,
-                    residentStatus: true,
-                    primaryName: true,
+                    residentStatus: false,
+                    primaryName: false,
                     ownerDetails: true,
-                    tenantDetails: true,
+                    tenantDetails: false,
                     contact: true,
-                    maintenance: true,
-                    blood: true,
-                    familyMembers: true,
-                    vehicles: true,
+                    maintenance: false,
+                    blood: false,
+                    familyMembers: false,
+                    vehicles: false,
                     interests: false,
                     regDate: false
                 },
+
+                // Custom Printable Columns (with configurable length / width)
+                customColumns: [
+                    { id: 'c1', title: 'Amount Collected / રકમ (₹)', width: '120px' },
+                    { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', width: '100px' },
+                    { id: 'c3', title: 'Member Signature / સહી', width: '160px' }
+                ],
 
                 init() {
                     this.loadData();
@@ -644,9 +739,36 @@
                     }
                 },
 
+                // Custom Column Handlers
+                addCustomColumn() {
+                    const id = 'col_' + Date.now();
+                    const num = this.customColumns.length + 1;
+                    this.customColumns.push({
+                        id: id,
+                        title: `Custom Column ${num}`,
+                        width: '120px'
+                    });
+                },
+
+                removeCustomColumn(index) {
+                    this.customColumns.splice(index, 1);
+                },
+
                 // Apply Quick Column Presets
                 applyPreset(type) {
-                    if (type === 'all') {
+                    if (type === 'form') {
+                        Object.keys(this.cols).forEach(k => this.cols[k] = false);
+                        this.cols.houseNumber = true;
+                        this.cols.ownerDetails = true;
+                        this.cols.contact = true;
+                        if (this.customColumns.length === 0) {
+                            this.customColumns = [
+                                { id: 'c1', title: 'Amount Collected / રકમ (₹)', width: '120px' },
+                                { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', width: '100px' },
+                                { id: 'c3', title: 'Member Signature / સહી', width: '160px' }
+                            ];
+                        }
+                    } else if (type === 'all') {
                         Object.keys(this.cols).forEach(k => this.cols[k] = true);
                     } else if (type === 'directory') {
                         Object.keys(this.cols).forEach(k => this.cols[k] = false);
@@ -677,6 +799,25 @@
                         this.cols.contact = true;
                         this.cols.familyMembers = true;
                         this.cols.maintenance = true;
+                    }
+                },
+
+                // Download Printable Form with Custom Columns in Excel format (.xlsx)
+                downloadFormExcel() {
+                    const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Form';
+                    DataStore.downloadPrintableFormExcel(
+                        this.filteredResidents,
+                        this.cols,
+                        this.customColumns,
+                        `WesternVilla_Printable_Form_${ts}.xlsx`
+                    );
+                },
+
+                // Reload Sample Starter Data (if local database was empty or cleared)
+                reloadSampleData() {
+                    if (confirm('Restore starter sample records (4 houses) for local offline testing?')) {
+                        DataStore.resetToSampleData();
+                        this.loadData();
                     }
                 },
 
