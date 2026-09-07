@@ -436,14 +436,18 @@ const DataStore = {
         return wb;
     },
 
-    downloadExcel(filename = 'WesternVilla_Society_Master.xlsx') {
+    downloadExcel(filename = 'WesternVilla_Society_Master.xlsx', residentsList = null) {
+        if (typeof XLSX === 'undefined') {
+            alert('Excel library (SheetJS) is not loaded. Please ensure js/xlsx.full.min.js is available or check your connection.');
+            return false;
+        }
         try {
-            const wb = this.buildMultiSheetWorkbook();
+            const wb = this.buildMultiSheetWorkbook(residentsList);
             XLSX.writeFile(wb, filename);
             return true;
         } catch (e) {
             console.error('Failed to download Excel workbook:', e);
-            this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'));
+            alert('Error creating Excel workbook: ' + e.message);
             return false;
         }
     },

@@ -81,7 +81,7 @@
                         <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span>Master 3-Sheet Excel (.xlsx) / ૩-શીટ એક્સેલ</span>
+                        <span>📥 Download 3-Sheet Excel (.xlsx) / ૩-શીટ એક્સેલ</span>
                     </button>
 
                     <!-- Download Selected Columns Custom Excel -->
@@ -89,7 +89,7 @@
                         <svg class="h-4 w-4 mr-1.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
-                        <span>Selected Columns Excel (.xlsx)</span>
+                        <span>📊 Download Selected Columns Excel (.xlsx)</span>
                     </button>
 
                     <!-- Backup URL -->
@@ -99,11 +99,6 @@
                         </svg>
                         <span>Backup URL / બેકઅપ</span>
                     </a>
-
-                    <!-- Export Selected CSV -->
-                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition">
-                        <span>CSV Export</span>
-                    </button>
 
                     <!-- Import CSV -->
                     <label class="inline-flex items-center px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
@@ -700,7 +695,7 @@
                 // Download Complete 3-Sheet Excel Workbook (.xlsx)
                 downloadMultiSheetExcel() {
                     const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Master';
-                    DataStore.downloadExcel(`WesternVilla_Society_Master_${ts}.xlsx`);
+                    DataStore.downloadExcel(`WesternVilla_Society_Master_${ts}.xlsx`, this.filteredResidents);
                 },
 
                 // Download Dynamic Excel based on currently selected columns & filters
