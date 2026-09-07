@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- SheetJS for multi-sheet Excel generation -->
+    <script src="./js/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Custom CSS & Print Styles -->
     <link rel="stylesheet" href="./css/custom.css">
 </head>
@@ -73,29 +76,45 @@
                         <span>Print A4 Report / પ્રિન્ટ</span>
                     </button>
 
-                    <!-- Export Selected CSV -->
-                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                    <!-- Multi-Sheet Excel (.xlsx) -->
+                    <button type="button" @click="downloadMultiSheetExcel()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
                         <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span>Export CSV / એક્સેલ</span>
+                        <span>Multi-Sheet Excel (.xlsx) / એક્સેલ</span>
+                    </button>
+
+                    <!-- Backup URL -->
+                    <a href="backup.html" target="_blank" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Backup URL / બેકઅપ</span>
+                    </a>
+
+                    <!-- Export Selected CSV -->
+                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span>CSV Export</span>
                     </button>
 
                     <!-- Import CSV -->
-                    <label class="inline-flex items-center px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
+                    <label class="inline-flex items-center px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
                         <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                         </svg>
-                        <span>Import CSV / અપલોડ</span>
+                        <span>Import CSV</span>
                         <input type="file" accept=".csv" @change="handleCSVUpload($event)" class="hidden">
                     </label>
 
                     <!-- Add New -->
-                    <a href="index.html" class="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
+                    <a href="index.html" class="inline-flex items-center px-3.5 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
                         <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span>Add New / નવું ફોર્મ</span>
+                        <span>+ Register</span>
                     </a>
                 </div>
             </div>
@@ -167,8 +186,8 @@
                         <button type="button" @click="applyPreset('vehicles')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold rounded-lg transition">
                             Vehicles
                         </button>
-                        <button type="button" @click="applyPreset('volunteers')" class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold rounded-lg transition">
-                            Volunteers
+                        <button type="button" @click="applyPreset('print')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold rounded-lg transition">
+                            🖨️ Sheet Print (Roster)
                         </button>
                     </div>
                 </div>
@@ -631,12 +650,14 @@
                         this.cols.primaryName = true;
                         this.cols.contact = true;
                         this.cols.vehicles = true;
-                    } else if (type === 'volunteers') {
+                    } else if (type === 'print') {
                         Object.keys(this.cols).forEach(k => this.cols[k] = false);
                         this.cols.houseNumber = true;
+                        this.cols.residentStatus = true;
                         this.cols.primaryName = true;
                         this.cols.contact = true;
-                        this.cols.interests = true;
+                        this.cols.familyMembers = true;
+                        this.cols.maintenance = true;
                     }
                 },
 
@@ -644,6 +665,12 @@
                 triggerPrint() {
                     this.currentDateTime = new Date().toLocaleString();
                     window.print();
+                },
+
+                // Download Complete 4-Sheet Excel Workbook (.xlsx)
+                downloadMultiSheetExcel() {
+                    const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Master';
+                    DataStore.downloadExcel(`WesternVilla_Society_Master_${ts}.xlsx`);
                 },
 
                 // Export Selected Columns to CSV
