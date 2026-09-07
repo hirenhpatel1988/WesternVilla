@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Western Villa - Resident Details / ઘર વિગત</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Custom CSS & Print Styles -->
+    <link rel="stylesheet" href="./css/custom.css">
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; font-size: 11pt !important; }
+            .print-card { box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800" x-data="detailsApp()">
+
+    <!-- Top Navigation Bar (Hidden when printing) -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm no-print">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <span class="h-10 w-10 rounded-xl bg-blue-700 text-white font-black text-xl flex items-center justify-center shadow">WV</span>
+                    <div>
+                        <a href="report.html" class="text-xl font-bold text-slate-900 tracking-tight block">Western Villa</a>
+                        <span class="text-xs text-slate-500 font-medium block">Resident Profile / ઘર વિગત</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <a href="report.html" class="inline-flex items-center px-3.5 py-2 text-sm font-semibold text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Back to Reports / અહેવાલ</span>
+                    </a>
+                    <button type="button" @click="printProfile()" class="inline-flex items-center px-3.5 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition">
+                        <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span>Print / પ્રિન્ટ</span>
+                    </button>
+                    <a href="index.html" class="inline-flex items-center px-3 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
+                        <span>+ Register</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="max-w-5xl mx-auto py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
+
+        <!-- NOT FOUND STATE -->
+        <template x-if="notFound">
+            <div class="bg-white p-8 sm:p-12 rounded-3xl border border-slate-200 text-center shadow-lg">
+                <div class="h-16 w-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Resident Record Not Found / રેકોર્ડ મળ્યો નથી</h2>
+                <p class="text-sm text-slate-500 max-w-md mx-auto mb-6">
+                    <span x-show="houseNumber">No registered record found for <strong>House No. <span x-text="houseNumber"></span></strong>.</span>
+                    <span x-show="!houseNumber">No house number was specified in the request.</span>
+                    <br>કૃપા કરીને અહેવાલ પર પાછા જાઓ અથવા નવી નોંધણી કરો.
+                </p>
+                <div class="flex items-center justify-center space-x-3">
+                    <a href="report.html" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition">
+                        &larr; View All Homes in Report
+                    </a>
+                    <a href="index.html" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition">
+                        + Register This Home
+                    </a>
+                </div>
+            </div>
+        </template>
+
+        <!-- RESIDENT DETAILS FOUND -->
+        <template x-if="resident">
+            <div>
+                <!-- Top Summary Banner -->
+                <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-md mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                            <span x-text="resident.houseNumber"></span>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">House No / ઘર નંબર</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold"
+                                      :class="resident.isTenant === 'Yes' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'"
+                                      x-text="resident.isTenant === 'Yes' ? 'Tenant Occupied / ભાડુઆત' : 'Owner Occupied / માલિક'">
+                                </span>
+                                <span class="px-2 py-0.5 rounded-full text-xs font-bold"
+                                      :class="resident.isMaintenancePaid === 'Yes' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'"
+                                      x-text="resident.isMaintenancePaid === 'Yes' ? 'Maint. Paid' : 'Maint. Unpaid'">
+                                </span>
+                            </div>
+                            <h1 class="text-2xl sm:text-3xl font-black text-slate-900 mt-1" x-text="primaryName"></h1>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Western Villa Society, House # <span x-text="resident.houseNumber"></span> | 
+                                Registered: <span x-text="formatDate(resident.registeredAt)"></span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Header Quick Actions (Print & Back) -->
+                    <div class="flex items-center space-x-2 no-print">
+                        <a href="report.html" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition inline-flex items-center">
+                            <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            <span>Back to Reports</span>
+                        </a>
+                        <button type="button" @click="printProfile()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition inline-flex items-center">
+                            <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span>Print Profile</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CARDS CONTAINER (Matching Registration Form Steps) -->
+                <div class="space-y-6">
+
+                    <!-- STEP 1: House Identification & Contact -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center space-x-3 mb-5 pb-3 border-b border-slate-100">
+                            <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">1</div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">House Number & Contact / ઘર નંબર અને સંપર્ક</h2>
+                                <p class="text-[11px] text-slate-400">Primary phone, email, and property address</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">House Number / ઘર નંબર</span>
+                                <span class="text-lg font-black text-slate-900 block mt-1" x-text="'House #' + resident.houseNumber"></span>
+                            </div>
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Primary Mobile / મોબાઇલ નંબર</span>
+                                <a :href="'tel:' + resident.mobileNumber" class="text-base font-bold text-blue-700 block mt-1 hover:underline" x-text="resident.mobileNumber || '-'"></a>
+                            </div>
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Address / ઇમેઇલ</span>
+                                <a :href="'mailto:' + resident.email" class="text-sm font-semibold text-slate-700 block mt-1 hover:underline truncate" x-text="resident.email || '-'"></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Owner Details -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center space-x-3 mb-5 pb-3 border-b border-slate-100">
+                            <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">2</div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">Property Owner Details / માલિકની વિગતો</h2>
+                                <p class="text-[11px] text-slate-400">Legal owner identity, occupation and medical profile</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                            <div class="col-span-2 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Owner Full Name / માલિકનું નામ</span>
+                                <span class="text-base font-bold text-slate-900 block mt-1" x-text="ownerFullName"></span>
+                                <span class="text-[11px] text-slate-500" x-text="`(${resident.ownerFirstName || ''} ${resident.ownerMiddleName || ''} ${resident.ownerSurName || ''})`"></span>
+                            </div>
+
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Gender & Age / લિંગ & ઉંમર</span>
+                                <span class="text-sm font-bold text-slate-800 block mt-1">
+                                    <span x-text="resident.gender || '-'"></span> 
+                                    <span class="text-slate-400 font-normal" x-show="resident.age" x-text="' (' + resident.age + ' yrs)'"></span>
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Blood Group / બ્લડ ગ્રુપ</span>
+                                <div class="mt-1 flex items-center space-x-1.5">
+                                    <span class="px-2.5 py-0.5 bg-rose-100 text-rose-800 font-bold rounded-lg text-xs" x-text="resident.bloodGroup || 'Not Specified'"></span>
+                                    <template x-if="resident.isBloodDonated === 'Yes'">
+                                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-semibold rounded text-[10px]">Donor</span>
+                                    </template>
+                                </div>
+                            </div>
+
+                            <div class="col-span-2 sm:col-span-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Owner Occupation / વ્યવસાય વિગત</span>
+                                <div class="mt-1 text-xs text-slate-800">
+                                    <strong class="font-bold text-slate-900" x-text="resident.ownerOccupationType || 'None'"></strong>
+                                    <span x-show="resident.ownerOccupationDetails" x-text="' - ' + resident.ownerOccupationDetails"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Tenancy Details -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center space-x-3 mb-5 pb-3 border-b border-slate-100">
+                            <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">3</div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">Occupancy & Tenant Details / રહેવાસી દરજ્જો અને ભાડુઆત</h2>
+                                <p class="text-[11px] text-slate-400">Owner self-occupied or rented out to tenant</p>
+                            </div>
+                        </div>
+
+                        <template x-if="resident.isTenant === 'Yes'">
+                            <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-2xl">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-2.5 py-1 bg-blue-600 text-white font-bold rounded-xl text-xs">Rented to Tenant / ભાડે આપેલ છે</span>
+                                    <span class="text-xs text-blue-800 font-semibold">Tenant Living in Home</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                    <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Tenant Full Name / ભાડુઆતનું નામ</span>
+                                        <span class="text-sm font-bold text-blue-900 block mt-1" x-text="tenantFullName"></span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Tenant Age / ઉંમર</span>
+                                        <span class="text-sm font-bold text-slate-800 block mt-1" x-text="resident.tenantAge ? resident.tenantAge + ' yrs' : '-'"></span>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-xl border border-blue-100">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Tenant Occupation / વ્યવસાય</span>
+                                        <span class="text-xs font-semibold text-slate-800 block mt-1">
+                                            <span x-text="resident.tenantOccupationType || '-'"></span>
+                                            <span x-show="resident.tenantOccupationDetails" x-text="' (' + resident.tenantOccupationDetails + ')'"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="resident.isTenant !== 'Yes'">
+                            <div class="p-4 bg-emerald-50/60 border border-emerald-200 rounded-2xl flex items-center space-x-3 text-emerald-900">
+                                <svg class="h-6 w-6 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                <div>
+                                    <strong class="font-bold text-sm block">Self-Occupied by Property Owner / માલિક પોતે રહે છે</strong>
+                                    <span class="text-xs text-emerald-700">This home is not rented out. The legal owner resides in this property.</span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- STEP 4: Maintenance Payment Status -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center space-x-3 mb-5 pb-3 border-b border-slate-100">
+                            <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">4</div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">Maintenance Payment Status / મેન્ટેનન્સ સ્થિતિ</h2>
+                                <p class="text-[11px] text-slate-400">Society maintenance dues, receipt status and receipt number</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                            <div class="p-3.5 rounded-2xl border"
+                                 :class="resident.isMaintenancePaid === 'Yes' ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200'">
+                                <span class="text-[10px] font-bold uppercase tracking-wider block"
+                                      :class="resident.isMaintenancePaid === 'Yes' ? 'text-emerald-600' : 'text-rose-600'">
+                                    Maintenance Paid? / મેન્ટેનન્સ
+                                </span>
+                                <span class="text-lg font-black block mt-1"
+                                      :class="resident.isMaintenancePaid === 'Yes' ? 'text-emerald-950' : 'text-rose-950'"
+                                      x-text="resident.isMaintenancePaid === 'Yes' ? 'Paid / ચૂકવેલ છે' : 'Unpaid / બાકી છે'">
+                                </span>
+                            </div>
+
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Receipt Received? / રસીદ મળી?</span>
+                                <span class="text-base font-bold text-slate-800 block mt-1" x-text="resident.isReceiptReceived || 'No'"></span>
+                            </div>
+
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Receipt Number / રસીદ નંબર</span>
+                                <span class="text-base font-black text-slate-900 block mt-1" x-text="resident.receiptNumber || 'Not Issued / -'"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: Family Members Details -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">5</div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Family Members / પરિવારના સભ્યો</h2>
+                                    <p class="text-[11px] text-slate-400">All individuals residing in this home</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-purple-50 border border-purple-200 text-purple-700 rounded-full font-bold text-xs"
+                                  x-text="(resident.familyMembers ? resident.familyMembers.length : 0) + ' Member(s)'">
+                            </span>
+                        </div>
+
+                        <!-- If no family members registered -->
+                        <template x-if="!resident.familyMembers || resident.familyMembers.length === 0">
+                            <div class="p-5 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-xs">
+                                No additional family members registered for this home.
+                                <br>કોઈ વધારાના પરિવાર સભ્ય નોંધાયેલ નથી.
+                            </div>
+                        </template>
+
+                        <!-- Family Members Grid/List -->
+                        <template x-if="resident.familyMembers && resident.familyMembers.length > 0">
+                            <div class="space-y-3">
+                                <template x-for="(mem, idx) in resident.familyMembers" :key="idx">
+                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 hover:border-slate-300 transition">
+                                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200/70">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="h-6 w-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center" x-text="idx + 1"></span>
+                                                <h3 class="font-bold text-sm text-slate-900" x-text="`${mem.firstName || ''} ${mem.middleName || ''} ${mem.surName || ''}`"></h3>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-semibold"
+                                                      :class="mem.gender === 'Female' ? 'bg-pink-100 text-pink-800' : 'bg-blue-100 text-blue-800'"
+                                                      x-text="mem.gender || '-'">
+                                                </span>
+                                                <span class="text-xs text-slate-500 font-medium" x-show="mem.age" x-text="mem.age + ' yrs'"></span>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2">
+                                                <template x-if="mem.bloodGroup">
+                                                    <span class="px-2 py-0.5 bg-rose-100 text-rose-800 rounded font-bold text-[11px]" x-text="'Blood: ' + mem.bloodGroup"></span>
+                                                </template>
+                                                <template x-if="mem.isBloodDonated === 'Yes'">
+                                                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-semibold text-[10px]">Blood Donor</span>
+                                                </template>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2.5 text-xs">
+                                            <div>
+                                                <span class="text-[10px] text-slate-400 font-bold uppercase">Occupation / વ્યવસાય:</span>
+                                                <span class="font-medium text-slate-700 ml-1">
+                                                    <span x-text="mem.occupationType || 'None'"></span>
+                                                    <span x-show="mem.occupationDetails" x-text="' (' + mem.occupationDetails + ')'"></span>
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="text-[10px] text-slate-400 font-bold uppercase">Mobile Number / મોબાઇલ:</span>
+                                                <template x-if="mem.mobileNumber">
+                                                    <a :href="'tel:' + mem.mobileNumber" class="text-blue-600 font-bold hover:underline ml-1" x-text="mem.mobileNumber"></a>
+                                                </template>
+                                                <template x-if="!mem.mobileNumber">
+                                                    <span class="text-slate-400 ml-1">-</span>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- STEP 6: Vehicle Details -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center justify-between mb-5 pb-3 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">6</div>
+                                <div>
+                                    <h2 class="text-base sm:text-lg font-bold text-slate-900">Vehicle Details / વાહનની વિગતો</h2>
+                                    <p class="text-[11px] text-slate-400">Two-wheelers and four-wheelers registered in society parking</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-amber-50 border border-amber-200 text-amber-700 rounded-full font-bold text-xs"
+                                  x-text="(resident.vehicles ? resident.vehicles.length : 0) + ' Vehicle(s)'">
+                            </span>
+                        </div>
+
+                        <!-- If no vehicles registered -->
+                        <template x-if="!resident.vehicles || resident.vehicles.length === 0">
+                            <div class="p-5 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 text-xs">
+                                No vehicles registered for this home.
+                                <br>કોઈ વાહન નોંધાયેલ નથી.
+                            </div>
+                        </template>
+
+                        <!-- Vehicles Grid -->
+                        <template x-if="resident.vehicles && resident.vehicles.length > 0">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <template x-for="(veh, vIdx) in resident.vehicles" :key="vIdx">
+                                    <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="h-10 w-10 rounded-xl flex items-center justify-center font-bold text-xs"
+                                                 :class="veh.vehicleType === 'Four' ? 'bg-indigo-100 text-indigo-700' : 'bg-amber-100 text-amber-700'">
+                                                <span x-text="veh.vehicleType === 'Four' ? '🚗 4W' : '🛵 2W'"></span>
+                                            </div>
+                                            <div>
+                                                <div class="font-black text-sm text-slate-900 uppercase tracking-wide" x-text="veh.vehicleNumber || 'Not Specified'"></div>
+                                                <div class="text-[11px] text-slate-500 mt-0.5">
+                                                    <span x-text="veh.vehicleType === 'Four' ? 'Four Wheeler (૪ વ્હીલર)' : 'Two Wheeler (૨ વ્હીલર)'"></span> | 
+                                                    <span class="font-semibold text-slate-700" x-text="veh.fuelType || 'Fuel N/A'"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+                                              :class="veh.fuelType === 'Electric' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'"
+                                              x-text="veh.fuelType || '-'">
+                                        </span>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- STEP 7: Society Task Interests -->
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm print-card">
+                        <div class="flex items-center space-x-3 mb-5 pb-3 border-b border-slate-100">
+                            <div class="h-7 w-7 rounded-full bg-blue-700 flex items-center justify-center text-white font-bold text-xs">7</div>
+                            <div>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900">Society Tasks & Volunteering / સોસાયટી સેવા રસ</h2>
+                                <p class="text-[11px] text-slate-400">Areas where the resident is willing to contribute and volunteer</p>
+                            </div>
+                        </div>
+
+                        <template x-if="!resident.interests || resident.interests.length === 0">
+                            <p class="text-xs text-slate-400">No specific volunteer interests indicated / કોઈ વિગત પસંદ કરેલ નથી.</p>
+                        </template>
+
+                        <template x-if="resident.interests && resident.interests.length > 0">
+                            <div class="flex flex-wrap gap-2">
+                                <template x-for="item in resident.interests" :key="item">
+                                    <span class="px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-800 rounded-xl text-xs font-semibold" x-text="'✨ ' + item"></span>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Back Navigation (Hidden when printing) -->
+                <div class="mt-8 text-center no-print">
+                    <a href="report.html" class="inline-flex items-center px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-2xl shadow transition">
+                        <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        <span>Back to Society Reports / અહેવાલ પર પાછા જાઓ</span>
+                    </a>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Data Engine & Logic -->
+    <script src="./js/data-store.js"></script>
+    <script>
+        function detailsApp() {
+            return {
+                houseNumber: '',
+                resident: null,
+                notFound: false,
+
+                init() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const houseParam = urlParams.get('house');
+                    const idParam = urlParams.get('id');
+
+                    if (houseParam) {
+                        this.houseNumber = String(houseParam).trim();
+                        this.resident = DataStore.getResidentByHouse(this.houseNumber);
+                    } else if (idParam) {
+                        this.resident = DataStore.getResidentById(idParam);
+                        if (this.resident) this.houseNumber = String(this.resident.houseNumber).trim();
+                    }
+
+                    if (!this.resident) {
+                        this.notFound = true;
+                    }
+                },
+
+                get primaryName() {
+                    if (!this.resident) return '';
+                    if (this.resident.isTenant === 'Yes') {
+                        return `${this.resident.tenantFirstName || ''} ${this.resident.tenantMiddleName || ''} ${this.resident.tenantSurName || ''}`.trim() || 'Tenant';
+                    }
+                    return `${this.resident.ownerFirstName || ''} ${this.resident.ownerMiddleName || ''} ${this.resident.ownerSurName || ''}`.trim() || 'Owner';
+                },
+
+                get ownerFullName() {
+                    if (!this.resident) return '';
+                    return `${this.resident.ownerFirstName || ''} ${this.resident.ownerMiddleName || ''} ${this.resident.ownerSurName || ''}`.trim();
+                },
+
+                get tenantFullName() {
+                    if (!this.resident || this.resident.isTenant !== 'Yes') return '';
+                    return `${this.resident.tenantFirstName || ''} ${this.resident.tenantMiddleName || ''} ${this.resident.tenantSurName || ''}`.trim();
+                },
+
+                formatDate(iso) {
+                    if (!iso) return '-';
+                    try {
+                        return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+                    } catch {
+                        return iso;
+                    }
+                },
+
+                printProfile() {
+                    window.print();
+                }
+            };
+        }
+    </script>
+</body>
+</html>
