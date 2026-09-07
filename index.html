@@ -8,9 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Data Engine (Local First) -->
     <script src="./js/data-store.js"></script>
-    <!-- Alpine.js (Local first with CDN fallback) -->
-    <script src="./js/alpine.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Custom CSS & Print Styles -->
     <link rel="stylesheet" href="./css/custom.css">
 </head>
@@ -730,6 +727,9 @@
                 }
             };
         }
+        window.registrationApp = registrationApp;
     </script>
+    <!-- Alpine.js Core (Loaded after DOM & registrationApp are ready) -->
+    <script src="./js/alpine.min.js"></script>
 </body>
 </html>
