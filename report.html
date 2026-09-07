@@ -67,25 +67,33 @@
                         Select which data to include, filter as needed, and print directly on A4 paper or export to CSV.
                     </p>
                 </div>
-                <div class="mt-4 md:mt-0 flex flex-wrap gap-2.5">
+                <div class="mt-4 md:mt-0 flex flex-wrap gap-2">
                     <!-- Print A4 -->
-                    <button type="button" @click="triggerPrint()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                    <button type="button" @click="triggerPrint()" class="inline-flex items-center px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
                         <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
-                        <span>Print A4 Report / પ્રિન્ટ</span>
+                        <span>Print A4 / પ્રિન્ટ</span>
                     </button>
 
-                    <!-- Multi-Sheet Excel (.xlsx) -->
-                    <button type="button" @click="downloadMultiSheetExcel()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                    <!-- Master 3-Sheet Excel (.xlsx) -->
+                    <button type="button" @click="downloadMultiSheetExcel()" class="inline-flex items-center px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
                         <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <span>Multi-Sheet Excel (.xlsx) / એક્સેલ</span>
+                        <span>Master 3-Sheet Excel (.xlsx) / ૩-શીટ એક્સેલ</span>
+                    </button>
+
+                    <!-- Download Selected Columns Custom Excel -->
+                    <button type="button" @click="downloadCustomExcel()" class="inline-flex items-center px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs sm:text-sm font-bold rounded-xl transition">
+                        <svg class="h-4 w-4 mr-1.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>Selected Columns Excel (.xlsx)</span>
                     </button>
 
                     <!-- Backup URL -->
-                    <a href="backup.html" target="_blank" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
+                    <a href="backup.html" target="_blank" class="inline-flex items-center px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition">
                         <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                         </svg>
@@ -93,27 +101,18 @@
                     </a>
 
                     <!-- Export Selected CSV -->
-                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition">
-                        <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                    <button type="button" @click="exportSelectedCSV()" class="inline-flex items-center px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition">
                         <span>CSV Export</span>
                     </button>
 
                     <!-- Import CSV -->
-                    <label class="inline-flex items-center px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
-                        <svg class="h-4 w-4 mr-1.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
+                    <label class="inline-flex items-center px-3 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl cursor-pointer transition shadow-sm">
                         <span>Import CSV</span>
                         <input type="file" accept=".csv" @change="handleCSVUpload($event)" class="hidden">
                     </label>
 
-                    <!-- Add New -->
-                    <a href="index.html" class="inline-flex items-center px-3.5 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
-                        <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
+                    <!-- Register Link -->
+                    <a href="index.html" class="inline-flex items-center px-3 py-2 bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs sm:text-sm font-bold rounded-xl transition">
                         <span>+ Register</span>
                     </a>
                 </div>
@@ -287,10 +286,15 @@
                 <!-- Sort -->
                 <div>
                     <label class="block text-[11px] font-bold text-slate-500 mb-1">Sort By / ક્રમ</label>
-                    <select x-model="sortBy" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                    <select x-model="sortBy" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white font-medium">
                         <option value="houseAsc">House No (1 &rarr; 181)</option>
                         <option value="houseDesc">House No (181 &rarr; 1)</option>
-                        <option value="nameAsc">Name (A &rarr; Z)</option>
+                        <option value="nameAsc">Resident Name (A &rarr; Z)</option>
+                        <option value="nameDesc">Resident Name (Z &rarr; A)</option>
+                        <option value="familyDesc">Most Family Members</option>
+                        <option value="vehiclesDesc">Most Vehicles</option>
+                        <option value="paidFirst">Maintenance Paid First</option>
+                        <option value="unpaidFirst">Maintenance Unpaid First</option>
                     </select>
                 </div>
             </div>
@@ -563,7 +567,7 @@
                 get filteredResidents() {
                     let list = [...this.residents];
 
-                    // Search query
+                    // Search query (Searches House No, Owner, Tenant, Family Members, Mobile, Vehicles)
                     if (this.searchQuery.trim()) {
                         const q = this.searchQuery.toLowerCase().trim();
                         list = list.filter(r => {
@@ -571,7 +575,23 @@
                             const owner = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.toLowerCase();
                             const tenant = `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.toLowerCase();
                             const mobile = String(r.mobileNumber || '');
-                            return house.includes(q) || owner.includes(q) || tenant.includes(q) || mobile.includes(q);
+                            const email = String(r.email || '').toLowerCase();
+                            const receipt = String(r.receiptNumber || '').toLowerCase();
+
+                            // Search in family members
+                            const inFamily = (r.familyMembers || []).some(m => {
+                                const mName = `${m.firstName || ''} ${m.middleName || ''} ${m.surName || ''}`.toLowerCase();
+                                const mMobile = String(m.mobileNumber || '');
+                                return mName.includes(q) || mMobile.includes(q);
+                            });
+
+                            // Search in vehicles
+                            const inVehicles = (r.vehicles || []).some(v => {
+                                const vNum = String(v.vehicleNumber || '').toLowerCase();
+                                return vNum.includes(q);
+                            });
+
+                            return house.includes(q) || owner.includes(q) || tenant.includes(q) || mobile.includes(q) || email.includes(q) || receipt.includes(q) || inFamily || inVehicles;
                         });
                     }
 
@@ -589,13 +609,23 @@
                         list = list.filter(r => r.isMaintenancePaid !== 'Yes');
                     }
 
-                    // Sorting
+                    // Comprehensive Sorting
                     if (this.sortBy === 'houseAsc') {
                         list.sort((a, b) => (parseInt(a.houseNumber, 10) || 0) - (parseInt(b.houseNumber, 10) || 0));
                     } else if (this.sortBy === 'houseDesc') {
                         list.sort((a, b) => (parseInt(b.houseNumber, 10) || 0) - (parseInt(a.houseNumber, 10) || 0));
                     } else if (this.sortBy === 'nameAsc') {
-                        list.sort((a, b) => (a.ownerFirstName || '').localeCompare(b.ownerFirstName || ''));
+                        list.sort((a, b) => this.getPrimaryName(a).localeCompare(this.getPrimaryName(b)));
+                    } else if (this.sortBy === 'nameDesc') {
+                        list.sort((a, b) => this.getPrimaryName(b).localeCompare(this.getPrimaryName(a)));
+                    } else if (this.sortBy === 'familyDesc') {
+                        list.sort((a, b) => (b.familyMembers?.length || 0) - (a.familyMembers?.length || 0));
+                    } else if (this.sortBy === 'vehiclesDesc') {
+                        list.sort((a, b) => (b.vehicles?.length || 0) - (a.vehicles?.length || 0));
+                    } else if (this.sortBy === 'paidFirst') {
+                        list.sort((a, b) => (b.isMaintenancePaid === 'Yes' ? 1 : 0) - (a.isMaintenancePaid === 'Yes' ? 1 : 0));
+                    } else if (this.sortBy === 'unpaidFirst') {
+                        list.sort((a, b) => (a.isMaintenancePaid === 'Yes' ? 1 : 0) - (b.isMaintenancePaid === 'Yes' ? 1 : 0));
                     }
 
                     return list;
@@ -667,10 +697,17 @@
                     window.print();
                 },
 
-                // Download Complete 4-Sheet Excel Workbook (.xlsx)
+                // Download Complete 3-Sheet Excel Workbook (.xlsx)
                 downloadMultiSheetExcel() {
                     const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Master';
                     DataStore.downloadExcel(`WesternVilla_Society_Master_${ts}.xlsx`);
+                },
+
+                // Download Dynamic Excel based on currently selected columns & filters
+                downloadCustomExcel() {
+                    const selectedColIds = Object.keys(this.cols).filter(k => this.cols[k]);
+                    const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Custom';
+                    DataStore.downloadCustomExcel(this.filteredResidents, selectedColIds, `WesternVilla_Custom_Report_${ts}.xlsx`);
                 },
 
                 // Export Selected Columns to CSV

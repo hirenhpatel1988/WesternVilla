@@ -10,14 +10,13 @@ const MAX_HOUSE_NUMBER = 181;
 const CONTACT_PERSON = 'Hiren Patel - Home 13';
 const CONTACT_PHONE = '9876543210';
 
-// Default initial data: Started as EMPTY so live demo has 0 pre-existing records
+// Default initial data: Starts as EMPTY so live demo has 0 pre-existing records
 const DEFAULT_SEED_DATA = [];
 
 /* =========================================================
  * STRING SANITIZATION & TITLE CASING HELPERS
  * ========================================================= */
 
-// Capitalize / Title Case words (e.g., "ramesh kanti patel" -> "Ramesh Kanti Patel")
 function toTitleCase(str) {
     if (!str || typeof str !== 'string') return '';
     return str.trim()
@@ -25,13 +24,11 @@ function toTitleCase(str) {
         .replace(/(?:^|\s|-|\/)\S/g, function(a) { return a.toUpperCase(); });
 }
 
-// Convert string to uppercase (for vehicle registration plates & receipt numbers)
 function toUpper(str) {
     if (!str || typeof str !== 'string') return '';
     return str.trim().toUpperCase();
 }
 
-// Sort any list strictly numerically by House Number (1 to 181)
 function sortByHouseNumber(list) {
     return (list || []).slice().sort((a, b) => {
         const numA = parseInt(a.houseNumber, 10) || 0;
@@ -40,7 +37,6 @@ function sortByHouseNumber(list) {
     });
 }
 
-// Deep sanitize resident record before saving
 function sanitizeResident(record) {
     if (!record) return record;
     const clean = JSON.parse(JSON.stringify(record));
@@ -129,14 +125,12 @@ const DataStore = {
     CONTACT_PHONE: CONTACT_PHONE,
     MAX_HOUSE_NUMBER: MAX_HOUSE_NUMBER,
 
-    // Initialize local storage (starts empty if never set)
     init() {
         if (!localStorage.getItem(STORAGE_KEY)) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SEED_DATA));
         }
     },
 
-    // Get all residents strictly sorted by house number ascending (1 to 181)
     getAllResidents() {
         this.init();
         try {
@@ -149,7 +143,6 @@ const DataStore = {
         }
     },
 
-    // Check if house number is already registered
     isHouseNumberRegistered(houseNumber, excludeId = null) {
         if (!houseNumber) return false;
         const normalized = String(houseNumber).trim();
@@ -160,7 +153,6 @@ const DataStore = {
         });
     },
 
-    // Get details of already registered house
     getResidentByHouse(houseNumber) {
         if (!houseNumber) return null;
         const normalized = String(houseNumber).trim();
@@ -168,13 +160,11 @@ const DataStore = {
         return residents.find(r => String(r.houseNumber).trim() === normalized) || null;
     },
 
-    // Get single resident by ID
     getResidentById(id) {
         const residents = this.getAllResidents();
         return residents.find(r => r.id === Number(id)) || null;
     },
 
-    // Save or update resident with Title Case & strict duplicate validation
     saveResident(rawResident) {
         this.init();
         const resident = sanitizeResident(rawResident);
@@ -195,7 +185,6 @@ const DataStore = {
             };
         }
 
-        // Assign ID and timestamp if new
         if (!resident.id) {
             const maxId = residents.reduce((max, r) => (r.id > max ? r.id : max), 0);
             resident.id = maxId + 1;
@@ -211,7 +200,6 @@ const DataStore = {
             }
         }
 
-        // Always save in strictly sorted order (1 to 181)
         const sortedResidents = sortByHouseNumber(residents);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedResidents));
 
@@ -222,7 +210,6 @@ const DataStore = {
         };
     },
 
-    // Delete a resident record
     deleteResident(id) {
         const residents = this.getAllResidents();
         const filtered = residents.filter(r => r.id !== Number(id));
@@ -230,13 +217,11 @@ const DataStore = {
         return true;
     },
 
-    // Clear all data (starts fresh with 0 records)
     clearAll() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
         return [];
     },
 
-    // Load sample seed data if user manually requests
     loadSampleData(sampleList) {
         const cleaned = (sampleList || []).map(r => sanitizeResident(r));
         const sorted = sortByHouseNumber(cleaned);
@@ -245,14 +230,12 @@ const DataStore = {
     },
 
     /* =========================================================
-     * MULTI-SHEET EXCEL GENERATION (.xlsx)
-     * Sheet 1: All details in sorted order for all Homes
-     * Sheet 2: All Family Member for each home in sorting order
-     * Sheet 3: All Vehicle Details for each Home in sorting order
-     * Sheet 4: Sheet Print (House No, Main Name, Mobile, Total Members)
+     * 3-SHEET EXCEL WORKBOOK GENERATOR (.xlsx)
+     * Sheet 1: One Row for Each Member (All individual residents)
+     * Sheet 2: All Vehicle Details with House and Owner/Tenant Info
+     * Sheet 3: Only Owner List with Contact Details & Total Family Count
      * ========================================================= */
 
-    // Build the 4 worksheets and create the complete workbook
     buildMultiSheetWorkbook(residentsList = null) {
         if (typeof XLSX === 'undefined') {
             throw new Error('SheetJS library (xlsx) is not loaded.');
@@ -261,7 +244,6 @@ const DataStore = {
         const residents = sortByHouseNumber(residentsList || this.getAllResidents());
         const wb = XLSX.utils.book_new();
 
-        // Helper to compute column widths
         const applyAutoColWidths = (ws, aoaData) => {
             const colWidths = [];
             aoaData.forEach(row => {
@@ -274,125 +256,131 @@ const DataStore = {
         };
 
         // ----------------------------------------------------
-        // SHEET 1: All Details (Sorted order for all Homes)
+        // SHEET 1: One Row for Each Member
         // ----------------------------------------------------
         const sheet1Headers = [
             'House No / ઘર નંબર',
-            'Resident Type / રહેવાસી પ્રકાર',
-            'Primary Resident Full Name / મુખ્ય રહેવાસી',
-            'Owner Full Name / માલિકનું પૂરું નામ',
-            'Owner Age / ઉંમર',
-            'Owner Gender / લિંગ',
-            'Owner Occupation / વ્યવસાય',
-            'Owner Occupation Details / વિગત',
-            'Is Rented? / ભાડે આપેલ?',
-            'Tenant Full Name / ભાડુઆતનું પૂરું નામ',
-            'Tenant Age / ઉંમર',
-            'Tenant Occupation / વ્યવસાય',
-            'Tenant Occupation Details / વિગત',
-            'Mobile Number / મોબાઇલ નંબર',
+            'Resident Status / પ્રકાર',
+            'Head of House / મુખ્ય વ્યક્તિ',
+            'Member Role / સભ્ય દરજ્જો',
+            'Member Full Name / સભ્યનું પૂરું નામ',
+            'First Name / નામ',
+            'Middle Name / મધ્યમ નામ',
+            'Surname / અટક',
+            'Gender / લિંગ',
+            'Age / ઉંમર',
+            'Mobile Number / મોબાઇલ',
             'Email Address / ઇમેઇલ',
+            'Occupation Type / વ્યવસાય',
+            'Occupation Details / વિગત',
             'Blood Group / બ્લડ ગ્રુપ',
             'Blood Donated? / રક્ત દાન?',
             'Maintenance Paid? / મેન્ટેનન્સ?',
-            'Receipt Received? / રસીદ મળી?',
             'Receipt Number / રસીદ નંબર',
-            'Total Family Members / પરિવાર સભ્યો',
-            'Total Vehicles / વાહનોની સંખ્યા',
-            'Society Volunteering Tasks / સેવા કાર્ય રસ',
-            'Registration Date / નોંધણી તારીખ'
+            'Registered Date / નોંધણી તારીખ'
         ];
 
         const sheet1Rows = [sheet1Headers];
         residents.forEach(r => {
-            const primaryName = r.isTenant === 'Yes'
+            const headName = r.isTenant === 'Yes'
+                ? `${r.tenantFirstName || ''} ${r.tenantSurName || ''}`.trim()
+                : `${r.ownerFirstName || ''} ${r.ownerSurName || ''}`.trim();
+            const status = r.isTenant === 'Yes' ? 'Tenant (ભાડુઆત)' : 'Owner (માલિક)';
+
+            // 1. Primary Member Row
+            const primaryFullName = r.isTenant === 'Yes'
                 ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim()
                 : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim();
 
-            const ownerName = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim();
-            const tenantName = r.isTenant === 'Yes'
-                ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim()
-                : '';
-
             sheet1Rows.push([
                 r.houseNumber,
-                r.isTenant === 'Yes' ? 'Tenant / ભાડુઆત' : 'Owner / માલિક',
-                primaryName,
-                ownerName,
-                r.age || '',
-                r.gender || '',
-                r.ownerOccupationType || '',
-                r.ownerOccupationDetails || '',
-                r.isTenant || 'No',
-                tenantName,
-                r.isTenant === 'Yes' ? (r.tenantAge || '') : '',
-                r.isTenant === 'Yes' ? (r.tenantOccupationType || '') : '',
-                r.isTenant === 'Yes' ? (r.tenantOccupationDetails || '') : '',
+                status,
+                headName,
+                'Primary Resident (મુખ્ય રહેવાસી)',
+                primaryFullName,
+                r.isTenant === 'Yes' ? r.tenantFirstName : r.ownerFirstName,
+                r.isTenant === 'Yes' ? r.tenantMiddleName : r.ownerMiddleName,
+                r.isTenant === 'Yes' ? r.tenantSurName : r.ownerSurName,
+                r.gender || 'Male',
+                r.isTenant === 'Yes' ? (r.tenantAge || '') : (r.age || ''),
                 r.mobileNumber || '',
                 r.email || '',
+                r.isTenant === 'Yes' ? (r.tenantOccupationType || '') : (r.ownerOccupationType || ''),
+                r.isTenant === 'Yes' ? (r.tenantOccupationDetails || '') : (r.ownerOccupationDetails || ''),
                 r.bloodGroup || '',
                 r.isBloodDonated || 'No',
                 r.isMaintenancePaid || 'No',
-                r.isReceiptReceived || 'No',
                 r.receiptNumber || '',
-                r.familyMembers ? r.familyMembers.length : 0,
-                r.vehicles ? r.vehicles.length : 0,
-                (r.interests || []).join(', '),
                 r.registeredAt ? new Date(r.registeredAt).toLocaleDateString() : ''
             ]);
+
+            // 2. Individual Rows for each family member
+            if (r.familyMembers && r.familyMembers.length > 0) {
+                r.familyMembers.forEach(m => {
+                    const memFullName = `${m.firstName || ''} ${m.middleName || ''} ${m.surName || ''}`.trim();
+                    sheet1Rows.push([
+                        r.houseNumber,
+                        status,
+                        headName,
+                        'Family Member (પરિવાર સભ્ય)',
+                        memFullName,
+                        m.firstName || '',
+                        m.middleName || '',
+                        m.surName || '',
+                        m.gender || '',
+                        m.age || '',
+                        m.mobileNumber || '',
+                        '',
+                        m.occupationType || '',
+                        m.occupationDetails || '',
+                        m.bloodGroup || '',
+                        m.isBloodDonated || 'No',
+                        r.isMaintenancePaid || 'No',
+                        r.receiptNumber || '',
+                        r.registeredAt ? new Date(r.registeredAt).toLocaleDateString() : ''
+                    ]);
+                });
+            }
         });
 
         const ws1 = XLSX.utils.aoa_to_sheet(sheet1Rows);
         applyAutoColWidths(ws1, sheet1Rows);
-        XLSX.utils.book_append_sheet(wb, ws1, 'All Details');
+        XLSX.utils.book_append_sheet(wb, ws1, 'All Members');
 
         // ----------------------------------------------------
-        // SHEET 2: Family Members (Sorted order of Home Number)
+        // SHEET 2: All Vehicle Details with House & Owner/Tenant Info
         // ----------------------------------------------------
         const sheet2Headers = [
             'House No / ઘર નંબર',
-            'Main Resident Name / મુખ્ય રહેવાસી',
-            'Resident Status / રહેવાસી પ્રકાર',
-            'Member # / ક્રમ',
-            'Member First Name / નામ',
-            'Member Middle Name / મધ્યમ નામ',
-            'Member SurName / અટક',
-            'Member Full Name / પૂરું નામ',
-            'Gender / લિંગ',
-            'Age / ઉંમર',
-            'Mobile Number / મોબાઇલ',
-            'Occupation Type / વ્યવસાય',
-            'Occupation Details / વિગત',
-            'Blood Group / બ્લડ ગ્રુપ',
-            'Blood Donated? / રક્ત દાન?'
+            'Occupancy Status / રહેવાસી સ્થિતિ',
+            'Owner Full Name / માલિકનું નામ',
+            'Tenant Full Name / ભાડુઆતનું નામ',
+            'Primary Contact Mobile / મોબાઇલ',
+            'Vehicle # / ક્રમ',
+            'Vehicle Type / પ્રકાર',
+            'Fuel Type / બળતણ',
+            'Vehicle Number / વાહન નંબર'
         ];
 
         const sheet2Rows = [sheet2Headers];
         residents.forEach(r => {
-            const mainName = r.isTenant === 'Yes'
-                ? `${r.tenantFirstName || ''} ${r.tenantSurName || ''}`.trim()
-                : `${r.ownerFirstName || ''} ${r.ownerSurName || ''}`.trim();
-            const status = r.isTenant === 'Yes' ? 'Tenant' : 'Owner';
+            const ownerName = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim();
+            const tenantName = r.isTenant === 'Yes'
+                ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim()
+                : '-';
 
-            if (r.familyMembers && r.familyMembers.length > 0) {
-                r.familyMembers.forEach((m, idx) => {
-                    const fullName = `${m.firstName || ''} ${m.middleName || ''} ${m.surName || ''}`.trim();
+            if (r.vehicles && r.vehicles.length > 0) {
+                r.vehicles.forEach((v, idx) => {
                     sheet2Rows.push([
                         r.houseNumber,
-                        mainName,
-                        status,
+                        r.isTenant === 'Yes' ? 'Tenant (ભાડુઆત)' : 'Owner (માલિક)',
+                        ownerName,
+                        tenantName,
+                        r.mobileNumber || '',
                         idx + 1,
-                        m.firstName || '',
-                        m.middleName || '',
-                        m.surName || '',
-                        fullName,
-                        m.gender || '',
-                        m.age || '',
-                        m.mobileNumber || '',
-                        m.occupationType || '',
-                        m.occupationDetails || '',
-                        m.bloodGroup || '',
-                        m.isBloodDonated || 'No'
+                        v.vehicleType === 'Two' ? 'Two Wheeler (૨ વ્હીલર)' : 'Four Wheeler (૪ વ્હીલર)',
+                        v.fuelType || '',
+                        v.vehicleNumber || 'Not Specified'
                     ]);
                 });
             }
@@ -400,85 +388,54 @@ const DataStore = {
 
         const ws2 = XLSX.utils.aoa_to_sheet(sheet2Rows);
         applyAutoColWidths(ws2, sheet2Rows);
-        XLSX.utils.book_append_sheet(wb, ws2, 'Family Members');
+        XLSX.utils.book_append_sheet(wb, ws2, 'Vehicle Details');
 
         // ----------------------------------------------------
-        // SHEET 3: Vehicle Details (Sorted order of Home Number)
+        // SHEET 3: Only Owner List along with Contact & Total Family Count
         // ----------------------------------------------------
         const sheet3Headers = [
             'House No / ઘર નંબર',
-            'Main Resident Name / મુખ્ય રહેવાસી',
-            'Resident Status / રહેવાસી પ્રકાર',
-            'Vehicle # / ક્રમ',
-            'Vehicle Type / પ્રકાર',
-            'Fuel Type / બળતણ',
-            'Vehicle Registration Number / વાહન નંબર'
+            'Owner Full Name / માલિકનું પૂરું નામ',
+            'Owner Mobile / મોબાઇલ નંબર',
+            'Owner Email / ઇમેઇલ',
+            'Is Rented? / ભાડે આપેલ?',
+            'Tenant Full Name / ભાડુઆતનું નામ',
+            'Tenant Mobile / ભાડુઆત મોબાઇલ',
+            'Total Family Members / કુલ પરિવાર સભ્યો',
+            'Total Vehicles / કુલ વાહનો',
+            'Maintenance Paid? / મેન્ટેનન્સ સ્થિતિ',
+            'Receipt Number / રસીદ નંબર'
         ];
 
         const sheet3Rows = [sheet3Headers];
         residents.forEach(r => {
-            const mainName = r.isTenant === 'Yes'
-                ? `${r.tenantFirstName || ''} ${r.tenantSurName || ''}`.trim()
-                : `${r.ownerFirstName || ''} ${r.ownerSurName || ''}`.trim();
-            const status = r.isTenant === 'Yes' ? 'Tenant' : 'Owner';
-
-            if (r.vehicles && r.vehicles.length > 0) {
-                r.vehicles.forEach((v, idx) => {
-                    sheet3Rows.push([
-                        r.houseNumber,
-                        mainName,
-                        status,
-                        idx + 1,
-                        v.vehicleType === 'Two' ? 'Two Wheeler (૨ વ્હીલર)' : 'Four Wheeler (૪ વ્હીલર)',
-                        v.fuelType || '',
-                        v.vehicleNumber || ''
-                    ]);
-                });
-            }
-        });
-
-        const ws3 = XLSX.utils.aoa_to_sheet(sheet3Rows);
-        applyAutoColWidths(ws3, sheet3Rows);
-        XLSX.utils.book_append_sheet(wb, ws3, 'Vehicle Details');
-
-        // ----------------------------------------------------
-        // SHEET 4: Sheet Print (House No, Main Name, Mobile, Total Members)
-        // ----------------------------------------------------
-        const sheetPrintHeaders = [
-            'House No / ઘર નંબર',
-            'Main Person Full Name / મુખ્ય વ્યક્તિનું પૂરું નામ',
-            'Mobile Number / મોબાઇલ નંબર',
-            'Total Family Members / કુલ પરિવાર સભ્યો',
-            'Resident Type / પ્રકાર',
-            'Maintenance Status / મેન્ટેનન્સ સ્થિતિ',
-            'Receipt Number / રસીદ નંબર'
-        ];
-
-        const sheetPrintRows = [sheetPrintHeaders];
-        residents.forEach(r => {
-            const mainName = r.isTenant === 'Yes'
+            const ownerName = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim();
+            const tenantName = r.isTenant === 'Yes'
                 ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim()
-                : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim();
+                : '-';
 
-            sheetPrintRows.push([
+            sheet3Rows.push([
                 r.houseNumber,
-                mainName,
+                ownerName,
                 r.mobileNumber || '',
+                r.email || '-',
+                r.isTenant === 'Yes' ? 'Yes (ભાડે આપેલ)' : 'No (માલિક રહે છે)',
+                tenantName,
+                r.isTenant === 'Yes' ? (r.mobileNumber || '-') : '-',
                 r.familyMembers ? r.familyMembers.length : 0,
-                r.isTenant === 'Yes' ? 'Tenant (ભાડુઆત)' : 'Owner (માલિક)',
+                r.vehicles ? r.vehicles.length : 0,
                 r.isMaintenancePaid === 'Yes' ? 'Paid (ચૂકવેલ)' : 'Unpaid (બાકી)',
                 r.receiptNumber || '-'
             ]);
         });
 
-        const wsPrint = XLSX.utils.aoa_to_sheet(sheetPrintRows);
-        applyAutoColWidths(wsPrint, sheetPrintRows);
-        XLSX.utils.book_append_sheet(wb, wsPrint, 'Sheet Print');
+        const ws3 = XLSX.utils.aoa_to_sheet(sheet3Rows);
+        applyAutoColWidths(ws3, sheet3Rows);
+        XLSX.utils.book_append_sheet(wb, ws3, 'Owner List');
 
         return wb;
     },
 
-    // Download the Multi-Sheet Excel file
     downloadExcel(filename = 'WesternVilla_Society_Master.xlsx') {
         try {
             const wb = this.buildMultiSheetWorkbook();
@@ -486,17 +443,65 @@ const DataStore = {
             return true;
         } catch (e) {
             console.error('Failed to download Excel workbook:', e);
-            // Fallback to CSV if SheetJS has issues
             this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'));
             return false;
         }
+    },
+
+    // Build single-sheet Excel dynamically based on selected columns & filtered residents
+    downloadCustomExcel(residentsList, selectedColumns, filename = 'WesternVilla_Custom_Report.xlsx') {
+        if (typeof XLSX === 'undefined') {
+            this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'), selectedColumns);
+            return;
+        }
+
+        const residents = sortByHouseNumber(residentsList || this.getAllResidents());
+        const wb = XLSX.utils.book_new();
+
+        const columnDefinitions = [
+            { id: 'houseNumber', title: 'House No / ઘર નંબર', get: r => r.houseNumber },
+            { id: 'residentStatus', title: 'Resident Type / પ્રકાર', get: r => r.isTenant === 'Yes' ? 'Tenant (ભાડુઆત)' : 'Owner (માલિક)' },
+            { id: 'primaryName', title: 'Primary Resident / મુખ્ય રહેવાસી', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
+            { id: 'ownerDetails', title: 'Owner Name / માલિકનું નામ', get: r => `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
+            { id: 'tenantDetails', title: 'Tenant Name / ભાડુઆતનું નામ', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : '-' },
+            { id: 'contact', title: 'Mobile / મોબાઇલ', get: r => r.mobileNumber || '' },
+            { id: 'maintenance', title: 'Maintenance / મેન્ટેનન્સ', get: r => r.isMaintenancePaid === 'Yes' ? `Paid (${r.receiptNumber || 'Receipt Yes'})` : 'Unpaid' },
+            { id: 'blood', title: 'Blood Group / બ્લડ ગ્રુપ', get: r => r.bloodGroup || '-' },
+            { id: 'familyMembers', title: 'Total Family Members / પરિવાર સંખ્યા', get: r => r.familyMembers ? r.familyMembers.length : 0 },
+            { id: 'vehicles', title: 'Total Vehicles / વાહનો સંખ્યા', get: r => r.vehicles ? r.vehicles.length : 0 },
+            { id: 'interests', title: 'Volunteering Interests / સેવા રસ', get: r => (r.interests || []).join(', ') },
+            { id: 'regDate', title: 'Registration Date / નોંધણી તારીખ', get: r => r.registeredAt ? new Date(r.registeredAt).toLocaleDateString() : '' }
+        ];
+
+        const activeCols = selectedColumns && selectedColumns.length > 0
+            ? columnDefinitions.filter(c => selectedColumns.includes(c.id))
+            : columnDefinitions;
+
+        const headers = activeCols.map(c => c.title);
+        const rows = [headers];
+
+        residents.forEach(r => {
+            rows.push(activeCols.map(c => c.get(r)));
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const colWidths = [];
+        rows.forEach(row => {
+            row.forEach((cell, idx) => {
+                const str = cell !== null && cell !== undefined ? String(cell) : '';
+                colWidths[idx] = Math.max(colWidths[idx] || 10, Math.min(str.length + 3, 40));
+            });
+        });
+        ws['!cols'] = colWidths.map(w => ({ wch: w }));
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Custom Report');
+        XLSX.writeFile(wb, filename);
     },
 
     /* =========================================================
      * BACKUP SYSTEM
      * ========================================================= */
 
-    // Generate formatted timestamp string (YYYY-MM-DD_HH-mm)
     getTimestampString() {
         const now = new Date();
         const y = now.getFullYear();
@@ -507,14 +512,12 @@ const DataStore = {
         return `${y}-${m}-${d}_${h}-${min}`;
     },
 
-    // Trigger full Excel backup download
     downloadBackupExcel() {
         const ts = this.getTimestampString();
         const filename = `WesternVilla_Backup_${ts}.xlsx`;
         return this.downloadExcel(filename);
     },
 
-    // Trigger raw JSON backup download (for exact data restore)
     downloadBackupJSON() {
         const residents = this.getAllResidents();
         const ts = this.getTimestampString();
@@ -536,7 +539,6 @@ const DataStore = {
         URL.revokeObjectURL(url);
     },
 
-    // Restore database from JSON backup file
     async restoreFromJSON(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -598,9 +600,7 @@ const DataStore = {
             { id: 'receiptReceived', title: 'Receipt Received? / રસીદ મળી?', get: r => r.isReceiptReceived || 'No' },
             { id: 'receiptNumber', title: 'Receipt Number / રસીદ નંબર', get: r => r.receiptNumber || '' },
             { id: 'familyCount', title: 'Family Members Count / પરિવાર સભ્યો', get: r => (r.familyMembers ? r.familyMembers.length : 0) },
-            { id: 'familySummary', title: 'Family Members Details / પરિવાર વિગત', get: r => (r.familyMembers || []).map((m, idx) => `${idx + 1}. ${m.firstName} ${m.middleName || ''} ${m.surName} (${m.gender || '-'}, ${m.age ? m.age + 'y' : '-'})`).join('; ') },
             { id: 'vehiclesCount', title: 'Vehicles Count / વાહનોની સંખ્યા', get: r => (r.vehicles ? r.vehicles.length : 0) },
-            { id: 'vehiclesSummary', title: 'Vehicles Details / વાહનો વિગત', get: r => (r.vehicles || []).map((v, idx) => `${idx + 1}. ${v.vehicleType === 'Two' ? '2-Wheeler' : '4-Wheeler'} [${v.fuelType}] ${v.vehicleNumber || ''}`).join('; ') },
             { id: 'interests', title: 'Society Task Interests / સોસાયટી કાર્ય રસ', get: r => (r.interests || []).join('; ') },
             { id: 'registeredAt', title: 'Registration Date / નોંધણી તારીખ', get: r => r.registeredAt ? new Date(r.registeredAt).toLocaleDateString() : '' }
         ];
