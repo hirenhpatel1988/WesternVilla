@@ -228,15 +228,14 @@ body {
         max-width: 140px !important;
     }
 
-    /* Dashed write-in box for signatures and blank inputs in print */
+    /* Write-in cell space for signatures and blank inputs in print (no inner border) */
     .write-in-box {
         min-height: 28px !important;
         height: 28px !important;
         width: 100% !important;
-        border: 1px dashed #94a3b8 !important;
-        border-radius: 4px !important;
+        border: none !important;
         box-sizing: border-box !important;
-        background-color: #ffffff !important;
+        background-color: transparent !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
