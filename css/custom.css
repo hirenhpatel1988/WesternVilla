@@ -139,6 +139,80 @@ body {
         print-color-adjust: exact !important;
     }
 
+    /* Dynamic Sizing Scales for Print Table */
+    table.print-size-large {
+        font-size: 11pt !important;
+    }
+    table.print-size-large th {
+        font-size: 9.5pt !important;
+        padding: 8px 10px !important;
+    }
+    table.print-size-large td {
+        font-size: 11pt !important;
+        padding: 8px 10px !important;
+    }
+    table.print-size-large .cell-name {
+        font-size: 12pt !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+    }
+    table.print-size-large .cell-mobile {
+        font-size: 11pt !important;
+        font-weight: 700 !important;
+    }
+    table.print-size-large .cell-custom-val {
+        font-size: 11pt !important;
+        font-weight: 700 !important;
+    }
+
+    table.print-size-medium {
+        font-size: 9.5pt !important;
+    }
+    table.print-size-medium th {
+        font-size: 8.5pt !important;
+        padding: 6px 8px !important;
+    }
+    table.print-size-medium td {
+        font-size: 9.5pt !important;
+        padding: 6px 8px !important;
+    }
+    table.print-size-medium .cell-name {
+        font-size: 10pt !important;
+        font-weight: 700 !important;
+    }
+    table.print-size-medium .cell-mobile {
+        font-size: 9.5pt !important;
+        font-weight: 600 !important;
+    }
+    table.print-size-medium .cell-custom-val {
+        font-size: 9.5pt !important;
+        font-weight: 600 !important;
+    }
+
+    table.print-size-compact {
+        font-size: 8.5pt !important;
+    }
+    table.print-size-compact th {
+        font-size: 7.5pt !important;
+        padding: 4px 5px !important;
+    }
+    table.print-size-compact td {
+        font-size: 8.5pt !important;
+        padding: 4px 5px !important;
+    }
+    table.print-size-compact .cell-name {
+        font-size: 8.5pt !important;
+        font-weight: 600 !important;
+    }
+    table.print-size-compact .cell-mobile {
+        font-size: 8.5pt !important;
+        font-weight: 500 !important;
+    }
+    table.print-size-compact .cell-custom-val {
+        font-size: 8.5pt !important;
+        font-weight: 500 !important;
+    }
+
     /* Table links print as solid black text with no underlines or blue colors */
     table a, 
     table a:visited, 

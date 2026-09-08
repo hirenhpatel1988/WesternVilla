@@ -697,9 +697,10 @@ const DataStore = {
                 row.push(r.familyMembers ? r.familyMembers.length : 0);
             }
 
-            // Custom columns are empty for form fill-in
-            (customCols || []).forEach(() => {
-                row.push('');
+            // Custom columns filled with default value if set (e.g. 1000), or empty for handwriting / signature
+            (customCols || []).forEach(cc => {
+                const val = (cc.defaultValue !== undefined && cc.defaultValue !== null) ? String(cc.defaultValue) : '';
+                row.push(val);
             });
 
             rows.push(row);

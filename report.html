@@ -245,10 +245,22 @@
                                 Add write-in blank columns for physical printouts (e.g. Amount collection, Yes/No, Signature) with custom width.
                             </p>
                         </div>
-                        <button type="button" @click="addCustomColumn()" class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition border border-indigo-200 shadow-sm self-start sm:self-auto">
-                            <svg class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                            <span>+ Add Column / નવી કોલમ</span>
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <!-- Print Sizing Control -->
+                            <div class="flex items-center space-x-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-xl text-xs font-semibold">
+                                <span class="text-slate-500 font-bold">Print Sizing / સાઇઝ:</span>
+                                <select x-model="printSize" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="auto">Auto (Smart Dynamic) / આપોઆપ</option>
+                                    <option value="large">Large / મોટો (11pt)</option>
+                                    <option value="medium">Medium / મધ્યમ (9.5pt)</option>
+                                    <option value="compact">Compact / નાનો (8.5pt)</option>
+                                </select>
+                            </div>
+                            <button type="button" @click="addCustomColumn()" class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition border border-indigo-200 shadow-sm self-start sm:self-auto">
+                                <svg class="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                <span>+ Add Column / નવી કોલમ</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Custom Columns Editor Rows -->
@@ -258,8 +270,13 @@
                                 <span class="h-6 w-6 rounded-lg bg-indigo-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0" x-text="idx + 1"></span>
                                 
                                 <!-- Column Title -->
-                                <div class="flex-grow min-w-[200px]">
-                                    <input type="text" x-model="cc.title" placeholder="Column Title (e.g. Amount Collection, Signature...)" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500 text-slate-800" />
+                                <div class="flex-grow min-w-[170px]">
+                                    <input type="text" x-model="cc.title" placeholder="Title (e.g. Amount Collection, Signature...)" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500 text-slate-800" />
+                                </div>
+
+                                <!-- Default Value (e.g. 1000 for each home) -->
+                                <div class="w-36 flex-shrink-0">
+                                    <input type="text" x-model="cc.defaultValue" placeholder="Default (e.g. 1000)" class="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500 text-slate-800" title="Default value printed for each home (e.g. 1000). Leave empty for handwriting / signature." />
                                 </div>
 
                                 <!-- Column Width / Length -->
@@ -355,7 +372,7 @@
         <!-- MAIN REPORT TABLE CARD -->
         <div class="bg-white shadow-lg rounded-3xl overflow-hidden border border-slate-200 print-container">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                <table :class="['min-w-full divide-y divide-slate-200 text-xs', dynamicTableClass]">
                     <thead class="bg-slate-50 text-slate-700">
                         <tr>
                             <th x-show="cols.houseNumber" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 w-16">
@@ -364,16 +381,16 @@
                             <th x-show="cols.residentStatus" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Type
                             </th>
-                            <th x-show="cols.primaryName" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.primaryName" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Primary Resident / મુખ્ય રહેવાસી
                             </th>
-                            <th x-show="cols.ownerDetails" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.ownerDetails" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Owner Details / માલિક
                             </th>
-                            <th x-show="cols.tenantDetails" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.tenantDetails" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Tenant Details / ભાડુઆત
                             </th>
-                            <th x-show="cols.contact" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.contact" :class="dynamicContactThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Contact / સંપર્ક
                             </th>
                             <th x-show="cols.maintenance" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
@@ -424,7 +441,7 @@
 
                                 <!-- Primary Resident Name (Hyperlink) -->
                                 <td x-show="cols.primaryName" class="px-3 py-2.5 font-bold border-r border-slate-200">
-                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="text-blue-700 hover:text-blue-900 font-bold hover:underline inline-flex items-center group" title="Click to view all resident details">
+                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name text-blue-700 hover:text-blue-900 font-bold hover:underline inline-flex items-center group" title="Click to view all resident details">
                                         <span x-text="getPrimaryName(item)"></span>
                                         <svg class="h-3 w-3 ml-1 text-blue-400 group-hover:text-blue-700 opacity-60 group-hover:opacity-100 transition no-print" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -434,7 +451,7 @@
 
                                 <!-- Owner Details (Hyperlink) -->
                                 <td x-show="cols.ownerDetails" class="px-3 py-2.5 border-r border-slate-200">
-                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="font-semibold text-slate-900 hover:text-blue-700 hover:underline block" title="Click to view owner profile" x-text="`${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`"></a>
+                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name font-semibold text-slate-900 hover:text-blue-700 hover:underline block" title="Click to view owner profile" x-text="`${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`"></a>
                                     <!-- Extra info hidden in print (Name only on printout) -->
                                     <div class="text-[10px] text-slate-500 no-print">
                                         <span x-text="item.gender || '-'"></span> | 
@@ -454,7 +471,7 @@
                                 <td x-show="cols.tenantDetails" class="px-3 py-2.5 border-r border-slate-200">
                                     <template x-if="item.isTenant === 'Yes'">
                                         <div>
-                                            <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="font-semibold text-blue-900 hover:text-blue-700 hover:underline block" title="Click to view tenant details" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></a>
+                                            <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name font-semibold text-blue-900 hover:text-blue-700 hover:underline block" title="Click to view tenant details" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></a>
                                             <!-- Extra info hidden in print -->
                                             <div class="text-[10px] text-slate-500 no-print">
                                                 <span x-text="item.tenantAge ? item.tenantAge + ' yrs' : '-'"></span> | 
@@ -470,7 +487,7 @@
 
                                 <!-- Contact Details -->
                                 <td x-show="cols.contact" class="px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
-                                    <div class="font-semibold text-slate-800 print:text-black" x-text="item.mobileNumber || '-'"></div>
+                                    <div :class="dynamicMobileClass" class="cell-mobile font-semibold text-slate-800 print:text-black" x-text="item.mobileNumber || '-'"></div>
                                     <!-- Email hidden on printout -->
                                     <div class="text-[10px] text-slate-400 no-print" x-text="item.email || ''"></div>
                                 </td>
@@ -553,9 +570,14 @@
                                 <!-- Custom Fillable Write-in Columns (for printing, amounts, checks, signatures) -->
                                 <template x-for="col in customColumns" :key="col.id">
                                     <td :style="`width: ${col.width}; min-width: ${col.width};`" class="px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
-                                        <div class="h-9 w-full border border-dashed border-slate-300 rounded print:border-slate-400 print:bg-white flex items-center justify-center">
-                                            <!-- Printable blank write-in box -->
-                                        </div>
+                                        <template x-if="col.defaultValue">
+                                            <div class="cell-custom-val py-1 px-2 font-bold text-slate-900 print:text-black text-center" :class="dynamicMobileClass" x-text="col.defaultValue"></div>
+                                        </template>
+                                        <template x-if="!col.defaultValue">
+                                            <div class="h-9 w-full border border-dashed border-slate-300 rounded print:border-slate-400 print:bg-white flex items-center justify-center">
+                                                <!-- Printable blank write-in box -->
+                                            </div>
+                                        </template>
                                     </td>
                                 </template>
 
@@ -604,6 +626,7 @@
                 filterBloodGroup: 'all',
                 sortBy: 'houseAsc',
                 currentDateTime: new Date().toLocaleString(),
+                printSize: 'auto',
 
                 // Column Visibility Flags (Default: Form with House, Owner/Tenant, Mobile, Custom Columns)
                 cols: {
@@ -621,11 +644,11 @@
                     regDate: false
                 },
 
-                // Custom Printable Columns (with configurable length / width)
+                // Custom Printable Columns (with configurable length / width & default values)
                 customColumns: [
-                    { id: 'c1', title: 'Amount Collected / રકમ (₹)', width: '120px' },
-                    { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', width: '100px' },
-                    { id: 'c3', title: 'Member Signature / સહી', width: '160px' }
+                    { id: 'c1', title: 'Amount Collected / રકમ (₹)', defaultValue: '1000', width: '120px' },
+                    { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', defaultValue: '', width: '100px' },
+                    { id: 'c3', title: 'Member Signature / સહી', defaultValue: '', width: '160px' }
                 ],
 
                 init() {
@@ -643,6 +666,66 @@
                     const vehicles = this.residents.reduce((sum, r) => sum + (r.vehicles?.length || 0), 0);
                     const familyMembers = this.residents.reduce((sum, r) => sum + (r.familyMembers?.length || 0), 0);
                     return { total, tenants, paid, vehicles, familyMembers };
+                },
+
+                get activeColCount() {
+                    let count = 0;
+                    Object.values(this.cols).forEach(v => { if (v) count++; });
+                    count += (this.customColumns || []).length;
+                    return count;
+                },
+
+                get effectivePrintSize() {
+                    if (this.printSize && this.printSize !== 'auto') {
+                        return this.printSize;
+                    }
+                    // Smart dynamic sizing:
+                    // If <= 6 columns (e.g. House No, Owner, Mobile, + up to 3 custom columns): Large
+                    // If 7-8 columns: Medium
+                    // If 9+ columns: Compact
+                    if (this.activeColCount <= 6) return 'large';
+                    if (this.activeColCount <= 8) return 'medium';
+                    return 'compact';
+                },
+
+                get dynamicTableClass() {
+                    return 'print-size-' + this.effectivePrintSize;
+                },
+
+                get dynamicNameClass() {
+                    if (this.effectivePrintSize === 'large') {
+                        return 'text-sm md:text-base font-bold';
+                    } else if (this.effectivePrintSize === 'medium') {
+                        return 'text-xs md:text-sm font-semibold';
+                    }
+                    return 'text-xs font-semibold';
+                },
+
+                get dynamicMobileClass() {
+                    if (this.effectivePrintSize === 'large') {
+                        return 'text-sm md:text-base font-bold tracking-wide';
+                    } else if (this.effectivePrintSize === 'medium') {
+                        return 'text-xs md:text-sm font-semibold';
+                    }
+                    return 'text-xs font-semibold';
+                },
+
+                get dynamicOwnerThClass() {
+                    if (this.effectivePrintSize === 'large') {
+                        return 'min-w-[220px] print:min-w-[190px]';
+                    } else if (this.effectivePrintSize === 'medium') {
+                        return 'min-w-[180px] print:min-w-[160px]';
+                    }
+                    return 'min-w-[140px]';
+                },
+
+                get dynamicContactThClass() {
+                    if (this.effectivePrintSize === 'large') {
+                        return 'min-w-[150px] print:min-w-[130px]';
+                    } else if (this.effectivePrintSize === 'medium') {
+                        return 'min-w-[120px] print:min-w-[110px]';
+                    }
+                    return 'min-w-[100px]';
                 },
 
                 get filteredResidents() {
@@ -746,6 +829,7 @@
                     this.customColumns.push({
                         id: id,
                         title: `Custom Column ${num}`,
+                        defaultValue: '',
                         width: '120px'
                     });
                 },
@@ -763,9 +847,9 @@
                         this.cols.contact = true;
                         if (this.customColumns.length === 0) {
                             this.customColumns = [
-                                { id: 'c1', title: 'Amount Collected / રકમ (₹)', width: '120px' },
-                                { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', width: '100px' },
-                                { id: 'c3', title: 'Member Signature / સહી', width: '160px' }
+                                { id: 'c1', title: 'Amount Collected / રકમ (₹)', defaultValue: '1000', width: '120px' },
+                                { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', defaultValue: '', width: '100px' },
+                                { id: 'c3', title: 'Member Signature / સહી', defaultValue: '', width: '160px' }
                             ];
                         }
                     } else if (type === 'all') {
