@@ -676,9 +676,9 @@ const DataStore = {
             const row = [r.houseNumber];
 
             if (showOwnerTenant) {
-                const ownerName = `${r.ownerFirstName || ''} ${r.ownerSurName || ''}`.trim();
+                const ownerName = `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.replace(/\s+/g, ' ').trim();
                 if (r.isTenant === 'Yes') {
-                    const tenantName = `${r.tenantFirstName || ''} ${r.tenantSurName || ''}`.trim();
+                    const tenantName = `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.replace(/\s+/g, ' ').trim();
                     row.push(`Tenant: ${tenantName} (Owner: ${ownerName})`);
                 } else {
                     row.push(`Owner: ${ownerName}`);

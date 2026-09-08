@@ -435,7 +435,8 @@
                                 <!-- Owner Details (Hyperlink) -->
                                 <td x-show="cols.ownerDetails" class="px-3 py-2.5 border-r border-slate-200">
                                     <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="font-semibold text-slate-900 hover:text-blue-700 hover:underline block" title="Click to view owner profile" x-text="`${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`"></a>
-                                    <div class="text-[10px] text-slate-500">
+                                    <!-- Extra info hidden in print (Name only on printout) -->
+                                    <div class="text-[10px] text-slate-500 no-print">
                                         <span x-text="item.gender || '-'"></span> | 
                                         <span x-text="item.age ? item.age + ' yrs' : '-'"></span> | 
                                         <span x-text="item.ownerOccupationType || '-'"></span>
@@ -443,8 +444,8 @@
                                     </div>
                                     <!-- If tenant is available, show here so default printable form has both -->
                                     <template x-if="item.isTenant === 'Yes'">
-                                        <div class="mt-1.5 inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold">
-                                            <span>Tenant: <strong x-text="`${item.tenantFirstName || ''} ${item.tenantSurName || ''}`.trim() || 'Yes'"></strong></span>
+                                        <div class="mt-1.5 inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-semibold print:bg-transparent print:border-none print:p-0 print:m-0 print:mt-1 print:block print:text-[8.5pt] print:font-normal print:text-black">
+                                            <span>Tenant: <strong x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`.trim() || 'Yes'"></strong></span>
                                         </div>
                                     </template>
                                 </td>
@@ -454,7 +455,8 @@
                                     <template x-if="item.isTenant === 'Yes'">
                                         <div>
                                             <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="font-semibold text-blue-900 hover:text-blue-700 hover:underline block" title="Click to view tenant details" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></a>
-                                            <div class="text-[10px] text-slate-500">
+                                            <!-- Extra info hidden in print -->
+                                            <div class="text-[10px] text-slate-500 no-print">
                                                 <span x-text="item.tenantAge ? item.tenantAge + ' yrs' : '-'"></span> | 
                                                 <span x-text="item.tenantOccupationType || '-'"></span>
                                                 <span x-show="item.tenantOccupationDetails" x-text="` (${item.tenantOccupationDetails})`"></span>
@@ -468,8 +470,9 @@
 
                                 <!-- Contact Details -->
                                 <td x-show="cols.contact" class="px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
-                                    <div class="font-semibold text-slate-800" x-text="item.mobileNumber || '-'"></div>
-                                    <div class="text-[10px] text-slate-400" x-text="item.email || ''"></div>
+                                    <div class="font-semibold text-slate-800 print:text-black" x-text="item.mobileNumber || '-'"></div>
+                                    <!-- Email hidden on printout -->
+                                    <div class="text-[10px] text-slate-400 no-print" x-text="item.email || ''"></div>
                                 </td>
 
                                 <!-- Maintenance Details -->
@@ -477,34 +480,34 @@
                                     <span :class="item.isMaintenancePaid === 'Yes' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-rose-50 text-rose-800 border-rose-300'" class="badge border">
                                         <span x-text="item.isMaintenancePaid === 'Yes' ? 'Paid / ચૂકવેલ' : 'Unpaid / બાકી'"></span>
                                     </span>
-                                    <div x-show="item.isMaintenancePaid === 'Yes' && item.receiptNumber" class="text-[10px] text-slate-400 mt-0.5">
+                                    <div x-show="item.isMaintenancePaid === 'Yes' && item.receiptNumber" class="text-[10px] text-slate-400 mt-0.5 no-print">
                                         Rec: <span x-text="item.receiptNumber"></span>
                                     </div>
                                 </td>
 
                                 <!-- Blood Group -->
                                 <td x-show="cols.blood" class="px-3 py-2.5 text-center border-r border-slate-200 whitespace-nowrap">
-                                    <span class="font-bold text-slate-700" x-text="item.bloodGroup || '-'"></span>
-                                    <div x-show="item.isBloodDonated === 'Yes'" class="text-[9px] text-emerald-600 font-bold">Donated</div>
+                                    <span class="font-bold text-slate-700 print:text-black" x-text="item.bloodGroup || '-'"></span>
+                                    <div x-show="item.isBloodDonated === 'Yes'" class="text-[9px] text-emerald-600 font-bold no-print">Donated</div>
                                 </td>
 
                                 <!-- Family Members -->
                                 <td x-show="cols.familyMembers" class="px-3 py-2.5 border-r border-slate-200">
                                     <template x-if="item.familyMembers && item.familyMembers.length > 0">
                                         <div>
-                                            <span class="font-bold text-[10px] text-purple-700" x-text="`${item.familyMembers.length} member(s):`"></span>
-                                            <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5">
+                                            <span class="font-bold text-[10px] text-purple-700 no-print" x-text="`${item.familyMembers.length} member(s):`"></span>
+                                            <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5 print:pl-2 print:text-black">
                                                 <template x-for="fm in item.familyMembers" :key="fm.firstName + fm.surName">
                                                     <li>
-                                                        <span x-text="`${fm.firstName} ${fm.middleName || ''} ${fm.surName}`"></span>
-                                                        <span class="text-slate-400" x-text="` (${fm.gender || '-'}, ${fm.age ? fm.age + 'y' : '-'})`"></span>
+                                                        <span class="font-medium" x-text="`${fm.firstName} ${fm.middleName || ''} ${fm.surName}`"></span>
+                                                        <span class="text-slate-400 no-print" x-text="` (${fm.gender || '-'}, ${fm.age ? fm.age + 'y' : '-'})`"></span>
                                                     </li>
                                                 </template>
                                             </ul>
                                         </div>
                                     </template>
                                     <template x-if="!item.familyMembers || item.familyMembers.length === 0">
-                                        <span class="text-slate-300 text-[10px]">None</span>
+                                        <span class="text-slate-300 text-[10px]">-</span>
                                     </template>
                                 </td>
 
@@ -722,9 +725,9 @@
 
                 getPrimaryName(item) {
                     if (item.isTenant === 'Yes') {
-                        return `${item.tenantFirstName || ''} ${item.tenantSurName || ''}`.trim() || 'Tenant';
+                        return `${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`.replace(/\s+/g, ' ').trim() || 'Tenant';
                     }
-                    return `${item.ownerFirstName || ''} ${item.ownerSurName || ''}`.trim() || 'Owner';
+                    return `${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`.replace(/\s+/g, ' ').trim() || 'Owner';
                 },
 
                 formatDate(iso) {

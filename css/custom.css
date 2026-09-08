@@ -139,6 +139,15 @@ body {
         print-color-adjust: exact !important;
     }
 
+    /* Table links print as solid black text with no underlines or blue colors */
+    table a, 
+    table a:visited, 
+    table a:hover {
+        color: #000000 !important;
+        text-decoration: none !important;
+        font-weight: 700 !important;
+    }
+
     /* Ensure table rows do not break across pages awkwardly */
     tr {
         page-break-inside: avoid !important;
