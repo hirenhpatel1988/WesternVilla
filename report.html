@@ -370,12 +370,12 @@
         </div>
 
         <!-- MAIN REPORT TABLE CARD -->
-        <div class="bg-white shadow-lg rounded-3xl overflow-hidden border border-slate-200 print-container">
+        <div class="bg-white shadow-lg rounded-3xl overflow-hidden border border-slate-200 print-container print-card">
             <div class="overflow-x-auto custom-scrollbar">
                 <table :class="['min-w-full divide-y divide-slate-200 text-xs', dynamicTableClass]">
                     <thead class="bg-slate-50 text-slate-700">
                         <tr>
-                            <th x-show="cols.houseNumber" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 w-16">
+                            <th x-show="cols.houseNumber" class="col-house px-2 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 w-12 whitespace-nowrap">
                                 House #
                             </th>
                             <th x-show="cols.residentStatus" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
@@ -390,7 +390,7 @@
                             <th x-show="cols.tenantDetails" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Tenant Details / ભાડુઆત
                             </th>
-                            <th x-show="cols.contact" :class="dynamicContactThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.contact" :class="dynamicContactThClass" class="col-contact px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Contact / સંપર્ક
                             </th>
                             <th x-show="cols.maintenance" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
@@ -426,8 +426,8 @@
                         <template x-for="item in filteredResidents" :key="item.id">
                             <tr class="hover:bg-slate-50/70 transition">
                                 <!-- House No -->
-                                <td x-show="cols.houseNumber" class="px-3 py-2.5 text-center font-black border-r border-slate-200 bg-slate-50/30">
-                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="text-sm font-black text-blue-700 hover:text-blue-900 hover:underline" title="View house details">
+                                <td x-show="cols.houseNumber" class="col-house px-2 py-2.5 text-center font-black border-r border-slate-200 bg-slate-50/30 whitespace-nowrap">
+                                    <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="text-sm font-black text-blue-700 hover:text-blue-900 hover:underline whitespace-nowrap inline-block" title="View house details">
                                         <span x-text="item.houseNumber"></span>
                                     </a>
                                 </td>
@@ -486,7 +486,7 @@
                                 </td>
 
                                 <!-- Contact Details -->
-                                <td x-show="cols.contact" class="px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
+                                <td x-show="cols.contact" class="col-contact px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
                                     <div :class="dynamicMobileClass" class="cell-mobile font-semibold text-slate-800 print:text-black" x-text="item.mobileNumber || '-'"></div>
                                     <!-- Email hidden on printout -->
                                     <div class="text-[10px] text-slate-400 no-print" x-text="item.email || ''"></div>
@@ -574,7 +574,7 @@
                                             <div class="cell-custom-val py-1 px-2 font-bold text-slate-900 print:text-black text-center" :class="dynamicMobileClass" x-text="col.defaultValue"></div>
                                         </template>
                                         <template x-if="!col.defaultValue">
-                                            <div class="h-9 w-full border border-dashed border-slate-300 rounded print:border-slate-400 print:bg-white flex items-center justify-center">
+                                            <div class="write-in-box h-8 w-full border border-dashed border-slate-300 rounded print:border-slate-400 print:bg-white flex items-center justify-center">
                                                 <!-- Printable blank write-in box -->
                                             </div>
                                         </template>
@@ -712,20 +712,20 @@
 
                 get dynamicOwnerThClass() {
                     if (this.effectivePrintSize === 'large') {
-                        return 'min-w-[220px] print:min-w-[190px]';
+                        return 'min-w-[220px] print:min-w-0';
                     } else if (this.effectivePrintSize === 'medium') {
-                        return 'min-w-[180px] print:min-w-[160px]';
+                        return 'min-w-[180px] print:min-w-0';
                     }
-                    return 'min-w-[140px]';
+                    return 'min-w-[140px] print:min-w-0';
                 },
 
                 get dynamicContactThClass() {
                     if (this.effectivePrintSize === 'large') {
-                        return 'min-w-[150px] print:min-w-[130px]';
+                        return 'min-w-[150px] print:min-w-0';
                     } else if (this.effectivePrintSize === 'medium') {
-                        return 'min-w-[120px] print:min-w-[110px]';
+                        return 'min-w-[120px] print:min-w-0';
                     }
-                    return 'min-w-[100px]';
+                    return 'min-w-[100px] print:min-w-0';
                 },
 
                 get filteredResidents() {

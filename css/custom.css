@@ -51,16 +51,18 @@ body {
 @media print {
     @page {
         size: A4 portrait;
-        margin: 12mm 10mm 12mm 10mm;
+        margin: 8mm 8mm 8mm 8mm;
     }
 
-    body {
+    html, body {
         background-color: #ffffff !important;
         color: #000000 !important;
         font-size: 9.5pt !important;
         line-height: 1.3 !important;
         padding: 0 !important;
         margin: 0 !important;
+        width: 100% !important;
+        overflow: visible !important;
     }
 
     /* Hide non-printable elements */
@@ -79,14 +81,20 @@ body {
         display: none !important;
     }
 
-    /* Print Container full width */
-    .print-container {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
+    /* Outer containers in print must never clip, have shadows, or round corners */
+    .print-container,
+    .print-card,
+    .overflow-x-auto,
+    main {
+        overflow: visible !important;
         box-shadow: none !important;
         border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        background: transparent !important;
     }
 
     /* Show Print Header */
@@ -94,12 +102,13 @@ body {
         display: block !important;
         text-align: center;
         border-bottom: 2px solid #1e3a8a;
-        padding-bottom: 8px;
-        margin-bottom: 14px;
+        padding-bottom: 6px;
+        margin-bottom: 10px;
+        width: 100% !important;
     }
 
     .print-only-header h1 {
-        font-size: 16pt !important;
+        font-size: 15pt !important;
         font-weight: 800 !important;
         color: #1e3a8a !important;
         margin: 0;
@@ -108,25 +117,32 @@ body {
     }
 
     .print-only-header p {
-        font-size: 8.5pt !important;
+        font-size: 8pt !important;
         color: #475569 !important;
-        margin: 3px 0 0 0;
+        margin: 2px 0 0 0;
     }
 
-    /* Print Table Styling */
+    /* Print Table strictly 100% width, never overflowing */
     table {
         width: 100% !important;
+        max-width: 100% !important;
+        table-layout: fixed !important; /* CRITICAL: Fixed layout guarantees table stays within 100% page width */
         border-collapse: collapse !important;
-        margin-top: 10px !important;
-        font-size: 8.5pt !important;
+        margin-top: 6px !important;
+        margin-bottom: 0 !important;
+        box-sizing: border-box !important;
     }
 
     table th, 
     table td {
-        border: 1px solid #cbd5e1 !important;
+        border: 1px solid #475569 !important; /* Clean, visible border */
+        box-sizing: border-box !important;
         padding: 5px 6px !important;
         text-align: left !important;
-        word-break: break-word !important;
+        vertical-align: middle !important;
+        word-break: normal !important; /* DO NOT break words mid-character */
+        overflow-wrap: break-word !important;
+        min-width: 0 !important; /* Prevent inline min-widths from pushing table past page edges */
     }
 
     table th {
@@ -139,77 +155,112 @@ body {
         print-color-adjust: exact !important;
     }
 
+    /* House Number Column: NEVER wrap characters, comfortable fixed width */
+    .col-house,
+    th.col-house,
+    td.col-house {
+        width: 58px !important;
+        min-width: 58px !important;
+        max-width: 62px !important;
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+        text-align: center !important;
+        padding: 5px 4px !important;
+    }
+
+    /* Contact Column: NEVER wrap mobile numbers */
+    .col-contact,
+    th.col-contact,
+    td.col-contact {
+        white-space: nowrap !important;
+        word-break: keep-all !important;
+    }
+
+    /* Dashed write-in box for signatures and blank inputs in print */
+    .write-in-box {
+        min-height: 28px !important;
+        height: 28px !important;
+        width: 100% !important;
+        border: 1px dashed #94a3b8 !important;
+        border-radius: 4px !important;
+        box-sizing: border-box !important;
+        background-color: #ffffff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     /* Dynamic Sizing Scales for Print Table */
     table.print-size-large {
-        font-size: 11pt !important;
+        font-size: 10pt !important;
     }
     table.print-size-large th {
-        font-size: 9.5pt !important;
-        padding: 8px 10px !important;
+        font-size: 8.5pt !important;
+        padding: 5px 5px !important;
     }
     table.print-size-large td {
-        font-size: 11pt !important;
-        padding: 8px 10px !important;
+        font-size: 10pt !important;
+        padding: 6px 6px !important;
     }
     table.print-size-large .cell-name {
-        font-size: 12pt !important;
+        font-size: 11pt !important;
         font-weight: 700 !important;
-        line-height: 1.3 !important;
+        line-height: 1.25 !important;
     }
     table.print-size-large .cell-mobile {
-        font-size: 11pt !important;
+        font-size: 10.5pt !important;
         font-weight: 700 !important;
     }
     table.print-size-large .cell-custom-val {
-        font-size: 11pt !important;
+        font-size: 10.5pt !important;
         font-weight: 700 !important;
     }
 
     table.print-size-medium {
-        font-size: 9.5pt !important;
+        font-size: 9pt !important;
     }
     table.print-size-medium th {
-        font-size: 8.5pt !important;
-        padding: 6px 8px !important;
+        font-size: 8pt !important;
+        padding: 5px 5px !important;
     }
     table.print-size-medium td {
-        font-size: 9.5pt !important;
-        padding: 6px 8px !important;
+        font-size: 9pt !important;
+        padding: 5px 5px !important;
     }
     table.print-size-medium .cell-name {
-        font-size: 10pt !important;
+        font-size: 9.5pt !important;
         font-weight: 700 !important;
     }
     table.print-size-medium .cell-mobile {
-        font-size: 9.5pt !important;
+        font-size: 9pt !important;
         font-weight: 600 !important;
     }
     table.print-size-medium .cell-custom-val {
-        font-size: 9.5pt !important;
+        font-size: 9pt !important;
         font-weight: 600 !important;
     }
 
     table.print-size-compact {
-        font-size: 8.5pt !important;
+        font-size: 8pt !important;
     }
     table.print-size-compact th {
-        font-size: 7.5pt !important;
-        padding: 4px 5px !important;
+        font-size: 7pt !important;
+        padding: 4px 4px !important;
     }
     table.print-size-compact td {
-        font-size: 8.5pt !important;
-        padding: 4px 5px !important;
+        font-size: 8pt !important;
+        padding: 4px 4px !important;
     }
     table.print-size-compact .cell-name {
-        font-size: 8.5pt !important;
+        font-size: 8pt !important;
         font-weight: 600 !important;
     }
     table.print-size-compact .cell-mobile {
-        font-size: 8.5pt !important;
+        font-size: 8pt !important;
         font-weight: 500 !important;
     }
     table.print-size-compact .cell-custom-val {
-        font-size: 8.5pt !important;
+        font-size: 8pt !important;
         font-weight: 500 !important;
     }
 
