@@ -589,9 +589,9 @@ const DataStore = {
     },
 
     // Build single-sheet Excel dynamically based on selected columns & filtered residents
-    downloadCustomExcel(residentsList, selectedColumns, filename = 'WesternVilla_Custom_Report.xlsx', ageCriteria = '10') {
+    downloadCustomExcel(residentsList, selectedColumns, filename = 'WesternVilla_Custom_Report.xlsx', ageCriteria = '10', showAgeBreakdown = true) {
         if (typeof XLSX === 'undefined') {
-            this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'), selectedColumns);
+            this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'), selectedColumns, ageCriteria, showAgeBreakdown);
             return;
         }
 
@@ -616,10 +616,17 @@ const DataStore = {
                     }
                     const fList = r.familyMembers || [];
                     const total = 1 + fList.length;
+                    const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+
+                    if (!showAgeBreakdown) {
+                        return totalStr;
+                    }
+
                     const threshold = parseInt(ageCriteria, 10);
                     if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) {
-                        return total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+                        return totalStr;
                     }
+
                     let countAbove = primaryAge > threshold ? 1 : 0;
                     let countBelow = primaryAge <= threshold ? 1 : 0;
                     fList.forEach(m => {
@@ -627,7 +634,9 @@ const DataStore = {
                         if (mAge > threshold) countAbove++;
                         else countBelow++;
                     });
-                    return `${total === 1 ? 'Total = 1 member' : `Total = ${total} members`}, Age>${threshold} = ${countAbove} member & Age<=${threshold} = ${countBelow} member`;
+                    const belowStr = countBelow === 1 ? `Age <= ${threshold} = 1 member` : `Age <= ${threshold} = ${countBelow} members`;
+                    const aboveStr = countAbove === 1 ? `Age > ${threshold} = 1 member` : `Age > ${threshold} = ${countAbove} members`;
+                    return `${totalStr}\r\n${belowStr}\r\n${aboveStr}`;
                 }
             },
             { id: 'blood', title: 'Blood Group / બ્લડ ગ્રુપ', get: r => r.bloodGroup || '-' },
@@ -662,7 +671,7 @@ const DataStore = {
     },
 
     // Download Printable Roster Form with Custom Columns in Excel format (.xlsx)
-    downloadPrintableFormExcel(residentsList, standardCols, customCols = [], filename = 'WesternVilla_Printable_Form.xlsx', ageCriteria = '10') {
+    downloadPrintableFormExcel(residentsList, standardCols, customCols = [], filename = 'WesternVilla_Printable_Form.xlsx', ageCriteria = '10', showAgeBreakdown = true) {
         if (typeof XLSX === 'undefined') {
             alert('Excel library (SheetJS) is not loaded. Please reload or check your connection.');
             return false;
@@ -724,18 +733,26 @@ const DataStore = {
                 }
                 const fList = r.familyMembers || [];
                 const total = 1 + fList.length;
-                const threshold = parseInt(ageCriteria, 10);
-                if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) {
-                    row.push(total === 1 ? 'Total = 1 member' : `Total = ${total} members`);
+                const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+
+                if (!showAgeBreakdown) {
+                    row.push(totalStr);
                 } else {
-                    let countAbove = primaryAge > threshold ? 1 : 0;
-                    let countBelow = primaryAge <= threshold ? 1 : 0;
-                    fList.forEach(m => {
-                        const mAge = parseInt(m.age, 10) || 0;
-                        if (mAge > threshold) countAbove++;
-                        else countBelow++;
-                    });
-                    row.push(`${total === 1 ? 'Total = 1 member' : `Total = ${total} members`}, Age>${threshold} = ${countAbove} member & Age<=${threshold} = ${countBelow} member`);
+                    const threshold = parseInt(ageCriteria, 10);
+                    if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) {
+                        row.push(totalStr);
+                    } else {
+                        let countAbove = primaryAge > threshold ? 1 : 0;
+                        let countBelow = primaryAge <= threshold ? 1 : 0;
+                        fList.forEach(m => {
+                            const mAge = parseInt(m.age, 10) || 0;
+                            if (mAge > threshold) countAbove++;
+                            else countBelow++;
+                        });
+                        const belowStr = countBelow === 1 ? `Age <= ${threshold} = 1 member` : `Age <= ${threshold} = ${countBelow} members`;
+                        const aboveStr = countAbove === 1 ? `Age > ${threshold} = 1 member` : `Age > ${threshold} = ${countAbove} members`;
+                        row.push(`${totalStr}\r\n${belowStr}\r\n${aboveStr}`);
+                    }
                 }
             }
 
@@ -856,7 +873,7 @@ const DataStore = {
         return `"${str}"`;
     },
 
-    generateCSV(residentsList = null, selectedColumns = null) {
+    generateCSV(residentsList = null, selectedColumns = null, ageCriteria = '10', showAgeBreakdown = true) {
         const list = sortByHouseNumber(residentsList || this.getAllResidents());
 
         const allColumns = [
@@ -873,6 +890,34 @@ const DataStore = {
             { id: 'tenantOccupation', title: 'Tenant Occupation / ભાડુઆત વ્યવસાય', get: r => r.isTenant === 'Yes' && r.tenantOccupationType ? `${r.tenantOccupationType}${r.tenantOccupationDetails ? ' - ' + r.tenantOccupationDetails : ''}` : '' },
             { id: 'mobileNumber', title: 'Mobile Number / મોબાઇલ નંબર', get: r => r.mobileNumber || '' },
             { id: 'email', title: 'Email Address / ઇમેઇલ', get: r => r.email || '' },
+            {
+                id: 'totalFamilyMembers',
+                title: 'Total Family Members / કુલ પરિવાર સભ્યો',
+                get: r => {
+                    let primaryAge = 0;
+                    if (r.isTenant === 'Yes') {
+                        primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
+                    } else {
+                        primaryAge = parseInt(r.age, 10) || 0;
+                    }
+                    const fList = r.familyMembers || [];
+                    const total = 1 + fList.length;
+                    const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+                    if (!showAgeBreakdown) return totalStr;
+                    const threshold = parseInt(ageCriteria, 10);
+                    if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) return totalStr;
+                    let countAbove = primaryAge > threshold ? 1 : 0;
+                    let countBelow = primaryAge <= threshold ? 1 : 0;
+                    fList.forEach(m => {
+                        const mAge = parseInt(m.age, 10) || 0;
+                        if (mAge > threshold) countAbove++;
+                        else countBelow++;
+                    });
+                    const belowStr = countBelow === 1 ? `Age <= ${threshold} = 1 member` : `Age <= ${threshold} = ${countBelow} members`;
+                    const aboveStr = countAbove === 1 ? `Age > ${threshold} = 1 member` : `Age > ${threshold} = ${countAbove} members`;
+                    return `${totalStr}; ${belowStr}; ${aboveStr}`;
+                }
+            },
             { id: 'bloodGroup', title: 'Blood Group / બ્લડ ગ્રુપ', get: r => r.bloodGroup || '' },
             { id: 'bloodDonated', title: 'Blood Donated? / રક્ત દાન?', get: r => r.isBloodDonated || '' },
             { id: 'maintenancePaid', title: 'Maintenance Paid? / મેન્ટેનન્સ?', get: r => r.isMaintenancePaid || 'No' },
@@ -896,8 +941,8 @@ const DataStore = {
         return '\uFEFF' + [headerRow, ...dataRows].join('\r\n');
     },
 
-    downloadCSV(filename = 'WesternVilla_Residents.csv', selectedColumns = null) {
-        const csvContent = this.generateCSV(null, selectedColumns);
+    downloadCSV(filename = 'WesternVilla_Residents.csv', selectedColumns = null, ageCriteria = '10', showAgeBreakdown = true) {
+        const csvContent = this.generateCSV(null, selectedColumns, ageCriteria, showAgeBreakdown);
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');

@@ -225,27 +225,74 @@
                 </div>
 
                 <!-- OPTIONAL AGE CRITERIA CONFIGURATION PANEL -->
-                <div x-show="cols.totalFamilyMembers" class="mt-3.5 pt-3 border-t border-slate-100 bg-purple-50/70 p-3 rounded-xl border border-purple-200">
-                    <div class="flex flex-wrap items-center justify-between gap-2.5">
-                        <div class="flex items-center space-x-2">
-                            <span class="h-2.5 w-2.5 rounded-full bg-purple-600 animate-pulse"></span>
-                            <span class="font-extrabold text-purple-900 text-xs">Age Criteria / ઉંમર માપદંડ (Optional / વૈકલ્પિક):</span>
+                <div x-show="cols.totalFamilyMembers" class="mt-3.5 pt-3 border-t border-slate-100 bg-purple-50/70 p-3.5 rounded-2xl border border-purple-200">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                        <!-- Left: Mode Switcher -->
+                        <div>
+                            <div class="flex items-center space-x-2 mb-2">
+                                <span class="h-2.5 w-2.5 rounded-full bg-purple-600" :class="showAgeBreakdown ? 'animate-pulse' : ''"></span>
+                                <span class="font-extrabold text-purple-950 text-xs uppercase tracking-wide">Family Member Display Format / પરિવાર પ્રદર્શન સ્વરૂપ:</span>
+                            </div>
+                            <!-- Segmented Toggle: Total Only vs 3 Rows Breakdown -->
+                            <div class="inline-flex p-1 bg-white border border-purple-200 rounded-xl shadow-xs">
+                                <button type="button" 
+                                        @click="showAgeBreakdown = false" 
+                                        :class="!showAgeBreakdown ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-600 hover:text-purple-700 hover:bg-purple-50'"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
+                                    <span>👥 Total Only (ફક્ત કુલ સભ્યો)</span>
+                                </button>
+                                <button type="button" 
+                                        @click="showAgeBreakdown = true; if(!ageCriteria) ageCriteria = '10';" 
+                                        :class="showAgeBreakdown ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-600 hover:text-purple-700 hover:bg-purple-50'"
+                                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
+                                    <span>📊 3 Rows: Total, &le;10 &amp; &gt;10 (ત્રણ પંક્તિ)</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex items-center space-x-2 text-xs">
-                            <span class="text-slate-600 font-medium">Split at Age:</span>
-                            <input type="number" x-model="ageCriteria" min="1" max="120" placeholder="e.g. 10" class="w-24 px-2.5 py-1 bg-white border border-purple-300 rounded-lg text-xs font-bold text-purple-900 outline-none focus:ring-2 focus:ring-purple-400" />
-                            <button type="button" x-show="ageCriteria !== ''" @click="ageCriteria = ''" class="px-2 py-1 bg-white border border-slate-200 hover:bg-rose-50 hover:text-rose-600 text-slate-500 text-[11px] font-semibold rounded-md transition" title="Clear to show total only">
-                                Clear Criteria
+
+                        <!-- Right: Threshold configuration (Active only when 3 rows breakdown is enabled) -->
+                        <div x-show="showAgeBreakdown" class="flex flex-wrap items-center gap-2 text-xs bg-white/80 p-2 rounded-xl border border-purple-200 shadow-xs">
+                            <span class="text-slate-700 font-bold">Split at Age / વય મર્યાદા:</span>
+                            <div class="flex items-center space-x-1">
+                                <span class="text-slate-400 font-bold text-xs">&le; and &gt;</span>
+                                <input type="number" x-model="ageCriteria" min="1" max="120" placeholder="10" 
+                                       class="w-16 px-2 py-1 bg-white border border-purple-300 rounded-lg text-xs font-black text-purple-900 outline-none focus:ring-2 focus:ring-purple-400 text-center" />
+                            </div>
+                            <button type="button" @click="ageCriteria = '10'" class="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-[11px] rounded-lg border border-purple-200 transition">
+                                10 Yrs
                             </button>
-                            <button type="button" x-show="ageCriteria === ''" @click="ageCriteria = '10'" class="px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-bold rounded-md transition">
-                                Set Age 10
+                            <button type="button" @click="ageCriteria = '18'" class="px-2 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold text-[11px] rounded-lg border border-purple-200 transition">
+                                18 Yrs
+                            </button>
+                            <!-- Direct Remove Breakdown Button -->
+                            <button type="button" @click="showAgeBreakdown = false" 
+                                    class="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-[11px] rounded-lg border border-rose-200 transition flex items-center space-x-1" 
+                                    title="Remove <=10 and >10 breakdown to show only Total members">
+                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <span>Remove &le;10 &amp; &gt;10</span>
                             </button>
                         </div>
                     </div>
-                    <div class="mt-1.5 text-[11px] text-purple-800 flex items-center flex-wrap gap-1.5">
-                        <span class="font-semibold">Format Preview / પરિણામ સ્વરૂપ:</span>
-                        <code class="bg-white px-2 py-0.5 rounded border border-purple-200 text-purple-950 font-mono text-[11px] shadow-sm font-semibold" x-text="ageCriteria !== '' ? `Total = 3 members, Age>${ageCriteria} = 2 member & Age<=${ageCriteria} = 1 member` : 'Total = 3 members'"></code>
-                        <span class="text-purple-600 text-[10px]">(Auto-calculated for each house based on resident and family ages)</span>
+
+                    <!-- Live Format Preview -->
+                    <div class="mt-2.5 pt-2 border-t border-purple-200/60 flex flex-wrap items-center gap-2 text-xs">
+                        <span class="font-bold text-purple-950 text-[11px]">Format Preview:</span>
+                        <template x-if="showAgeBreakdown">
+                            <div class="inline-flex items-center space-x-2 bg-white px-2.5 py-1 rounded-lg border border-purple-200 shadow-2xs font-mono text-[11px] text-slate-800">
+                                <span class="font-bold text-slate-900">Total = 3 members</span>
+                                <span class="text-slate-300">|</span>
+                                <span class="text-emerald-700 font-semibold" x-text="`Age <= ${ageCriteria || '10'} = 1 member`"></span>
+                                <span class="text-slate-300">|</span>
+                                <span class="text-indigo-700 font-semibold" x-text="`Age > ${ageCriteria || '10'} = 2 members`"></span>
+                                <span class="text-purple-600 text-[10px] font-sans font-medium ml-1">(Rendered as 3 clean stacked rows per house)</span>
+                            </div>
+                        </template>
+                        <template x-if="!showAgeBreakdown">
+                            <div class="inline-flex items-center space-x-1.5 bg-white px-2.5 py-1 rounded-lg border border-purple-200 shadow-2xs font-mono text-[11px]">
+                                <span class="font-bold text-purple-900">Total = 3 members</span>
+                                <span class="text-slate-500 font-sans text-[10px] ml-1">(Showing single Total row. Age breakdown &le;10 &amp; &gt;10 is removed.)</span>
+                            </div>
+                        </template>
                     </div>
                 </div>
 
@@ -401,7 +448,7 @@
                                 Contact / સંપર્ક
                             </th>
                             <!-- Total Family Members with Age Criteria -->
-                            <th x-show="cols.totalFamilyMembers" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200 min-w-[230px] print:min-w-0">
+                            <th x-show="cols.totalFamilyMembers" :class="showAgeBreakdown ? 'min-w-[175px]' : 'min-w-[120px]'" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200 print:min-w-0">
                                 Total Family / કુલ પરિવાર સભ્યો
                             </th>
                             <th x-show="cols.primaryName" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
@@ -468,12 +515,38 @@
                                     <div class="text-[10px] text-slate-400 no-print" x-text="item.email || ''"></div>
                                 </td>
 
-                                <!-- Total Family Members with Age Breakdown (Textbox) -->
-                                <td x-show="cols.totalFamilyMembers" class="px-3 py-2.5 border-r border-slate-200">
-                                    <div class="relative min-w-[220px] print:min-w-0">
-                                        <input type="text" readonly :value="getTotalFamilyMemberSummary(item)" class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 shadow-sm focus:outline-none select-all no-print cursor-text" />
-                                        <div class="hidden print:block font-semibold text-[9pt] text-black border border-slate-400 rounded px-1.5 py-1 bg-white" x-text="getTotalFamilyMemberSummary(item)"></div>
-                                    </div>
+                                <!-- Total Family Members (Clean 3 Rows for Total, <=10 & >10 OR Single Total) -->
+                                <td x-show="cols.totalFamilyMembers" class="px-3 py-2 border-r border-slate-200 align-middle">
+                                    <!-- MODE 1: Show Total Only (When breakdown is removed) -->
+                                    <template x-if="!showAgeBreakdown">
+                                        <div>
+                                            <div class="no-print">
+                                                <input type="text" readonly :value="getFamilyCounts(item).totalText" 
+                                                       class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-800 shadow-xs focus:outline-none select-all text-center cursor-text" />
+                                            </div>
+                                            <div class="hidden print:block font-bold text-[9pt] text-black border border-slate-400 rounded px-1 py-1 text-center bg-white whitespace-nowrap" 
+                                                 x-text="getFamilyCounts(item).totalText"></div>
+                                        </div>
+                                    </template>
+
+                                    <!-- MODE 2: Three Clean Rows for Total, <=10 & >10 -->
+                                    <template x-if="showAgeBreakdown">
+                                        <div>
+                                            <!-- Screen: 3 distinct rows, nicely formatted without wrapping -->
+                                            <div class="no-print bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 shadow-xs space-y-0.5">
+                                                <div class="font-black text-slate-900 border-b border-slate-200 pb-0.5 whitespace-nowrap" x-text="getFamilyCounts(item).totalText"></div>
+                                                <div class="text-[11px] text-emerald-800 font-semibold whitespace-nowrap" x-text="getFamilyCounts(item).belowText"></div>
+                                                <div class="text-[11px] text-indigo-800 font-semibold whitespace-nowrap" x-text="getFamilyCounts(item).aboveText"></div>
+                                            </div>
+
+                                            <!-- Print: 3 distinct rows, high contrast, clean line breaks -->
+                                            <div class="hidden print:block text-[8.5pt] text-black border border-slate-400 rounded px-1.5 py-1 bg-white leading-tight font-semibold">
+                                                <div class="font-bold pb-0.5 border-b border-slate-300 whitespace-nowrap" x-text="getFamilyCounts(item).totalText"></div>
+                                                <div class="pt-0.5 text-[8pt] whitespace-nowrap" x-text="getFamilyCounts(item).belowText"></div>
+                                                <div class="text-[8pt] whitespace-nowrap" x-text="getFamilyCounts(item).aboveText"></div>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </td>
 
                                 <!-- Primary Resident Name (Hyperlink) -->
@@ -625,6 +698,7 @@
                 currentDateTime: new Date().toLocaleString(),
                 printSize: 'auto',
                 ageCriteria: '10', // Optional Age criteria for family split (e.g. 10)
+                showAgeBreakdown: true, // If true, shows 3 rows (Total, Age <= threshold, Age > threshold); if false, shows only Total member
 
                 // Column Visibility Flags (Default: Form with House, Owner/Tenant, Mobile, Total Family, Custom Columns)
                 cols: {
@@ -818,8 +892,8 @@
                     }
                 },
 
-                // Total Family Members Summary Formatter (Textbox format with optional Age Criteria)
-                getTotalFamilyMemberSummary(item) {
+                // Family Counts and Breakdown Calculator
+                getFamilyCounts(item) {
                     let primaryAge = 0;
                     if (item.isTenant === 'Yes') {
                         primaryAge = parseInt(item.tenantAge, 10) || parseInt(item.age, 10) || 0;
@@ -829,10 +903,19 @@
 
                     const fList = item.familyMembers || [];
                     const total = 1 + fList.length;
+                    const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
 
                     const threshold = parseInt(this.ageCriteria, 10);
-                    if (isNaN(threshold) || this.ageCriteria === '' || this.ageCriteria === null) {
-                        return total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+                    if (!this.showAgeBreakdown || isNaN(threshold) || this.ageCriteria === '' || this.ageCriteria === null) {
+                        return {
+                            hasBreakdown: false,
+                            total,
+                            totalText: totalStr,
+                            belowCount: 0,
+                            belowText: '',
+                            aboveCount: 0,
+                            aboveText: ''
+                        };
                     }
 
                     let countAbove = primaryAge > threshold ? 1 : 0;
@@ -847,7 +930,28 @@
                         }
                     });
 
-                    return `${total === 1 ? 'Total = 1 member' : `Total = ${total} members`}, Age>${threshold} = ${countAbove} member & Age<=${threshold} = ${countBelow} member`;
+                    const belowStr = countBelow === 1 ? `Age <= ${threshold} = 1 member` : `Age <= ${threshold} = ${countBelow} members`;
+                    const aboveStr = countAbove === 1 ? `Age > ${threshold} = 1 member` : `Age > ${threshold} = ${countAbove} members`;
+
+                    return {
+                        hasBreakdown: true,
+                        threshold,
+                        total,
+                        totalText: totalStr,
+                        belowCount: countBelow,
+                        belowText: belowStr,
+                        aboveCount: countAbove,
+                        aboveText: aboveStr
+                    };
+                },
+
+                // Total Family Members Summary Formatter (for export & fallback)
+                getTotalFamilyMemberSummary(item) {
+                    const c = this.getFamilyCounts(item);
+                    if (!this.showAgeBreakdown || !c.hasBreakdown) {
+                        return c.totalText;
+                    }
+                    return `${c.totalText}\n${c.belowText}\n${c.aboveText}`;
                 },
 
                 // Custom Column Handlers
@@ -912,7 +1016,8 @@
                         this.cols,
                         this.customColumns,
                         `WesternVilla_Printable_Form_${ts}.xlsx`,
-                        this.ageCriteria
+                        this.ageCriteria,
+                        this.showAgeBreakdown
                     );
                 },
 
@@ -940,7 +1045,7 @@
                 downloadCustomExcel() {
                     const selectedColIds = Object.keys(this.cols).filter(k => this.cols[k]);
                     const ts = DataStore.getTimestampString ? DataStore.getTimestampString() : 'Custom';
-                    DataStore.downloadCustomExcel(this.filteredResidents, selectedColIds, `WesternVilla_Custom_Report_${ts}.xlsx`, this.ageCriteria);
+                    DataStore.downloadCustomExcel(this.filteredResidents, selectedColIds, `WesternVilla_Custom_Report_${ts}.xlsx`, this.ageCriteria, this.showAgeBreakdown);
                 },
 
                 // Export Selected Columns to CSV
@@ -964,7 +1069,7 @@
                         .map(k => mapping[k])
                         .filter(Boolean);
 
-                    DataStore.downloadCSV('WesternVilla_Custom_Report.csv', selectedColIds);
+                    DataStore.downloadCSV('WesternVilla_Custom_Report.csv', selectedColIds, this.ageCriteria, this.showAgeBreakdown);
                 },
 
                 // Import CSV File
