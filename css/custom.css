@@ -176,6 +176,59 @@ body {
         word-break: keep-all !important;
     }
 
+    /* Total Family Column in Print: Generously sized so 3 rows never overlap or touch borders */
+    .col-family,
+    th.col-family,
+    td.col-family {
+        width: 135px !important;
+        min-width: 130px !important;
+        max-width: 145px !important;
+        box-sizing: border-box !important;
+        padding: 4px 5px !important;
+    }
+
+    .family-print-box {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        border: 1px solid #64748b !important;
+        border-radius: 4px !important;
+        padding: 2px 4px !important;
+        background-color: #ffffff !important;
+        line-height: 1.25 !important;
+        font-size: 7.5pt !important;
+        overflow: hidden !important;
+    }
+
+    .family-print-box > div {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Custom Columns Print Widths (Prevent wide columns from starving standard columns) */
+    th.col-custom, td.col-custom {
+        padding: 4px 4px !important;
+        box-sizing: border-box !important;
+    }
+    th.col-custom-c1, td.col-custom-c1,
+    th.col-custom[style*="120px"], td.col-custom[style*="120px"] {
+        width: 90px !important;
+        min-width: 85px !important;
+        max-width: 95px !important;
+    }
+    th.col-custom-c2, td.col-custom-c2,
+    th.col-custom[style*="100px"], td.col-custom[style*="100px"] {
+        width: 85px !important;
+        min-width: 80px !important;
+        max-width: 90px !important;
+    }
+    th.col-custom-c3, td.col-custom-c3,
+    th.col-custom[style*="160px"], td.col-custom[style*="160px"] {
+        width: 135px !important;
+        min-width: 125px !important;
+        max-width: 140px !important;
+    }
+
     /* Dashed write-in box for signatures and blank inputs in print */
     .write-in-box {
         min-height: 28px !important;

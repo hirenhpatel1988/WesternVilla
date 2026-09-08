@@ -448,7 +448,7 @@
                                 Contact / સંપર્ક
                             </th>
                             <!-- Total Family Members with Age Criteria -->
-                            <th x-show="cols.totalFamilyMembers" :class="showAgeBreakdown ? 'min-w-[175px]' : 'min-w-[120px]'" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200 print:min-w-0">
+                            <th x-show="cols.totalFamilyMembers" :class="showAgeBreakdown ? 'min-w-[175px]' : 'min-w-[120px]'" class="col-family px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
                                 Total Family / કુલ પરિવાર સભ્યો
                             </th>
                             <th x-show="cols.primaryName" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
@@ -471,7 +471,7 @@
                             </th>
                             <!-- Custom Printable Columns Header -->
                             <template x-for="col in customColumns" :key="col.id">
-                                <th :style="`width: ${col.width}; min-width: ${col.width};`" class="px-3 py-3 text-center font-bold uppercase border-r border-slate-200 bg-slate-100/70 text-slate-800">
+                                <th :style="`width: ${col.width}; min-width: ${col.width};`" :class="'col-custom col-custom-' + col.id" class="col-custom px-3 py-3 text-center font-bold uppercase border-r border-slate-200 bg-slate-100/70 text-slate-800">
                                     <span x-text="col.title"></span>
                                 </th>
                             </template>
@@ -516,7 +516,7 @@
                                 </td>
 
                                 <!-- Total Family Members (Clean 3 Rows for Total, <=10 & >10 OR Single Total) -->
-                                <td x-show="cols.totalFamilyMembers" class="px-3 py-2 border-r border-slate-200 align-middle">
+                                <td x-show="cols.totalFamilyMembers" class="col-family px-2 py-2 border-r border-slate-200 align-middle">
                                     <!-- MODE 1: Show Total Only (When breakdown is removed) -->
                                     <template x-if="!showAgeBreakdown">
                                         <div>
@@ -524,7 +524,7 @@
                                                 <input type="text" readonly :value="getFamilyCounts(item).totalText" 
                                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-bold text-slate-800 shadow-xs focus:outline-none select-all text-center cursor-text" />
                                             </div>
-                                            <div class="hidden print:block font-bold text-[9pt] text-black border border-slate-400 rounded px-1 py-1 text-center bg-white whitespace-nowrap" 
+                                            <div class="hidden print:block font-bold text-[8.5pt] text-black border border-slate-400 rounded px-1 py-1 text-center bg-white whitespace-nowrap" 
                                                  x-text="getFamilyCounts(item).totalText"></div>
                                         </div>
                                     </template>
@@ -539,11 +539,11 @@
                                                 <div class="text-[11px] text-indigo-800 font-semibold whitespace-nowrap" x-text="getFamilyCounts(item).aboveText"></div>
                                             </div>
 
-                                            <!-- Print: 3 distinct rows, high contrast, clean line breaks -->
-                                            <div class="hidden print:block text-[8.5pt] text-black border border-slate-400 rounded px-1.5 py-1 bg-white leading-tight font-semibold">
+                                            <!-- Print: 3 distinct rows in high contrast, never overlapping -->
+                                            <div class="hidden print:block family-print-box">
                                                 <div class="font-bold pb-0.5 border-b border-slate-300 whitespace-nowrap" x-text="getFamilyCounts(item).totalText"></div>
-                                                <div class="pt-0.5 text-[8pt] whitespace-nowrap" x-text="getFamilyCounts(item).belowText"></div>
-                                                <div class="text-[8pt] whitespace-nowrap" x-text="getFamilyCounts(item).aboveText"></div>
+                                                <div class="pt-0.5 whitespace-nowrap" x-text="getFamilyCounts(item).belowText"></div>
+                                                <div class="whitespace-nowrap" x-text="getFamilyCounts(item).aboveText"></div>
                                             </div>
                                         </div>
                                     </template>
@@ -639,7 +639,7 @@
 
                                 <!-- Custom Fillable Write-in Columns (for printing, amounts, checks, signatures) -->
                                 <template x-for="col in customColumns" :key="col.id">
-                                    <td :style="`width: ${col.width}; min-width: ${col.width};`" class="px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
+                                    <td :style="`width: ${col.width}; min-width: ${col.width};`" :class="'col-custom col-custom-' + col.id" class="col-custom px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
                                         <template x-if="col.defaultValue">
                                             <div class="cell-custom-val py-1 px-2 font-bold text-slate-900 print:text-black text-center" :class="dynamicMobileClass" x-text="col.defaultValue"></div>
                                         </template>
