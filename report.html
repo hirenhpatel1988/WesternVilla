@@ -496,7 +496,7 @@
                                     <!-- Extra info hidden in print (Name only on printout) -->
                                     <div class="text-[10px] text-slate-500 no-print">
                                         <span x-text="item.gender || '-'"></span> | 
-                                        <span x-text="item.age ? item.age + ' yrs' : '-'"></span> | 
+                                        <span x-text="item.age ? getEffectiveAge(item.age, item.registeredAt) + ' yrs' : '-'"></span> | 
                                         <span x-text="item.ownerOccupationType || '-'"></span>
                                         <span x-show="item.ownerOccupationDetails" x-text="` (${item.ownerOccupationDetails})`"></span>
                                     </div>
@@ -566,7 +566,7 @@
                                             <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name font-semibold text-blue-900 hover:text-blue-700 hover:underline block" title="Click to view tenant details" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></a>
                                             <!-- Extra info hidden in print -->
                                             <div class="text-[10px] text-slate-500 no-print">
-                                                <span x-text="item.tenantAge ? item.tenantAge + ' yrs' : '-'"></span> | 
+                                                <span x-text="item.tenantAge ? getEffectiveAge(item.tenantAge, item.registeredAt) + ' yrs' : '-'"></span> | 
                                                 <span x-text="item.tenantOccupationType || '-'"></span>
                                                 <span x-show="item.tenantOccupationDetails" x-text="` (${item.tenantOccupationDetails})`"></span>
                                             </div>
@@ -592,7 +592,7 @@
                                                 <template x-for="fm in item.familyMembers" :key="fm.firstName + fm.surName">
                                                     <li>
                                                         <span class="font-medium" x-text="`${fm.firstName} ${fm.middleName || ''} ${fm.surName}`"></span>
-                                                        <span class="text-slate-400 no-print" x-text="` (${fm.gender || '-'}, ${fm.age ? fm.age + 'y' : '-'})`"></span>
+                                                        <span class="text-slate-400 no-print" x-text="` (${fm.gender || '-'}, ${fm.age ? getEffectiveAge(fm.age, item.registeredAt) + 'y' : '-'})`"></span>
                                                     </li>
                                                 </template>
                                             </ul>
@@ -892,14 +892,16 @@
                     }
                 },
 
+                // Dynamic Effective Age based on completed 12-month cycles from registration
+                getEffectiveAge(age, registeredAt) {
+                    return DataStore.getEffectiveAge(age, registeredAt);
+                },
+
                 // Family Counts and Breakdown Calculator
                 getFamilyCounts(item) {
-                    let primaryAge = 0;
-                    if (item.isTenant === 'Yes') {
-                        primaryAge = parseInt(item.tenantAge, 10) || parseInt(item.age, 10) || 0;
-                    } else {
-                        primaryAge = parseInt(item.age, 10) || 0;
-                    }
+                    let primaryAge = item.isTenant === 'Yes'
+                        ? (this.getEffectiveAge(item.tenantAge, item.registeredAt) || this.getEffectiveAge(item.age, item.registeredAt) || 0)
+                        : (this.getEffectiveAge(item.age, item.registeredAt) || 0);
 
                     const fList = item.familyMembers || [];
                     const total = 1 + fList.length;
@@ -922,7 +924,7 @@
                     let countBelow = primaryAge <= threshold ? 1 : 0;
 
                     fList.forEach(m => {
-                        const mAge = parseInt(m.age, 10) || 0;
+                        const mAge = this.getEffectiveAge(m.age, item.registeredAt) || 0;
                         if (mAge > threshold) {
                             countAbove++;
                         } else {

@@ -242,6 +242,30 @@ const DataStore = {
     CONTACT_PHONE: CONTACT_PHONE,
     MAX_HOUSE_NUMBER: MAX_HOUSE_NUMBER,
 
+    // Calculate dynamic effective age based on completed 12-month cycles since registration
+    getEffectiveAge(registeredAge, registeredAt) {
+        if (registeredAge === null || registeredAge === undefined || registeredAge === '') return '';
+        const baseAge = parseInt(registeredAge, 10);
+        if (isNaN(baseAge)) return registeredAge;
+        if (!registeredAt) return baseAge;
+
+        const regDate = new Date(registeredAt);
+        if (isNaN(regDate.getTime())) return baseAge;
+
+        const now = new Date();
+
+        let yearsPassed = now.getFullYear() - regDate.getFullYear();
+        const monthDiff = now.getMonth() - regDate.getMonth();
+        const dayDiff = now.getDate() - regDate.getDate();
+
+        // If the anniversary month & day haven't arrived yet this year, subtract 1
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+            yearsPassed--;
+        }
+
+        return Math.max(0, baseAge + Math.max(0, yearsPassed));
+    },
+
     init() {
         try {
             const current = localStorage.getItem(STORAGE_KEY);
@@ -438,7 +462,7 @@ const DataStore = {
                 r.isTenant === 'Yes' ? r.tenantMiddleName : r.ownerMiddleName,
                 r.isTenant === 'Yes' ? r.tenantSurName : r.ownerSurName,
                 r.gender || 'Male',
-                r.isTenant === 'Yes' ? (r.tenantAge || '') : (r.age || ''),
+                r.isTenant === 'Yes' ? this.getEffectiveAge(r.tenantAge, r.registeredAt) : this.getEffectiveAge(r.age, r.registeredAt),
                 r.mobileNumber || '',
                 r.email || '',
                 r.isTenant === 'Yes' ? (r.tenantOccupationType || '') : (r.ownerOccupationType || ''),
@@ -464,7 +488,7 @@ const DataStore = {
                         m.middleName || '',
                         m.surName || '',
                         m.gender || '',
-                        m.age || '',
+                        this.getEffectiveAge(m.age, r.registeredAt),
                         m.mobileNumber || '',
                         '',
                         m.occupationType || '',
@@ -608,12 +632,9 @@ const DataStore = {
                 id: 'totalFamilyMembers',
                 title: 'Total Family Members / કુલ પરિવાર સભ્યો',
                 get: r => {
-                    let primaryAge = 0;
-                    if (r.isTenant === 'Yes') {
-                        primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
-                    } else {
-                        primaryAge = parseInt(r.age, 10) || 0;
-                    }
+                    let primaryAge = r.isTenant === 'Yes'
+                        ? (this.getEffectiveAge(r.tenantAge, r.registeredAt) || this.getEffectiveAge(r.age, r.registeredAt) || 0)
+                        : (this.getEffectiveAge(r.age, r.registeredAt) || 0);
                     const fList = r.familyMembers || [];
                     const total = 1 + fList.length;
                     const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
@@ -630,7 +651,7 @@ const DataStore = {
                     let countAbove = primaryAge > threshold ? 1 : 0;
                     let countBelow = primaryAge <= threshold ? 1 : 0;
                     fList.forEach(m => {
-                        const mAge = parseInt(m.age, 10) || 0;
+                        const mAge = this.getEffectiveAge(m.age, r.registeredAt) || 0;
                         if (mAge > threshold) countAbove++;
                         else countBelow++;
                     });
@@ -640,7 +661,7 @@ const DataStore = {
                 }
             },
             { id: 'blood', title: 'Blood Group / બ્લડ ગ્રુપ', get: r => r.bloodGroup || '-' },
-            { id: 'familyMembers', title: 'Family List / પરિવાર નામો', get: r => (r.familyMembers || []).map(m => `${m.firstName} ${m.surName} (${m.age || '-'}y)`).join(', ') },
+            { id: 'familyMembers', title: 'Family List / પરિવાર નામો', get: r => (r.familyMembers || []).map(m => `${m.firstName} ${m.surName} (${this.getEffectiveAge(m.age, r.registeredAt) || '-'}y)`).join(', ') },
             { id: 'vehicles', title: 'Total Vehicles / વાહનો સંખ્યા', get: r => r.vehicles ? r.vehicles.length : 0 },
             { id: 'interests', title: 'Volunteering Interests / સેવા રસ', get: r => (r.interests || []).join(', ') }
         ];
@@ -725,12 +746,9 @@ const DataStore = {
             }
 
             if (standardCols && standardCols.totalFamilyMembers) {
-                let primaryAge = 0;
-                if (r.isTenant === 'Yes') {
-                    primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
-                } else {
-                    primaryAge = parseInt(r.age, 10) || 0;
-                }
+                let primaryAge = r.isTenant === 'Yes'
+                    ? (this.getEffectiveAge(r.tenantAge, r.registeredAt) || this.getEffectiveAge(r.age, r.registeredAt) || 0)
+                    : (this.getEffectiveAge(r.age, r.registeredAt) || 0);
                 const fList = r.familyMembers || [];
                 const total = 1 + fList.length;
                 const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
@@ -745,7 +763,7 @@ const DataStore = {
                         let countAbove = primaryAge > threshold ? 1 : 0;
                         let countBelow = primaryAge <= threshold ? 1 : 0;
                         fList.forEach(m => {
-                            const mAge = parseInt(m.age, 10) || 0;
+                            const mAge = this.getEffectiveAge(m.age, r.registeredAt) || 0;
                             if (mAge > threshold) countAbove++;
                             else countBelow++;
                         });
@@ -881,12 +899,12 @@ const DataStore = {
             { id: 'residentType', title: 'Resident Type / રહેવાસી પ્રકાર', get: r => r.isTenant === 'Yes' ? 'Tenant / ભાડુઆત' : 'Owner / માલિક' },
             { id: 'primaryName', title: 'Primary Resident Name / મુખ્ય રહેવાસી', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
             { id: 'ownerName', title: 'Owner Full Name / માલિકનું નામ', get: r => `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
-            { id: 'ownerAge', title: 'Owner Age / માલિકની ઉંમર', get: r => r.age || '' },
+            { id: 'ownerAge', title: 'Owner Age / માલિકની ઉંમર', get: r => this.getEffectiveAge(r.age, r.registeredAt) },
             { id: 'ownerGender', title: 'Owner Gender / માલિકનું લિંગ', get: r => r.gender || '' },
             { id: 'ownerOccupation', title: 'Owner Occupation / વ્યવસાય', get: r => r.ownerOccupationType ? `${r.ownerOccupationType}${r.ownerOccupationDetails ? ' - ' + r.ownerOccupationDetails : ''}` : '' },
             { id: 'isTenant', title: 'Is Rented? / ભાડે આપેલ છે?', get: r => r.isTenant || 'No' },
             { id: 'tenantName', title: 'Tenant Name / ભાડુઆતનું નામ', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : '' },
-            { id: 'tenantAge', title: 'Tenant Age / ભાડુઆતની ઉંમર', get: r => r.isTenant === 'Yes' ? (r.tenantAge || '') : '' },
+            { id: 'tenantAge', title: 'Tenant Age / ભાડુઆતની ઉંમર', get: r => r.isTenant === 'Yes' ? this.getEffectiveAge(r.tenantAge, r.registeredAt) : '' },
             { id: 'tenantOccupation', title: 'Tenant Occupation / ભાડુઆત વ્યવસાય', get: r => r.isTenant === 'Yes' && r.tenantOccupationType ? `${r.tenantOccupationType}${r.tenantOccupationDetails ? ' - ' + r.tenantOccupationDetails : ''}` : '' },
             { id: 'mobileNumber', title: 'Mobile Number / મોબાઇલ નંબર', get: r => r.mobileNumber || '' },
             { id: 'email', title: 'Email Address / ઇમેઇલ', get: r => r.email || '' },
@@ -894,12 +912,9 @@ const DataStore = {
                 id: 'totalFamilyMembers',
                 title: 'Total Family Members / કુલ પરિવાર સભ્યો',
                 get: r => {
-                    let primaryAge = 0;
-                    if (r.isTenant === 'Yes') {
-                        primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
-                    } else {
-                        primaryAge = parseInt(r.age, 10) || 0;
-                    }
+                    let primaryAge = r.isTenant === 'Yes'
+                        ? (this.getEffectiveAge(r.tenantAge, r.registeredAt) || this.getEffectiveAge(r.age, r.registeredAt) || 0)
+                        : (this.getEffectiveAge(r.age, r.registeredAt) || 0);
                     const fList = r.familyMembers || [];
                     const total = 1 + fList.length;
                     const totalStr = total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
@@ -909,7 +924,7 @@ const DataStore = {
                     let countAbove = primaryAge > threshold ? 1 : 0;
                     let countBelow = primaryAge <= threshold ? 1 : 0;
                     fList.forEach(m => {
-                        const mAge = parseInt(m.age, 10) || 0;
+                        const mAge = this.getEffectiveAge(m.age, r.registeredAt) || 0;
                         if (mAge > threshold) countAbove++;
                         else countBelow++;
                     });
