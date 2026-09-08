@@ -702,23 +702,23 @@ const DataStore = {
         const wb = XLSX.utils.book_new();
 
         // 1. Headers
-        const headers = ['House No / ઘર નંબર'];
+        const headers = ['House #'];
         
         const showOwnerTenant = !standardCols || standardCols.ownerDetails || standardCols.primaryName;
         if (showOwnerTenant) {
-            headers.push('Owner & Tenant Details / રહેવાસી & માલિક');
+            headers.push('Resident Name & Details');
         }
         if (!standardCols || standardCols.contact) {
-            headers.push('Mobile Number / મોબાઇલ');
+            headers.push('Mobile Number');
         }
         if (standardCols && standardCols.totalFamilyMembers) {
-            headers.push('Total Family Members / કુલ પરિવાર સભ્યો');
+            headers.push('Total Family');
         }
         if (standardCols && standardCols.blood) {
-            headers.push('Blood Group / બ્લડ ગ્રુપ');
+            headers.push('Blood Group');
         }
         if (standardCols && standardCols.familyMembers) {
-            headers.push('Family Count / સભ્યો');
+            headers.push('Family Count');
         }
 
         // Add Custom Columns

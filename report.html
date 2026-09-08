@@ -438,36 +438,36 @@
                 <table :class="['min-w-full divide-y divide-slate-200 text-xs', dynamicTableClass]">
                     <thead class="bg-slate-50 text-slate-700">
                         <tr>
-                            <th x-show="cols.houseNumber" class="col-house px-2 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 w-12 whitespace-nowrap">
+                            <th x-show="cols.houseNumber" class="col-house px-2 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 whitespace-nowrap">
                                 House #
                             </th>
-                            <th x-show="cols.ownerDetails" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Owner Details / માલિક
+                            <th x-show="cols.ownerDetails" :class="dynamicOwnerThClass" class="col-owner px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Resident Name
                             </th>
-                            <th x-show="cols.contact" :class="dynamicContactThClass" class="col-contact px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Contact / સંપર્ક
+                            <th x-show="cols.contact" :class="dynamicContactThClass" class="col-contact px-2 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 whitespace-nowrap">
+                                Mobile No
                             </th>
                             <!-- Total Family Members with Age Criteria -->
-                            <th x-show="cols.totalFamilyMembers" :class="showAgeBreakdown ? 'min-w-[175px]' : 'min-w-[120px]'" class="col-family px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Total Family / કુલ પરિવાર સભ્યો
+                            <th x-show="cols.totalFamilyMembers" :class="showAgeBreakdown ? 'min-w-[125px] max-w-[140px]' : 'min-w-[90px] max-w-[100px]'" class="col-family px-2.5 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Total Family
                             </th>
-                            <th x-show="cols.primaryName" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Primary Resident / મુખ્ય રહેવાસી
+                            <th x-show="cols.primaryName" :class="dynamicOwnerThClass" class="col-owner px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Primary Resident
                             </th>
-                            <th x-show="cols.tenantDetails" :class="dynamicOwnerThClass" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Tenant Details / ભાડુઆત
+                            <th x-show="cols.tenantDetails" :class="dynamicOwnerThClass" class="col-owner px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
+                                Tenant Details
                             </th>
-                            <th x-show="cols.blood" class="px-3 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200">
+                            <th x-show="cols.blood" class="px-2 py-3 text-center font-bold tracking-wider uppercase border-r border-slate-200 whitespace-nowrap">
                                 Blood Group
                             </th>
                             <th x-show="cols.familyMembers" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Family List / પરિવાર નામો
+                                Family Members
                             </th>
                             <th x-show="cols.vehicles" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Vehicles / વાહનો
+                                Vehicles
                             </th>
                             <th x-show="cols.interests" class="px-3 py-3 text-left font-bold tracking-wider uppercase border-r border-slate-200">
-                                Society Tasks / સેવા
+                                Interests
                             </th>
                             <!-- Custom Printable Columns Header -->
                             <template x-for="col in customColumns" :key="col.id">
@@ -491,7 +491,7 @@
                                 </td>
 
                                 <!-- Owner Details (Hyperlink) -->
-                                <td x-show="cols.ownerDetails" class="px-3 py-2.5 border-r border-slate-200">
+                                <td x-show="cols.ownerDetails" class="col-owner px-3 py-2.5 border-r border-slate-200">
                                     <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name font-semibold text-slate-900 hover:text-blue-700 hover:underline block" title="Click to view owner profile" x-text="`${item.ownerFirstName || ''} ${item.ownerMiddleName || ''} ${item.ownerSurName || ''}`"></a>
                                     <!-- Extra info hidden in print (Name only on printout) -->
                                     <div class="text-[10px] text-slate-500 no-print">
@@ -509,14 +509,14 @@
                                 </td>
 
                                 <!-- Contact Details -->
-                                <td x-show="cols.contact" class="col-contact px-3 py-2.5 border-r border-slate-200 whitespace-nowrap">
+                                <td x-show="cols.contact" class="col-contact px-2 py-2.5 text-center border-r border-slate-200 whitespace-nowrap">
                                     <div :class="dynamicMobileClass" class="cell-mobile font-semibold text-slate-800 print:text-black" x-text="item.mobileNumber || '-'"></div>
                                     <!-- Email hidden on printout -->
                                     <div class="text-[10px] text-slate-400 no-print" x-text="item.email || ''"></div>
                                 </td>
 
                                 <!-- Total Family Members (Clean 3 Rows for Total, <=10 & >10 OR Single Total, no inner borders) -->
-                                <td x-show="cols.totalFamilyMembers" class="col-family px-3 py-2.5 border-r border-slate-200 align-middle">
+                                <td x-show="cols.totalFamilyMembers" class="col-family px-2.5 py-2.5 border-r border-slate-200 align-middle">
                                     <!-- MODE 1: Show Total Only (When breakdown is removed) -->
                                     <template x-if="!showAgeBreakdown">
                                         <div>
@@ -547,7 +547,7 @@
                                 </td>
 
                                 <!-- Primary Resident Name (Hyperlink) -->
-                                <td x-show="cols.primaryName" class="px-3 py-2.5 font-bold border-r border-slate-200">
+                                <td x-show="cols.primaryName" class="col-owner px-3 py-2.5 font-bold border-r border-slate-200">
                                     <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name text-blue-700 hover:text-blue-900 font-bold hover:underline inline-flex items-center group" title="Click to view all resident details">
                                         <span x-text="getPrimaryName(item)"></span>
                                         <svg class="h-3 w-3 ml-1 text-blue-400 group-hover:text-blue-700 opacity-60 group-hover:opacity-100 transition no-print" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -557,7 +557,7 @@
                                 </td>
 
                                 <!-- Tenant Details (Hyperlink) -->
-                                <td x-show="cols.tenantDetails" class="px-3 py-2.5 border-r border-slate-200">
+                                <td x-show="cols.tenantDetails" class="col-owner px-3 py-2.5 border-r border-slate-200">
                                     <template x-if="item.isTenant === 'Yes'">
                                         <div>
                                             <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" :class="dynamicNameClass" class="cell-name font-semibold text-blue-900 hover:text-blue-700 hover:underline block" title="Click to view tenant details" x-text="`${item.tenantFirstName || ''} ${item.tenantMiddleName || ''} ${item.tenantSurName || ''}`"></a>
@@ -713,9 +713,9 @@
 
                 // Custom Printable Columns (with configurable length / width & default values)
                 customColumns: [
-                    { id: 'c1', title: 'Amount Collected / રકમ (₹)', defaultValue: '1000', width: '120px' },
-                    { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', defaultValue: '', width: '100px' },
-                    { id: 'c3', title: 'Member Signature / સહી', defaultValue: '', width: '160px' }
+                    { id: 'c1', title: 'Amount (₹)', defaultValue: '1000', width: '75px' },
+                    { id: 'c2', title: 'Attending', defaultValue: '', width: '80px' },
+                    { id: 'c3', title: 'Member Signature', defaultValue: '', width: '110px' }
                 ],
 
                 init() {
@@ -778,21 +778,11 @@
                 },
 
                 get dynamicOwnerThClass() {
-                    if (this.effectivePrintSize === 'large') {
-                        return 'min-w-[220px] print:min-w-0';
-                    } else if (this.effectivePrintSize === 'medium') {
-                        return 'min-w-[180px] print:min-w-0';
-                    }
-                    return 'min-w-[140px] print:min-w-0';
+                    return 'col-owner min-w-[220px] md:min-w-[280px] print:min-w-0';
                 },
 
                 get dynamicContactThClass() {
-                    if (this.effectivePrintSize === 'large') {
-                        return 'min-w-[150px] print:min-w-0';
-                    } else if (this.effectivePrintSize === 'medium') {
-                        return 'min-w-[120px] print:min-w-0';
-                    }
-                    return 'min-w-[100px] print:min-w-0';
+                    return 'col-contact w-[105px] min-w-[100px] max-w-[115px] print:min-w-0';
                 },
 
                 get filteredResidents() {
@@ -979,9 +969,9 @@
                         this.cols.totalFamilyMembers = true;
                         if (this.customColumns.length === 0) {
                             this.customColumns = [
-                                { id: 'c1', title: 'Amount Collected / રકમ (₹)', defaultValue: '1000', width: '120px' },
-                                { id: 'c2', title: 'Attending? / હાજરી (Yes/No)', defaultValue: '', width: '100px' },
-                                { id: 'c3', title: 'Member Signature / સહી', width: '160px' }
+                                { id: 'c1', title: 'Amount (₹)', defaultValue: '1000', width: '75px' },
+                                { id: 'c2', title: 'Attending', defaultValue: '', width: '80px' },
+                                { id: 'c3', title: 'Member Signature', width: '110px' }
                             ];
                         }
                     } else if (type === 'all') {

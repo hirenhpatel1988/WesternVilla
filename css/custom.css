@@ -155,36 +155,41 @@ body {
         print-color-adjust: exact !important;
     }
 
-    /* House Number Column: NEVER wrap characters, comfortable fixed width */
+    /* House Number Column: NEVER wrap characters, compact fixed width */
     .col-house,
     th.col-house,
     td.col-house {
-        width: 58px !important;
-        min-width: 58px !important;
-        max-width: 62px !important;
+        width: 52px !important;
+        min-width: 50px !important;
+        max-width: 54px !important;
         white-space: nowrap !important;
         word-break: keep-all !important;
         text-align: center !important;
-        padding: 5px 4px !important;
+        padding: 5px 3px !important;
     }
 
-    /* Contact Column: NEVER wrap mobile numbers */
+    /* Contact Column: strictly 10 digits, compact fixed width */
     .col-contact,
     th.col-contact,
     td.col-contact {
+        width: 80px !important;
+        min-width: 78px !important;
+        max-width: 84px !important;
         white-space: nowrap !important;
         word-break: keep-all !important;
+        text-align: center !important;
+        padding: 5px 3px !important;
     }
 
-    /* Total Family Column in Print: Generously sized so 3 rows never overlap or touch borders */
+    /* Total Family Column in Print: calibrated optimal width (no text truncation) */
     .col-family,
     th.col-family,
     td.col-family {
-        width: 135px !important;
-        min-width: 130px !important;
-        max-width: 145px !important;
+        width: 116px !important;
+        min-width: 112px !important;
+        max-width: 120px !important;
         box-sizing: border-box !important;
-        padding: 4px 5px !important;
+        padding: 4px 4px !important;
     }
 
     .family-print-box {
@@ -204,28 +209,52 @@ body {
         text-overflow: ellipsis !important;
     }
 
-    /* Custom Columns Print Widths (Prevent wide columns from starving standard columns) */
+    /* Custom Columns Print Widths (Amount max 5 digits, Attending compact, Signature comfortable) */
     th.col-custom, td.col-custom {
-        padding: 4px 4px !important;
+        padding: 4px 2px !important;
         box-sizing: border-box !important;
     }
+    /* Amount Collected: Max 5 digits (e.g. 1000) */
     th.col-custom-c1, td.col-custom-c1,
+    th.col-custom[style*="75px"], td.col-custom[style*="75px"],
+    th.col-custom[style*="90px"], td.col-custom[style*="90px"],
     th.col-custom[style*="120px"], td.col-custom[style*="120px"] {
-        width: 90px !important;
-        min-width: 85px !important;
-        max-width: 95px !important;
+        width: 66px !important;
+        min-width: 62px !important;
+        max-width: 70px !important;
+        text-align: center !important;
     }
+    /* Attending (Yes/No) */
     th.col-custom-c2, td.col-custom-c2,
+    th.col-custom[style*="80px"], td.col-custom[style*="80px"],
     th.col-custom[style*="100px"], td.col-custom[style*="100px"] {
-        width: 85px !important;
-        min-width: 80px !important;
-        max-width: 90px !important;
+        width: 74px !important;
+        min-width: 70px !important;
+        max-width: 78px !important;
+        text-align: center !important;
     }
+    /* Member Signature */
     th.col-custom-c3, td.col-custom-c3,
+    th.col-custom[style*="110px"], td.col-custom[style*="110px"],
     th.col-custom[style*="160px"], td.col-custom[style*="160px"] {
-        width: 135px !important;
-        min-width: 125px !important;
-        max-width: 140px !important;
+        width: 110px !important;
+        min-width: 100px !important;
+        max-width: 115px !important;
+    }
+
+    /* Resident Name Column: Maximally wide, gets all remaining table width */
+    .col-owner,
+    th.col-owner,
+    td.col-owner,
+    th[x-show*="ownerDetails"],
+    td[x-show*="ownerDetails"],
+    th[x-show*="primaryName"],
+    td[x-show*="primaryName"],
+    th[x-show*="tenantDetails"],
+    td[x-show*="tenantDetails"] {
+        width: auto !important;
+        min-width: 250px !important;
+        word-break: normal !important;
     }
 
     /* Write-in cell space for signatures and blank inputs in print (no inner border) */
