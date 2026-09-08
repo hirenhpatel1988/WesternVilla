@@ -589,7 +589,7 @@ const DataStore = {
     },
 
     // Build single-sheet Excel dynamically based on selected columns & filtered residents
-    downloadCustomExcel(residentsList, selectedColumns, filename = 'WesternVilla_Custom_Report.xlsx') {
+    downloadCustomExcel(residentsList, selectedColumns, filename = 'WesternVilla_Custom_Report.xlsx', ageCriteria = '10') {
         if (typeof XLSX === 'undefined') {
             this.downloadCSV(filename.replace(/\.xlsx$/i, '.csv'), selectedColumns);
             return;
@@ -600,17 +600,40 @@ const DataStore = {
 
         const columnDefinitions = [
             { id: 'houseNumber', title: 'House No / ઘર નંબર', get: r => r.houseNumber },
-            { id: 'residentStatus', title: 'Resident Type / પ્રકાર', get: r => r.isTenant === 'Yes' ? 'Tenant (ભાડુઆત)' : 'Owner (માલિક)' },
             { id: 'primaryName', title: 'Primary Resident / મુખ્ય રહેવાસી', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
             { id: 'ownerDetails', title: 'Owner Name / માલિકનું નામ', get: r => `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
             { id: 'tenantDetails', title: 'Tenant Name / ભાડુઆતનું નામ', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : '-' },
             { id: 'contact', title: 'Mobile / મોબાઇલ', get: r => r.mobileNumber || '' },
-            { id: 'maintenance', title: 'Maintenance / મેન્ટેનન્સ', get: r => r.isMaintenancePaid === 'Yes' ? `Paid (${r.receiptNumber || 'Receipt Yes'})` : 'Unpaid' },
+            {
+                id: 'totalFamilyMembers',
+                title: 'Total Family Members / કુલ પરિવાર સભ્યો',
+                get: r => {
+                    let primaryAge = 0;
+                    if (r.isTenant === 'Yes') {
+                        primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
+                    } else {
+                        primaryAge = parseInt(r.age, 10) || 0;
+                    }
+                    const fList = r.familyMembers || [];
+                    const total = 1 + fList.length;
+                    const threshold = parseInt(ageCriteria, 10);
+                    if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) {
+                        return total === 1 ? 'Total = 1 member' : `Total = ${total} members`;
+                    }
+                    let countAbove = primaryAge > threshold ? 1 : 0;
+                    let countBelow = primaryAge <= threshold ? 1 : 0;
+                    fList.forEach(m => {
+                        const mAge = parseInt(m.age, 10) || 0;
+                        if (mAge > threshold) countAbove++;
+                        else countBelow++;
+                    });
+                    return `${total === 1 ? 'Total = 1 member' : `Total = ${total} members`}, Age>${threshold} = ${countAbove} member & Age<=${threshold} = ${countBelow} member`;
+                }
+            },
             { id: 'blood', title: 'Blood Group / બ્લડ ગ્રુપ', get: r => r.bloodGroup || '-' },
-            { id: 'familyMembers', title: 'Total Family Members / પરિવાર સંખ્યા', get: r => r.familyMembers ? r.familyMembers.length : 0 },
+            { id: 'familyMembers', title: 'Family List / પરિવાર નામો', get: r => (r.familyMembers || []).map(m => `${m.firstName} ${m.surName} (${m.age || '-'}y)`).join(', ') },
             { id: 'vehicles', title: 'Total Vehicles / વાહનો સંખ્યા', get: r => r.vehicles ? r.vehicles.length : 0 },
-            { id: 'interests', title: 'Volunteering Interests / સેવા રસ', get: r => (r.interests || []).join(', ') },
-            { id: 'regDate', title: 'Registration Date / નોંધણી તારીખ', get: r => r.registeredAt ? new Date(r.registeredAt).toLocaleDateString() : '' }
+            { id: 'interests', title: 'Volunteering Interests / સેવા રસ', get: r => (r.interests || []).join(', ') }
         ];
 
         const activeCols = selectedColumns && selectedColumns.length > 0
@@ -639,7 +662,7 @@ const DataStore = {
     },
 
     // Download Printable Roster Form with Custom Columns in Excel format (.xlsx)
-    downloadPrintableFormExcel(residentsList, standardCols, customCols = [], filename = 'WesternVilla_Printable_Form.xlsx') {
+    downloadPrintableFormExcel(residentsList, standardCols, customCols = [], filename = 'WesternVilla_Printable_Form.xlsx', ageCriteria = '10') {
         if (typeof XLSX === 'undefined') {
             alert('Excel library (SheetJS) is not loaded. Please reload or check your connection.');
             return false;
@@ -657,6 +680,9 @@ const DataStore = {
         }
         if (!standardCols || standardCols.contact) {
             headers.push('Mobile Number / મોબાઇલ');
+        }
+        if (standardCols && standardCols.totalFamilyMembers) {
+            headers.push('Total Family Members / કુલ પરિવાર સભ્યો');
         }
         if (standardCols && standardCols.blood) {
             headers.push('Blood Group / બ્લડ ગ્રુપ');
@@ -687,6 +713,30 @@ const DataStore = {
 
             if (!standardCols || standardCols.contact) {
                 row.push(r.mobileNumber || '-');
+            }
+
+            if (standardCols && standardCols.totalFamilyMembers) {
+                let primaryAge = 0;
+                if (r.isTenant === 'Yes') {
+                    primaryAge = parseInt(r.tenantAge, 10) || parseInt(r.age, 10) || 0;
+                } else {
+                    primaryAge = parseInt(r.age, 10) || 0;
+                }
+                const fList = r.familyMembers || [];
+                const total = 1 + fList.length;
+                const threshold = parseInt(ageCriteria, 10);
+                if (isNaN(threshold) || ageCriteria === '' || ageCriteria === null) {
+                    row.push(total === 1 ? 'Total = 1 member' : `Total = ${total} members`);
+                } else {
+                    let countAbove = primaryAge > threshold ? 1 : 0;
+                    let countBelow = primaryAge <= threshold ? 1 : 0;
+                    fList.forEach(m => {
+                        const mAge = parseInt(m.age, 10) || 0;
+                        if (mAge > threshold) countAbove++;
+                        else countBelow++;
+                    });
+                    row.push(`${total === 1 ? 'Total = 1 member' : `Total = ${total} members`}, Age>${threshold} = ${countAbove} member & Age<=${threshold} = ${countBelow} member`);
+                }
             }
 
             if (standardCols && standardCols.blood) {
