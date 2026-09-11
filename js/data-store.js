@@ -146,6 +146,32 @@ function toUpper(str) {
     return str.trim().toUpperCase();
 }
 
+function formatVehicleNumber(str) {
+    if (!str || typeof str !== 'string') return '';
+    const trimmed = str.trim().toUpperCase();
+    const clean = trimmed.replace(/[^A-Z0-9]/g, '');
+
+    // Standard State RTO: e.g. GJ19AM7534 -> GJ-19-AM-7534
+    const stdMatch = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})(\d{1,4})$/);
+    if (stdMatch) {
+        return `${stdMatch[1]}-${stdMatch[2]}-${stdMatch[3]}-${stdMatch[4]}`;
+    }
+
+    // Bharat Series: e.g. 22BH1234AA -> 22-BH-1234-AA
+    const bhMatch = clean.match(/^(\d{2})(BH)(\d{4})([A-Z]{1,2})$/);
+    if (bhMatch) {
+        return `${bhMatch[1]}-${bhMatch[2]}-${bhMatch[3]}-${bhMatch[4]}`;
+    }
+
+    // Vintage / Old RTO: e.g. GJ011234 -> GJ-01-1234
+    const oldMatch = clean.match(/^([A-Z]{2})(\d{1,2})(\d{1,4})$/);
+    if (oldMatch) {
+        return `${oldMatch[1]}-${oldMatch[2]}-${oldMatch[3]}`;
+    }
+
+    return trimmed;
+}
+
 function sortByHouseNumber(list) {
     return (list || []).slice().sort((a, b) => {
         const numA = parseInt(a.houseNumber, 10) || 0;
@@ -220,7 +246,7 @@ function sanitizeResident(record) {
             .map(v => ({
                 vehicleType: v.vehicleType || 'Two',
                 fuelType: v.fuelType || 'Petrol',
-                vehicleNumber: toUpper(v.vehicleNumber)
+                vehicleNumber: formatVehicleNumber(v.vehicleNumber)
             }));
     } else {
         clean.vehicles = [];
@@ -241,6 +267,7 @@ const DataStore = {
     CONTACT_PERSON: CONTACT_PERSON,
     CONTACT_PHONE: CONTACT_PHONE,
     MAX_HOUSE_NUMBER: MAX_HOUSE_NUMBER,
+    formatVehicleNumber: formatVehicleNumber,
 
     // Calculate dynamic effective age based on completed 12-month cycles since registration
     getEffectiveAge(registeredAge, registeredAt) {
@@ -264,6 +291,104 @@ const DataStore = {
         }
 
         return Math.max(0, baseAge + Math.max(0, yearsPassed));
+    },
+
+    // Comprehensive resident search supporting Vehicle No, Mobile, Name (First/Middle/Surname), House No, etc.
+    matchesResident(resident, query) {
+        if (!resident) return false;
+        if (!query || typeof query !== 'string' || !query.trim()) return true;
+
+        const rawQ = query.trim().toLowerCase();
+        const qClean = rawQ.replace(/[^a-z0-9]/g, '');
+        const qDigits = rawQ.replace(/[^0-9]/g, '');
+        const qWords = rawQ.split(/\s+/).filter(w => w.length > 0);
+
+        const checkNameMatch = (first, middle, last) => {
+            const fn = String(first || '').toLowerCase();
+            const mn = String(middle || '').toLowerCase();
+            const ln = String(last || '').toLowerCase();
+            if (!fn && !mn && !ln) return false;
+
+            const fml = `${fn} ${mn} ${ln}`.trim();
+            const fl = `${fn} ${ln}`.trim();
+            const lf = `${ln} ${fn}`.trim();
+            const lmf = `${ln} ${mn} ${fn}`.trim();
+
+            if (fml.includes(rawQ) || fl.includes(rawQ) || lf.includes(rawQ) || lmf.includes(rawQ) || fn.includes(rawQ) || mn.includes(rawQ) || ln.includes(rawQ)) {
+                return true;
+            }
+
+            if (qWords.length > 1) {
+                const allParts = `${fn} ${mn} ${ln}`;
+                if (qWords.every(w => allParts.includes(w))) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        const checkMobileMatch = (mobile) => {
+            if (!mobile) return false;
+            const mStr = String(mobile);
+            if (mStr.includes(rawQ)) return true;
+            if (qDigits.length >= 3) {
+                const mDigits = mStr.replace(/[^0-9]/g, '');
+                if (mDigits.includes(qDigits)) return true;
+            }
+            return false;
+        };
+
+        const checkVehicleMatch = (vehicles) => {
+            if (!Array.isArray(vehicles) || vehicles.length === 0) return false;
+            return vehicles.some(v => {
+                if (!v) return false;
+                const vNumRaw = String(v.vehicleNumber || '').toLowerCase();
+                const vFuel = String(v.fuelType || '').toLowerCase();
+                const vType = String(v.vehicleType || '').toLowerCase();
+
+                if (vNumRaw.includes(rawQ) || vFuel.includes(rawQ) || vType.includes(rawQ)) {
+                    return true;
+                }
+
+                if (qClean.length >= 2) {
+                    const vNumClean = vNumRaw.replace(/[^a-z0-9]/g, '');
+                    if (vNumClean.includes(qClean)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        };
+
+        // 1. House number
+        const houseStr = String(resident.houseNumber || '').toLowerCase();
+        if (houseStr === rawQ || houseStr.includes(rawQ)) return true;
+        if (qDigits && houseStr === qDigits) return true;
+
+        // 2. Owner Name (First, Middle, Surname)
+        if (checkNameMatch(resident.ownerFirstName, resident.ownerMiddleName, resident.ownerSurName)) return true;
+
+        // 3. Tenant Name (First, Middle, Surname)
+        if (resident.isTenant === 'Yes' && checkNameMatch(resident.tenantFirstName, resident.tenantMiddleName, resident.tenantSurName)) return true;
+
+        // 4. Primary Mobile Number
+        if (checkMobileMatch(resident.mobileNumber)) return true;
+
+        // 5. Family Members (Names & Mobiles)
+        const inFamily = (resident.familyMembers || []).some(m => {
+            return checkNameMatch(m.firstName, m.middleName, m.surName) || checkMobileMatch(m.mobileNumber);
+        });
+        if (inFamily) return true;
+
+        // 6. Vehicles (Vehicle number with or without hyphens/spaces, fuel type, etc.)
+        if (checkVehicleMatch(resident.vehicles)) return true;
+
+        // 7. Email & Receipt number
+        const email = String(resident.email || '').toLowerCase();
+        const receipt = String(resident.receiptNumber || '').toLowerCase();
+        if (email.includes(rawQ) || receipt.includes(rawQ)) return true;
+
+        return false;
     },
 
     init() {
@@ -427,7 +552,7 @@ const DataStore = {
             'First Name / નામ',
             'Middle Name / મધ્યમ નામ',
             'Surname / અટક',
-            'Gender / લિંગ',
+            'Gender / જાતિ',
             'Age / ઉંમર',
             'Mobile Number / મોબાઇલ',
             'Email Address / ઇમેઇલ',
@@ -900,7 +1025,7 @@ const DataStore = {
             { id: 'primaryName', title: 'Primary Resident Name / મુખ્ય રહેવાસી', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
             { id: 'ownerName', title: 'Owner Full Name / માલિકનું નામ', get: r => `${r.ownerFirstName || ''} ${r.ownerMiddleName || ''} ${r.ownerSurName || ''}`.trim() },
             { id: 'ownerAge', title: 'Owner Age / માલિકની ઉંમર', get: r => this.getEffectiveAge(r.age, r.registeredAt) },
-            { id: 'ownerGender', title: 'Owner Gender / માલિકનું લિંગ', get: r => r.gender || '' },
+            { id: 'ownerGender', title: 'Owner Gender / માલિકની જાતિ', get: r => r.gender || '' },
             { id: 'ownerOccupation', title: 'Owner Occupation / વ્યવસાય', get: r => r.ownerOccupationType ? `${r.ownerOccupationType}${r.ownerOccupationDetails ? ' - ' + r.ownerOccupationDetails : ''}` : '' },
             { id: 'isTenant', title: 'Is Rented? / ભાડે આપેલ છે?', get: r => r.isTenant || 'No' },
             { id: 'tenantName', title: 'Tenant Name / ભાડુઆતનું નામ', get: r => r.isTenant === 'Yes' ? `${r.tenantFirstName || ''} ${r.tenantMiddleName || ''} ${r.tenantSurName || ''}`.trim() : '' },

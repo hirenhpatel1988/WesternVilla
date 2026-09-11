@@ -183,7 +183,7 @@
 
                     <!-- Gender -->
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2">Gender / લિંગ <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">Gender / જાતિ <span class="text-rose-500">*</span></label>
                         <select x-model="form.gender" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 transition outline-none bg-white">
                             <option value="Male">Male / પુરુષ</option>
                             <option value="Female">Female / સ્ત્રી</option>
@@ -392,7 +392,7 @@
                                     <input type="text" x-model="member.surName" placeholder="Surname" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Gender / લિંગ</label>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Gender / જાતિ</label>
                                     <select x-model="member.gender" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                                         <option value="">Select</option>
                                         <option value="Male">Male / પુરુષ</option>
@@ -502,12 +502,24 @@
                                     <select x-model="vehicle.fuelType" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white">
                                         <option value="Petrol">Petrol / પેટ્રોલ</option>
                                         <option value="Electric">Electric / ઇલેક્ટ્રિક</option>
+                                        <option value="CNG">CNG / સીએનજી</option>
                                         <option value="Diesel">Diesel / ડીઝલ</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Vehicle Number / નંબર (વૈકલ્પિક)</label>
-                                    <input type="text" x-model="vehicle.vehicleNumber" placeholder="e.g. GJ-01-AB-1234" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white" />
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">
+                                        Vehicle Number / વાહન નંબર (વૈકલ્પિક)
+                                        <span class="text-[11px] font-normal text-indigo-600 block sm:inline sm:ml-1">
+                                            (Write like: <strong>GJ19AM7534</strong> &rarr; Formats as: <strong class="text-slate-700">GJ-19-AM-7534</strong>)
+                                        </span>
+                                    </label>
+                                    <input type="text"
+                                           x-model="vehicle.vehicleNumber"
+                                           @input="vehicle.vehicleNumber = $event.target.value.toUpperCase()"
+                                           @blur="$event.target.value = vehicle.vehicleNumber = formatVehicleNumber(vehicle.vehicleNumber)"
+                                           @change="$event.target.value = vehicle.vehicleNumber = formatVehicleNumber(vehicle.vehicleNumber)"
+                                           placeholder="e.g. GJ19AM7534"
+                                           class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 bg-white uppercase" />
                                 </div>
                             </div>
 
@@ -679,6 +691,14 @@
                     this.form.vehicles.splice(index, 1);
                 },
 
+                // Format Vehicle Number helper
+                formatVehicleNumber(val) {
+                    if (window.DataStore && typeof DataStore.formatVehicleNumber === 'function') {
+                        return DataStore.formatVehicleNumber(val);
+                    }
+                    return (val || '').toUpperCase().trim();
+                },
+
                 // Form Submit Handler
                 submitRegistration() {
                     // Recheck duplicate
@@ -709,6 +729,13 @@
                     const defaultSur = record.isTenant === 'Yes' ? (record.tenantSurName || record.ownerSurName || '') : (record.ownerSurName || '');
                     record.familyMembers.forEach(m => {
                         if (!m.surName || !m.surName.trim()) m.surName = defaultSur;
+                    });
+
+                    // Format vehicle numbers
+                    (record.vehicles || []).forEach(v => {
+                        if (v.vehicleNumber) {
+                            v.vehicleNumber = this.formatVehicleNumber(v.vehicleNumber);
+                        }
                     });
 
                     // Save to DataStore
