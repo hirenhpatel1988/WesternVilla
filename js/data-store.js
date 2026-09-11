@@ -495,9 +495,13 @@ const DataStore = {
         };
     },
 
-    deleteResident(id) {
+    deleteResident(id, houseNumber = null) {
         const residents = this.getAllResidents();
-        const filtered = residents.filter(r => r.id !== Number(id));
+        const filtered = residents.filter(r => {
+            if (id && r.id === Number(id)) return false;
+            if (houseNumber && String(r.houseNumber).trim() === String(houseNumber).trim()) return false;
+            return true;
+        });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(sortByHouseNumber(filtered)));
         return true;
     },
