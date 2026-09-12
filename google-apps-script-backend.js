@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Google Apps Script - Western Villa Database Sync Backend
  *
  * HOW TO SETUP (Takes 2 Minutes):
@@ -102,9 +102,9 @@ function doPost(e) {
 
       const rowValues = [
         houseNum,
-        ${resident.ownerFirstName || ''}  .trim(),
+        [resident.ownerFirstName || '', resident.ownerMiddleName || '', resident.ownerSurName || ''].join(' ').trim(),
         resident.isTenant || 'No',
-        resident.isTenant === 'Yes' ? ${resident.tenantFirstName || ''}  .trim() : '-',
+        resident.isTenant === 'Yes' ? [resident.tenantFirstName || '', resident.tenantMiddleName || '', resident.tenantSurName || ''].join(' ').trim() : '-',
         resident.mobileNumber || '',
         resident.email || '',
         resident.gender || '',
@@ -158,9 +158,9 @@ function doPost(e) {
         const houseNum = String(resident.houseNumber).trim();
         const rowValues = [
           houseNum,
-          ${resident.ownerFirstName || ''}  .trim(),
+          [resident.ownerFirstName || '', resident.ownerMiddleName || '', resident.ownerSurName || ''].join(' ').trim(),
           resident.isTenant || 'No',
-          resident.isTenant === 'Yes' ? ${resident.tenantFirstName || ''}  .trim() : '-',
+          resident.isTenant === 'Yes' ? [resident.tenantFirstName || '', resident.tenantMiddleName || '', resident.tenantSurName || ''].join(' ').trim() : '-',
           resident.mobileNumber || '',
           resident.email || '',
           resident.gender || '',
@@ -180,7 +180,7 @@ function doPost(e) {
       return ContentService.createTextOutput(JSON.stringify({
         success: true,
         count: residents.length,
-        message: Bulk synced  records to Google Sheet
+        message: 'Bulk synced ' + residents.length + ' records to Google Sheet'
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
