@@ -168,17 +168,18 @@ body {
         padding: 5px 3px !important;
     }
 
-    /* Contact Column: strictly 10 digits, compact fixed width */
+    /* Contact Column: strictly 10 digits, comfortable fixed width ensuring zero overlap */
     .col-contact,
     th.col-contact,
     td.col-contact {
-        width: 80px !important;
-        min-width: 78px !important;
-        max-width: 84px !important;
+        width: 105px !important;
+        min-width: 100px !important;
+        max-width: 115px !important;
         white-space: nowrap !important;
         word-break: keep-all !important;
         text-align: center !important;
-        padding: 5px 3px !important;
+        padding: 5px 6px !important;
+        box-sizing: border-box !important;
     }
 
     /* Total Family Column in Print: calibrated optimal width (no text truncation) */
@@ -288,11 +289,13 @@ body {
         line-height: 1.25 !important;
     }
     table.print-size-large .cell-mobile {
-        font-size: 10.5pt !important;
+        font-size: 9.5pt !important;
         font-weight: 700 !important;
+        letter-spacing: 0.3px !important;
+        display: inline-block !important;
     }
     table.print-size-large .cell-custom-val {
-        font-size: 10.5pt !important;
+        font-size: 9.5pt !important;
         font-weight: 700 !important;
     }
 

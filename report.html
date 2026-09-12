@@ -838,7 +838,7 @@
 
                 get dynamicMobileClass() {
                     if (this.effectivePrintSize === 'large') {
-                        return 'text-sm md:text-base font-bold tracking-wide';
+                        return 'text-sm md:text-base font-bold tracking-normal';
                     } else if (this.effectivePrintSize === 'medium') {
                         return 'text-xs md:text-sm font-semibold';
                     }
@@ -850,7 +850,7 @@
                 },
 
                 get dynamicContactThClass() {
-                    return 'col-contact w-[105px] min-w-[100px] max-w-[115px] print:min-w-0';
+                    return 'col-contact w-[105px] min-w-[100px] max-w-[115px]';
                 },
 
                 get filteredResidents() {
