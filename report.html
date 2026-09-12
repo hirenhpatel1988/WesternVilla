@@ -92,6 +92,14 @@
                         <span>📊 Form Excel (.xlsx)</span>
                     </button>
 
+                    <!-- Cloud Database Sync (Google Sheets) -->
+                    <button type="button" @click="syncWithCloud()" :disabled="isSyncingCloud" class="inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition disabled:opacity-50" title="Sync live records with Google Sheet cloud database">
+                        <svg class="h-4 w-4 mr-1.5" :class="isSyncingCloud ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span x-text="isSyncingCloud ? 'Syncing...' : '🔄 Cloud Sync / સિંક'"></span>
+                    </button>
+
                     <!-- Backup & Restore Center -->
                     <div class="inline-flex items-center rounded-xl bg-slate-100 p-0.5 border border-slate-200 text-xs sm:text-sm font-bold shadow-sm">
                         <!-- Direct Backup Download -->
@@ -742,12 +750,48 @@
                     { id: 'c3', title: 'Member Signature', defaultValue: '', width: '110px' }
                 ],
 
+                isSyncingCloud: false,
+
                 init() {
                     this.loadData();
+                    // If cloud is configured, auto-fetch latest updates in background
+                    if (DataStore.isCloudConfigured && DataStore.isCloudConfigured()) {
+                        this.syncWithCloud(true);
+                    }
                 },
 
                 loadData() {
                     this.residents = DataStore.getAllResidents();
+                },
+
+                async syncWithCloud(silent = false) {
+                    if (!DataStore.isCloudConfigured || !DataStore.isCloudConfigured()) {
+                        if (!silent) {
+                            alert('Cloud Sync is not configured yet! Please follow the instructions in google-apps-script-backend.js to add your Google Sheet Web App URL in js/data-store.js.');
+                        }
+                        return;
+                    }
+
+                    this.isSyncingCloud = true;
+                    try {
+                        const result = await DataStore.fetchFromCloud();
+                        if (result.success) {
+                            this.loadData();
+                            if (!silent) {
+                                alert(`Cloud Sync Successful! Updated ${result.count} records from Google Sheet.`);
+                            }
+                        } else {
+                            if (!silent) {
+                                alert('Cloud Sync failed: ' + (result.message || result.error));
+                            }
+                        }
+                    } catch (err) {
+                        if (!silent) {
+                            alert('Cloud Sync error: ' + err.message);
+                        }
+                    } finally {
+                        this.isSyncingCloud = false;
+                    }
                 },
 
                 get stats() {

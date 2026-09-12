@@ -10,6 +10,9 @@ const MAX_HOUSE_NUMBER = 181;
 const CONTACT_PERSON = 'Hiren Patel - Home 13';
 const CONTACT_PHONE = '9876543210';
 
+// Google Apps Script Cloud Database URL (Paste your deployed Web App URL here)
+const CLOUD_SYNC_URL = ''; // e.g. 'https://script.google.com/macros/s/.../exec'
+
 // Default initial seed records: Populated when local storage is empty so data is always visible in local
 const DEFAULT_SEED_DATA = [
     {
@@ -490,6 +493,11 @@ const DataStore = {
         const sortedResidents = sortByHouseNumber(residents);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(sortedResidents));
 
+        // Background Cloud Sync (Silent, non-blocking)
+        this.syncResidentToCloud(resident).catch(err => {
+            console.warn('Background cloud sync notice:', err);
+        });
+
         return {
             success: true,
             resident: resident,
@@ -505,6 +513,12 @@ const DataStore = {
             return true;
         });
         localStorage.setItem(STORAGE_KEY, JSON.stringify(sortByHouseNumber(filtered)));
+
+        // Background Cloud Delete (Silent, non-blocking)
+        this.deleteResidentFromCloud(id, houseNumber).catch(err => {
+            console.warn('Background cloud delete notice:', err);
+        });
+
         return true;
     },
 
@@ -1225,6 +1239,125 @@ const DataStore = {
             reader.onerror = () => reject(new Error('Failed to read CSV file.'));
             reader.readAsText(file, 'UTF-8');
         });
+    },
+
+    /* =========================================================
+     * CLOUD DATABASE SYNCHRONIZATION (Google Sheets)
+     * ========================================================= */
+
+    isCloudConfigured() {
+        return typeof CLOUD_SYNC_URL === 'string' && CLOUD_SYNC_URL.trim().startsWith('http');
+    },
+
+    async fetchFromCloud() {
+        if (!this.isCloudConfigured()) {
+            return { success: false, message: 'Cloud sync URL is not configured yet.' };
+        }
+
+        try {
+            const response = await fetch(CLOUD_SYNC_URL, {
+                method: 'GET',
+                cache: 'no-store'
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server returned HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (data && data.success && Array.isArray(data.records)) {
+                const cleaned = data.records.map(r => sanitizeResident(r));
+                const sorted = sortByHouseNumber(cleaned);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
+                return {
+                    success: true,
+                    count: sorted.length,
+                    records: sorted,
+                    message: `Synced ${sorted.length} records from Cloud Database.`
+                };
+            } else {
+                throw new Error(data.error || 'Invalid data from cloud');
+            }
+        } catch (err) {
+            console.error('fetchFromCloud error:', err);
+            return {
+                success: false,
+                error: err.message,
+                message: 'Failed to fetch from cloud: ' + err.message
+            };
+        }
+    },
+
+    async syncResidentToCloud(resident) {
+        if (!this.isCloudConfigured()) return { success: false };
+
+        try {
+            await fetch(CLOUD_SYNC_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Google Apps Script Web App redirects
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'save',
+                    resident: resident
+                })
+            });
+            return { success: true };
+        } catch (err) {
+            console.warn('syncResidentToCloud failed:', err);
+            return { success: false, error: err.message };
+        }
+    },
+
+    async deleteResidentFromCloud(id, houseNumber) {
+        if (!this.isCloudConfigured()) return { success: false };
+
+        try {
+            await fetch(CLOUD_SYNC_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'delete',
+                    id: id,
+                    houseNumber: houseNumber
+                })
+            });
+            return { success: true };
+        } catch (err) {
+            console.warn('deleteResidentFromCloud failed:', err);
+            return { success: false, error: err.message };
+        }
+    },
+
+    async bulkSyncToCloud(residentsList = null) {
+        if (!this.isCloudConfigured()) {
+            return { success: false, message: 'Cloud sync URL is not configured yet.' };
+        }
+
+        const residents = residentsList || this.getAllResidents();
+        try {
+            await fetch(CLOUD_SYNC_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'bulk_sync',
+                    residents: residents
+                })
+            });
+            return {
+                success: true,
+                count: residents.length,
+                message: `Uploaded ${residents.length} records to Google Sheet database.`
+            };
+        } catch (err) {
+            console.error('bulkSyncToCloud error:', err);
+            return {
+                success: false,
+                error: err.message,
+                message: 'Failed to upload records: ' + err.message
+            };
+        }
     }
 };
 
