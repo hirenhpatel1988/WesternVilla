@@ -680,13 +680,16 @@
                                     </td>
                                 </template>
 
-                                <!-- Actions (View / Delete) -->
+                                <!-- Actions (View / Edit / Delete) -->
                                 <td class="px-3 py-2.5 text-center no-print whitespace-nowrap">
                                     <div class="flex items-center justify-center space-x-1.5">
                                         <a :href="'details.html?house=' + encodeURIComponent(item.houseNumber)" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-lg text-[11px] transition inline-flex items-center" title="View complete details">
                                             <span>View / જુઓ</span>
                                         </a>
-                                        <button type="button" @click="deleteItem(item.id, item.houseNumber)" class="text-rose-400 hover:text-rose-700 text-[11px] font-semibold hover:underline px-1.5 py-1">
+                                        <a :href="'index.html?edit=' + encodeURIComponent(item.houseNumber)" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] transition inline-flex items-center" title="Edit details for this house">
+                                            <span>Edit / સુધારો</span>
+                                        </a>
+                                        <button type="button" @click="deleteItem(item.id, item.houseNumber)" class="text-rose-400 hover:text-rose-700 text-[11px] font-semibold hover:underline px-1.5 py-1" title="Delete record">
                                             Delete
                                         </button>
                                     </div>

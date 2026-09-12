@@ -41,17 +41,44 @@
         
         <!-- Header Banner -->
         <div class="text-center mb-8">
-            <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-                Official Society Registration / સત્તાવાર સોસાયટી નોંધણી
-            </span>
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-teal-600">
-                Western Villa Community Registration
-            </h1>
-            <p class="mt-2 text-sm sm:text-base text-slate-600 font-medium">
-                Please provide accurate details of house owner, tenant, family members, and vehicles (House No. 1 to 181).
-                <br class="hidden sm:inline">
-                કૃપા કરીને ઘર માલિક, ભાડુઆત, પરિવારના સભ્યો અને વાહનોની સાચી વિગતો ભરો (ઘર નંબર ૧ થી ૧૮૧).
-            </p>
+            <template x-if="!isEditMode">
+                <div>
+                    <span class="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
+                        Official Society Registration / સત્તાવાર સોસાયટી નોંધણી
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-teal-600">
+                        Western Villa Community Registration
+                    </h1>
+                    <p class="mt-2 text-sm sm:text-base text-slate-600 font-medium">
+                        Please provide accurate details of house owner, tenant, family members, and vehicles (House No. 1 to 181).
+                        <br class="hidden sm:inline">
+                        કૃપા કરીને ઘર માલિક, ભાડુઆત, પરિવારના સભ્યો અને વાહનોની સાચી વિગતો ભરો (ઘર નંબર ૧ થી ૧૮૧).
+                    </p>
+                </div>
+            </template>
+
+            <template x-if="isEditMode">
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-3xl p-6 sm:p-8 shadow-md">
+                    <div class="inline-flex items-center space-x-1.5 px-3.5 py-1 bg-amber-100 text-amber-900 border border-amber-200 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+                        <span>✏️ Edit Mode / વિગત સુધારો</span>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Update Details for House No. <span class="text-amber-700 font-black" x-text="form.houseNumber"></span>
+                    </h1>
+                    <p class="mt-2 text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
+                        Modify resident, family members, vehicles or payment details below. Saving will update both local records and Google Sheets.
+                        <br>ઘરની વિગતો સુધારીને નીચે આપેલ <strong>Update Details</strong> બટન પર ક્લિક કરો.
+                    </p>
+                    <div class="mt-4 flex flex-wrap items-center justify-center gap-3">
+                        <a :href="'details.html?house=' + encodeURIComponent(form.houseNumber)" class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition shadow-sm inline-flex items-center">
+                            <span>&larr; Cancel / રદ કરો</span>
+                        </a>
+                        <a href="report.html" class="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl transition shadow-sm inline-flex items-center">
+                            <span>View All Homes in Report / અહેવાલ</span>
+                        </a>
+                    </div>
+                </div>
+            </template>
         </div>
 
         <!-- DUPLICATE HOUSE WARNING BANNER -->
@@ -111,13 +138,17 @@
                             max="181" 
                             required 
                             placeholder="e.g. 101 (1 to 181)" 
-                            :class="isDuplicateHouse ? 'border-rose-500 bg-rose-50 text-rose-900 ring-2 ring-rose-400' : 'border-slate-200 text-slate-900 focus:ring-blue-500'"
+                            :readonly="isEditMode"
+                            :class="isEditMode ? 'bg-slate-100 text-slate-700 cursor-not-allowed border-slate-300 font-bold' : (isDuplicateHouse ? 'border-rose-500 bg-rose-50 text-rose-900 ring-2 ring-rose-400' : 'border-slate-200 text-slate-900 focus:ring-blue-500')"
                             class="w-full px-4 py-2.5 rounded-xl border focus:ring-2 focus:border-blue-500 transition duration-200 outline-none font-semibold text-base"
                         />
-                        <div x-show="isDuplicateHouse" class="text-xs font-bold text-rose-600 mt-1.5 flex items-center">
+                        <div x-show="isDuplicateHouse && !isEditMode" class="text-xs font-bold text-rose-600 mt-1.5 flex items-center">
                             <span>Already registered! Contact Hiren Patel - Home 13</span>
                         </div>
-                        <p x-show="!isDuplicateHouse" class="text-xs text-slate-400 mt-1">Valid range: 1 to 181 / ૧ થી ૧૮૧ ની વચ્ચે</p>
+                        <p x-show="isEditMode" class="text-xs text-amber-700 font-semibold mt-1">
+                            Locked in edit mode / સુધારા મોડમાં ઘર નંબર બદલી શકાતો નથી
+                        </p>
+                        <p x-show="!isDuplicateHouse && !isEditMode" class="text-xs text-slate-400 mt-1">Valid range: 1 to 181 / ૧ થી ૧૮૧ ની વચ્ચે</p>
                     </div>
 
                     <!-- Primary Mobile Number -->
@@ -581,10 +612,10 @@
                     <button 
                         type="submit" 
                         :disabled="isDuplicateHouse" 
-                        :class="isDuplicateHouse ? 'bg-slate-400 cursor-not-allowed opacity-60' : 'bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 transform hover:-translate-y-0.5 shadow-md'"
-                        class="w-full sm:w-auto px-8 py-3 text-white font-bold rounded-2xl transition duration-200 text-center"
+                        :class="isDuplicateHouse ? 'bg-slate-400 cursor-not-allowed opacity-60 text-white font-bold' : (isEditMode ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 transform hover:-translate-y-0.5 shadow-md text-white font-bold' : 'bg-gradient-to-r from-blue-700 to-indigo-600 hover:from-blue-800 hover:to-indigo-700 transform hover:-translate-y-0.5 shadow-md text-white font-bold')"
+                        class="w-full sm:w-auto px-8 py-3 rounded-2xl transition duration-200 text-center"
                     >
-                        Submit Registration / ફોર્મ સબમિટ કરો
+                        <span x-text="isEditMode ? 'Update Details / વિગત સુધારો' : 'Submit Registration / ફોર્મ સબમિટ કરો'"></span>
                     </button>
                 </div>
             </div>
@@ -595,6 +626,8 @@
     <script>
         function registrationApp() {
             return {
+                isEditMode: false,
+                editingHouseNumber: '',
                 isDuplicateHouse: false,
                 interestOptions: [
                     { value: 'Social Events / સામાજિક કાર્યક્રમો', labelEn: 'Social Events', labelGu: 'સામાજિક કાર્યક્રમો' },
@@ -632,13 +665,40 @@
                     interests: []
                 },
 
-                // Duplicate house validation
+                // Initialize: detect if URL has ?edit=13 or ?house=13 or ?id=1
+                init() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const editParam = urlParams.get('edit') || urlParams.get('house');
+                    const idParam = urlParams.get('id');
+
+                    let existing = null;
+                    if (editParam) {
+                        existing = DataStore.getResidentByHouse(editParam);
+                    } else if (idParam) {
+                        existing = DataStore.getResidentById(idParam);
+                    }
+
+                    if (existing) {
+                        this.isEditMode = true;
+                        this.editingHouseNumber = String(existing.houseNumber);
+                        // Deep clone to prevent direct state mutation before submit
+                        this.form = JSON.parse(JSON.stringify(existing));
+                        if (!Array.isArray(this.form.familyMembers)) this.form.familyMembers = [];
+                        if (!Array.isArray(this.form.vehicles)) this.form.vehicles = [];
+                        if (!Array.isArray(this.form.interests)) this.form.interests = [];
+                    }
+                },
+
+                // Duplicate house validation (allows saving same house when in edit mode)
                 checkHouseDuplicate() {
                     if (!this.form.houseNumber) {
                         this.isDuplicateHouse = false;
                         return;
                     }
-                    this.isDuplicateHouse = DataStore.isHouseNumberRegistered(this.form.houseNumber);
+                    this.isDuplicateHouse = DataStore.isHouseNumberRegistered(
+                        this.form.houseNumber, 
+                        this.isEditMode && this.form.id ? this.form.id : null
+                    );
                 },
 
                 // Update default surnames for family members
@@ -701,8 +761,8 @@
 
                 // Form Submit Handler
                 submitRegistration() {
-                    // Recheck duplicate
-                    if (DataStore.isHouseNumberRegistered(this.form.houseNumber)) {
+                    // Recheck duplicate (allowing same house for current record in edit mode)
+                    if (DataStore.isHouseNumberRegistered(this.form.houseNumber, this.isEditMode && this.form.id ? this.form.id : null)) {
                         this.isDuplicateHouse = true;
                         alert(`House No. ${this.form.houseNumber} has already been registered! Please contact Hiren Patel - Home 13 for assistance.`);
                         return;
@@ -738,10 +798,17 @@
                         }
                     });
 
-                    // Save to DataStore
+                    // Save to DataStore (automatically syncs to Google Sheets)
                     const res = DataStore.saveResident(record);
                     if (!res.success) {
                         alert(res.message);
+                        return;
+                    }
+
+                    // If in Edit Mode, redirect to details page for the house
+                    if (this.isEditMode) {
+                        alert(`House No. ${record.houseNumber} details updated successfully! / ઘરની વિગતો સફળતાપૂર્વક સુધારાઈ!`);
+                        window.location.href = 'details.html?house=' + encodeURIComponent(record.houseNumber);
                         return;
                     }
 

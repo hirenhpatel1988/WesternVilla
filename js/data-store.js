@@ -483,6 +483,9 @@ const DataStore = {
         } else {
             const index = residents.findIndex(r => r.id === resident.id);
             if (index !== -1) {
+                if (residents[index].registeredAt && !resident.registeredAt) {
+                    resident.registeredAt = residents[index].registeredAt;
+                }
                 resident.updatedAt = new Date().toISOString();
                 residents[index] = resident;
             } else {
