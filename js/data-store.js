@@ -394,7 +394,9 @@ const DataStore = {
     init() {
         try {
             const current = localStorage.getItem(STORAGE_KEY);
-            if (!current || current === '[]') {
+            // Only seed data on FIRST-EVER use (key doesn't exist at all).
+            // If current === '[]', user intentionally deleted all records — do NOT re-seed.
+            if (current === null) {
                 const v1 = localStorage.getItem('western_villa_residents_db_v1') || localStorage.getItem('western_villa_residents_db');
                 if (v1 && v1 !== '[]') {
                     localStorage.setItem(STORAGE_KEY, v1);
