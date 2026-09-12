@@ -10,8 +10,8 @@ const MAX_HOUSE_NUMBER = 181;
 const CONTACT_PERSON = 'Hiren Patel - Home 13';
 const CONTACT_PHONE = '9876543210';
 
-// Google Apps Script Cloud Database URL (Paste your deployed Web App URL here)
-const CLOUD_SYNC_URL = ''; // e.g. 'https://script.google.com/macros/s/.../exec'
+// Google Apps Script Cloud Database URL (Connected to Western Villa Google Sheet)
+const CLOUD_SYNC_URL = 'https://script.google.com/macros/s/AKfycbxOYbnWhjBY8VA6V3bkbsp6BvqJV-1H6Zq3DgEfckG2Lwb3k0Bj7OSBv-Vv2yo7_Nve/exec';
 
 // Default initial seed records: Populated when local storage is empty so data is always visible in local
 const DEFAULT_SEED_DATA = [
