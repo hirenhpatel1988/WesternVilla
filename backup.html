@@ -142,6 +142,7 @@
             } catch (err) {
                 alert('Restore error: ' + err.message);
             }
+            event.target.value = '';
         }
 
         // Auto trigger backup when URL is called
