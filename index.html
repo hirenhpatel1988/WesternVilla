@@ -671,21 +671,33 @@
                     const editParam = urlParams.get('edit') || urlParams.get('house');
                     const idParam = urlParams.get('id');
 
-                    let existing = null;
-                    if (editParam) {
-                        existing = DataStore.getResidentByHouse(editParam);
-                    } else if (idParam) {
-                        existing = DataStore.getResidentById(idParam);
-                    }
+                    const loadFormRecord = () => {
+                        let existing = null;
+                        if (editParam) {
+                            existing = DataStore.getResidentByHouse(editParam);
+                        } else if (idParam) {
+                            existing = DataStore.getResidentById(idParam);
+                        }
 
-                    if (existing) {
-                        this.isEditMode = true;
-                        this.editingHouseNumber = String(existing.houseNumber);
-                        // Deep clone to prevent direct state mutation before submit
-                        this.form = JSON.parse(JSON.stringify(existing));
-                        if (!Array.isArray(this.form.familyMembers)) this.form.familyMembers = [];
-                        if (!Array.isArray(this.form.vehicles)) this.form.vehicles = [];
-                        if (!Array.isArray(this.form.interests)) this.form.interests = [];
+                        if (existing) {
+                            this.isEditMode = true;
+                            this.editingHouseNumber = String(existing.houseNumber);
+                            this.form = JSON.parse(JSON.stringify(existing));
+                            if (!Array.isArray(this.form.familyMembers)) this.form.familyMembers = [];
+                            if (!Array.isArray(this.form.vehicles)) this.form.vehicles = [];
+                            if (!Array.isArray(this.form.interests)) this.form.interests = [];
+                        }
+                    };
+
+                    loadFormRecord();
+
+                    // Background cloud sync to keep registered houses list and edit mode synchronized
+                    if (DataStore.isCloudConfigured && DataStore.isCloudConfigured()) {
+                        DataStore.fetchFromCloud().then(res => {
+                            if (res.success && (editParam || idParam)) {
+                                loadFormRecord();
+                            }
+                        }).catch(e => console.warn('Cloud sync notice:', e));
                     }
                 },
 

@@ -473,16 +473,31 @@
                     const houseParam = urlParams.get('house');
                     const idParam = urlParams.get('id');
 
-                    if (houseParam) {
-                        this.houseNumber = String(houseParam).trim();
-                        this.resident = DataStore.getResidentByHouse(this.houseNumber);
-                    } else if (idParam) {
-                        this.resident = DataStore.getResidentById(idParam);
-                        if (this.resident) this.houseNumber = String(this.resident.houseNumber).trim();
-                    }
+                    const lookup = () => {
+                        if (houseParam) {
+                            this.houseNumber = String(houseParam).trim();
+                            this.resident = DataStore.getResidentByHouse(this.houseNumber);
+                        } else if (idParam) {
+                            this.resident = DataStore.getResidentById(idParam);
+                            if (this.resident) this.houseNumber = String(this.resident.houseNumber).trim();
+                        }
+                    };
+
+                    lookup();
 
                     if (!this.resident) {
                         this.notFound = true;
+                        // Attempt cloud fetch in case record was just added on another device
+                        if (DataStore.isCloudConfigured && DataStore.isCloudConfigured()) {
+                            DataStore.fetchFromCloud().then(res => {
+                                if (res.success) {
+                                    lookup();
+                                    if (this.resident) {
+                                        this.notFound = false;
+                                    }
+                                }
+                            }).catch(e => console.warn('Cloud sync error in details:', e));
+                        }
                     }
                 },
 

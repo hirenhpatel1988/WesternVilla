@@ -1258,10 +1258,16 @@ const DataStore = {
         }
 
         try {
+            const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+            const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
+
             const response = await fetch(CLOUD_SYNC_URL, {
                 method: 'GET',
-                cache: 'no-store'
+                cache: 'no-store',
+                signal: controller ? controller.signal : undefined
             });
+
+            if (timeoutId) clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`Server returned HTTP ${response.status}`);
@@ -1269,8 +1275,41 @@ const DataStore = {
 
             const data = await response.json();
             if (data && data.success && Array.isArray(data.records)) {
-                const cleaned = data.records.map(r => sanitizeResident(r));
-                const sorted = sortByHouseNumber(cleaned);
+                // 1. Sanitize cloud records
+                const cleanedCloud = data.records.map(r => sanitizeResident(r));
+
+                // 2. Intelligent merge with existing local records so local/offline records are never lost
+                const localRecords = this.getAllResidents();
+                const cloudHouseMap = new Map();
+                cleanedCloud.forEach(r => cloudHouseMap.set(String(r.houseNumber).trim(), r));
+
+                const merged = [...cleanedCloud];
+                localRecords.forEach(localR => {
+                    const hNum = String(localR.houseNumber).trim();
+                    if (hNum && !cloudHouseMap.has(hNum)) {
+                        merged.push(localR);
+                    }
+                });
+
+                // 3. Guarantee 100% unique IDs across all records (prevents cross-device collisions)
+                const usedIds = new Set();
+                let nextId = 1;
+                merged.forEach(r => {
+                    if (r.id && typeof r.id === 'number' && !usedIds.has(r.id)) {
+                        usedIds.add(r.id);
+                        if (r.id >= nextId) nextId = r.id + 1;
+                    } else {
+                        r.id = null;
+                    }
+                });
+                merged.forEach(r => {
+                    if (!r.id) {
+                        r.id = nextId++;
+                        usedIds.add(r.id);
+                    }
+                });
+
+                const sorted = sortByHouseNumber(merged);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
                 return {
                     success: true,

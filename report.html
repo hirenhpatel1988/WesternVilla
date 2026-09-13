@@ -93,12 +93,15 @@
                     </button>
 
                     <!-- Cloud Database Sync (Google Sheets) -->
-                    <button type="button" @click="syncWithCloud()" :disabled="isSyncingCloud" class="inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition disabled:opacity-50" title="Sync live records with Google Sheet cloud database">
-                        <svg class="h-4 w-4 mr-1.5" :class="isSyncingCloud ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span x-text="isSyncingCloud ? 'Syncing...' : '🔄 Cloud Sync / સિંક'"></span>
-                    </button>
+                    <div class="inline-flex items-center space-x-1.5">
+                        <button type="button" @click="syncWithCloud()" :disabled="isSyncingCloud" class="inline-flex items-center px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition disabled:opacity-50" title="Sync live records with Google Sheet cloud database">
+                            <svg class="h-4 w-4 mr-1.5" :class="isSyncingCloud ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            <span x-text="isSyncingCloud ? 'Syncing...' : '🔄 Cloud Sync / સિંક'"></span>
+                        </button>
+                        <span x-show="cloudStatusText" x-cloak class="inline-flex items-center px-2 py-1.5 rounded-xl text-xs font-semibold border transition" :class="cloudStatusType === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : (cloudStatusType === 'syncing' ? 'bg-blue-50 text-blue-800 border-blue-300 animate-pulse' : 'bg-amber-50 text-amber-800 border-amber-300')" x-text="cloudStatusText"></span>
+                    </div>
 
                     <!-- Backup & Restore Center -->
                     <div class="inline-flex items-center rounded-xl bg-slate-100 p-0.5 border border-slate-200 text-xs sm:text-sm font-bold shadow-sm">
@@ -513,7 +516,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 bg-white">
-                        <template x-for="item in filteredResidents" :key="item.id">
+                        <template x-for="(item, rIdx) in filteredResidents" :key="item.houseNumber || ('res-' + rIdx)">
                             <tr class="hover:bg-slate-50/70 transition">
                                 <!-- House No -->
                                 <td x-show="cols.houseNumber" class="col-house px-2 py-2.5 text-center font-black border-r border-slate-200 bg-slate-50/30 whitespace-nowrap">
@@ -618,7 +621,7 @@
                                         <div>
                                             <span class="font-bold text-[10px] text-purple-700 no-print" x-text="`${item.familyMembers.length} member(s):`"></span>
                                             <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5 print:pl-2 print:text-black">
-                                                <template x-for="fm in item.familyMembers" :key="fm.firstName + fm.surName">
+                                                <template x-for="(fm, fIdx) in item.familyMembers" :key="item.houseNumber + '-fm-' + fIdx">
                                                     <li>
                                                         <span class="font-medium" x-text="`${fm.firstName} ${fm.middleName || ''} ${fm.surName}`"></span>
                                                         <span class="text-slate-400 no-print" x-text="` (${fm.gender || '-'}, ${fm.age ? getEffectiveAge(fm.age, item.registeredAt) + 'y' : '-'})`"></span>
@@ -630,45 +633,45 @@
                                     <template x-if="!item.familyMembers || item.familyMembers.length === 0">
                                         <span class="text-slate-300 text-[10px]">-</span>
                                     </template>
-                                </td>
+                                 </td>
 
-                                <!-- Vehicles -->
-                                <td x-show="cols.vehicles" class="px-3 py-2.5 border-r border-slate-200">
-                                    <template x-if="item.vehicles && item.vehicles.length > 0">
-                                        <div>
-                                            <span class="font-bold text-[10px] text-amber-700" x-text="`${item.vehicles.length} vehicle(s):`"></span>
-                                            <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5">
-                                                <template x-for="v in item.vehicles" :key="v.vehicleNumber || v.fuelType">
-                                                    <li>
-                                                        <span x-text="v.vehicleType === 'Two' ? '2-Wheeler' : '4-Wheeler'"></span>
-                                                        <span class="text-slate-400" x-text="` [${v.fuelType}] ${v.vehicleNumber || ''}`"></span>
-                                                    </li>
-                                                </template>
-                                            </ul>
-                                        </div>
-                                    </template>
-                                    <template x-if="!item.vehicles || item.vehicles.length === 0">
-                                        <span class="text-slate-300 text-[10px]">None</span>
-                                    </template>
-                                </td>
+                                 <!-- Vehicles -->
+                                 <td x-show="cols.vehicles" class="px-3 py-2.5 border-r border-slate-200">
+                                     <template x-if="item.vehicles && item.vehicles.length > 0">
+                                         <div>
+                                             <span class="font-bold text-[10px] text-amber-700" x-text="`${item.vehicles.length} vehicle(s):`"></span>
+                                             <ul class="text-[10px] text-slate-600 list-disc pl-3 mt-0.5">
+                                                 <template x-for="(v, vIdx) in item.vehicles" :key="item.houseNumber + '-v-' + vIdx">
+                                                     <li>
+                                                         <span x-text="v.vehicleType === 'Two' ? '2-Wheeler' : '4-Wheeler'"></span>
+                                                         <span class="text-slate-400" x-text="` [${v.fuelType}] ${v.vehicleNumber || ''}`"></span>
+                                                     </li>
+                                                 </template>
+                                             </ul>
+                                         </div>
+                                     </template>
+                                     <template x-if="!item.vehicles || item.vehicles.length === 0">
+                                         <span class="text-slate-300 text-[10px]">None</span>
+                                     </template>
+                                 </td>
 
-                                <!-- Society Tasks Interests -->
-                                <td x-show="cols.interests" class="px-3 py-2.5 border-r border-slate-200">
-                                    <template x-if="item.interests && item.interests.length > 0">
-                                        <div class="text-[10px] text-slate-600 space-y-0.5">
-                                            <template x-for="intr in item.interests" :key="intr">
-                                                <div class="truncate max-w-xs" x-text="intr"></div>
-                                            </template>
-                                        </div>
-                                    </template>
-                                    <template x-if="!item.interests || item.interests.length === 0">
-                                        <span class="text-slate-300 text-[10px]">-</span>
-                                    </template>
-                                </td>
+                                 <!-- Society Tasks Interests -->
+                                 <td x-show="cols.interests" class="px-3 py-2.5 border-r border-slate-200">
+                                     <template x-if="item.interests && item.interests.length > 0">
+                                         <div class="text-[10px] text-slate-600 space-y-0.5">
+                                             <template x-for="(intr, iIdx) in item.interests" :key="item.houseNumber + '-intr-' + iIdx">
+                                                 <div class="truncate max-w-xs" x-text="intr"></div>
+                                             </template>
+                                         </div>
+                                     </template>
+                                     <template x-if="!item.interests || item.interests.length === 0">
+                                         <span class="text-slate-300 text-[10px]">-</span>
+                                     </template>
+                                 </td>
 
-                                <!-- Custom Fillable Write-in Columns (for printing, amounts, checks, signatures) -->
-                                <template x-for="col in customColumns" :key="col.id">
-                                    <td :style="`width: ${col.width}; min-width: ${col.width};`" :class="'col-custom col-custom-' + col.id" class="col-custom px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
+                                 <!-- Custom Fillable Write-in Columns (for printing, amounts, checks, signatures) -->
+                                 <template x-for="col in customColumns" :key="item.houseNumber + '-' + col.id">
+                                     <td :style="`width: ${col.width}; min-width: ${col.width};`" :class="'col-custom col-custom-' + col.id" class="col-custom px-2 py-2 text-center border-r border-slate-200 bg-white align-middle">
                                         <template x-if="col.defaultValue">
                                             <div class="cell-custom-val py-1 px-2 font-bold text-slate-900 print:text-black text-center" :class="dynamicMobileClass" x-text="col.defaultValue"></div>
                                         </template>
@@ -754,10 +757,12 @@
                 ],
 
                 isSyncingCloud: false,
+                cloudStatusText: '',
+                cloudStatusType: '', // 'syncing', 'success', 'warning'
 
                 init() {
                     this.loadData();
-                    // If cloud is configured, auto-fetch latest updates in background
+                    // Auto-fetch latest updates from Google Sheet on page load
                     if (DataStore.isCloudConfigured && DataStore.isCloudConfigured()) {
                         this.syncWithCloud(true);
                     }
@@ -776,19 +781,28 @@
                     }
 
                     this.isSyncingCloud = true;
+                    this.cloudStatusType = 'syncing';
+                    this.cloudStatusText = 'Syncing...';
+
                     try {
                         const result = await DataStore.fetchFromCloud();
                         if (result.success) {
                             this.loadData();
+                            this.cloudStatusType = 'success';
+                            this.cloudStatusText = `✓ Cloud Synced (${result.count})`;
                             if (!silent) {
                                 alert(`Cloud Sync Successful! Updated ${result.count} records from Google Sheet.`);
                             }
                         } else {
+                            this.cloudStatusType = 'warning';
+                            this.cloudStatusText = '⚠️ Offline';
                             if (!silent) {
                                 alert('Cloud Sync failed: ' + (result.message || result.error));
                             }
                         }
                     } catch (err) {
+                        this.cloudStatusType = 'warning';
+                        this.cloudStatusText = '⚠️ Sync error';
                         if (!silent) {
                             alert('Cloud Sync error: ' + err.message);
                         }
