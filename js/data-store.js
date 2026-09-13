@@ -1261,7 +1261,8 @@ const DataStore = {
             const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
             const timeoutId = controller ? setTimeout(() => controller.abort(), 15000) : null;
 
-            const response = await fetch(CLOUD_SYNC_URL, {
+            const syncUrl = CLOUD_SYNC_URL + (CLOUD_SYNC_URL.includes('?') ? '&' : '?') + `_t=${Date.now()}`;
+            const response = await fetch(syncUrl, {
                 method: 'GET',
                 cache: 'no-store',
                 signal: controller ? controller.signal : undefined
